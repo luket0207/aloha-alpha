@@ -1,0 +1,150 @@
+@use '../styles/variables' as tokens;
+@use '../styles/mixins' as mixins;
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 10% 10%, rgba(tokens.$color-white, 0.6), transparent 30%),
+    linear-gradient(135deg, #dff5f0 0%, #f6fbf8 52%, #fff3db 100%);
+
+  &__inner {
+    min-height: clamp(32rem, 68vh, 46rem);
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(18rem, 0.85fr);
+    align-items: center;
+    gap: clamp(2rem, 6vw, 6rem);
+    padding-block: clamp(4.5rem, 9vw, 8rem);
+
+    @include mixins.mobile {
+      min-height: auto;
+      grid-template-columns: 1fr;
+      padding-block: 4rem 3rem;
+    }
+  }
+
+  &__content {
+    position: relative;
+    z-index: 1;
+    max-width: 42rem;
+  }
+
+  &__eyebrow {
+    margin: 0 0 1rem;
+    color: tokens.$color-brand;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    max-width: 12ch;
+    margin: 0;
+    color: tokens.$color-heading;
+  }
+
+  &__description {
+    max-width: 38rem;
+    margin-top: 1.5rem;
+    color: tokens.$color-ink;
+    font-size: clamp(1.05rem, 2vw, 1.25rem);
+    line-height: 1.7;
+
+    p {
+      margin-block: 0;
+    }
+
+    > :first-child {
+      margin-top: 0;
+    }
+
+    > :last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3.25rem;
+    margin-top: 2rem;
+    padding: 0.8rem 1.5rem;
+    border-radius: 999px;
+    background: tokens.$color-brand;
+    box-shadow: 0 0.75rem 1.75rem rgba(tokens.$color-heading, 0.18);
+    color: tokens.$color-white;
+    font-weight: 700;
+    text-decoration: none;
+    transition: transform 160ms ease, box-shadow 160ms ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 1rem 2rem rgba(tokens.$color-heading, 0.24);
+    }
+
+    &:focus-visible {
+      outline: 3px solid tokens.$color-heading;
+      outline-offset: 4px;
+    }
+  }
+
+  &__art {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    border: 1px solid rgba(tokens.$color-heading, 0.08);
+    border-radius: 50%;
+    background: rgba(tokens.$color-white, 0.45);
+    box-shadow: 0 2rem 5rem rgba(tokens.$color-heading, 0.12);
+
+    @include mixins.mobile {
+      width: min(80%, 22rem);
+      justify-self: center;
+    }
+  }
+
+  &__sun {
+    position: absolute;
+    top: 16%;
+    right: 18%;
+    width: 24%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: #ffc857;
+    box-shadow: 0 0 0 0.9rem rgba(#ffc857, 0.18);
+  }
+
+  &__wave {
+    position: absolute;
+    right: -12%;
+    bottom: 11%;
+    left: -12%;
+    height: 43%;
+    border-radius: 50% 50% 42% 42%;
+    transform: rotate(-6deg);
+
+    &--one {
+      bottom: 27%;
+      background: #7fc8b8;
+    }
+
+    &--two {
+      bottom: 13%;
+      background: #249b91;
+      transform: rotate(8deg);
+    }
+
+    &--three {
+      bottom: -7%;
+      background: tokens.$color-brand;
+      transform: rotate(-3deg);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__button {
+    transition: none;
+  }
+}

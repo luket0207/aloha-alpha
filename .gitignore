@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+
+# Frontend bundle is generated from source
+backend/themes/alohaalpha/dist/
+
+# Local settings and secrets
+.env
+.env.*
+!.env.example
+.wp-env.override.json
+
+# Environment, logs, exports, and OS files
+.wp-env/
+*.log
+*.sql
+*.sql.gz
+.DS_Store
+Thumbs.db

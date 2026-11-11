@@ -1,0 +1,21 @@
+@use './variables' as tokens;
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: tokens.$color-ink;
+  background: tokens.$color-surface;
+}
+
+body {
+  margin: 0;
+}
+
+a {
+  color: tokens.$color-brand;
+}
