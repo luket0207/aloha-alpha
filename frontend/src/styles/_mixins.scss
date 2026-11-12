@@ -6,3 +6,11 @@
     @content;
   }
 }
+
+@mixin theme($background, $text, $accent) {
+  --aloha-theme-background: #{$background};
+  --aloha-theme-text: #{$text};
+  --aloha-theme-accent: #{$accent};
+  background-color: var(--aloha-theme-background);
+  color: var(--aloha-theme-text);
+}

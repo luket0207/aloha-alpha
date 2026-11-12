@@ -1,5 +1,66 @@
+@use './variables' as tokens;
+
+@import url('https://fonts.googleapis.com/css2?family=Courgette&family=Klee+One&family=Yusei+Magic&display=swap');
+
+body,
+p,
+.wp-block-paragraph {
+  font-family: tokens.$font-body;
+}
+
+body {
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+p {
+  line-height: inherit;
+}
+
+a,
+span {
+  font-family: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+.aloha-heading--japanese {
+  margin-block: 0 0.6em;
+  font-family: tokens.$font-heading-japanese;
+  font-weight: 400;
+  line-height: 1.35;
+}
+
+.aloha-heading--latin {
+  font-family: tokens.$font-heading-latin;
+  line-height: 1.2;
+}
+
 h1 {
   font-size: clamp(2.25rem, 5vw, 4rem);
-  line-height: 1.1;
-  letter-spacing: -0.03em;
+}
+
+h2 {
+  font-size: clamp(1.8rem, 4vw, 3rem);
+}
+
+h3 {
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+h4 {
+  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+}
+
+h5 {
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
+}
+
+.aloha-logo,
+.aloha-logo a,
+.aloha-logo span {
+  font-family: tokens.$font-heading-latin;
 }

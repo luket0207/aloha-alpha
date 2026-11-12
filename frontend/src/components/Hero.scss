@@ -1,150 +1,140 @@
 @use '../styles/variables' as tokens;
-@use '../styles/mixins' as mixins;
 
-.hero {
+.aloha-hero {
   position: relative;
+  min-height: clamp(32rem, 55vw, 43rem);
   overflow: hidden;
-  background:
-    radial-gradient(circle at 10% 10%, rgba(tokens.$color-white, 0.6), transparent 30%),
-    linear-gradient(135deg, #dff5f0 0%, #f6fbf8 52%, #fff3db 100%);
+  background: tokens.$cream;
+  isolation: isolate;
+}
 
-  &__inner {
-    min-height: clamp(32rem, 68vh, 46rem);
-    display: grid;
-    grid-template-columns: minmax(0, 1.15fr) minmax(18rem, 0.85fr);
-    align-items: center;
-    gap: clamp(2rem, 6vw, 6rem);
-    padding-block: clamp(4.5rem, 9vw, 8rem);
+.aloha-hero__slides {
+  position: absolute;
+  z-index: 0;
+  inset: 0 0 0 32%;
+  overflow: hidden;
+  background: tokens.$cream;
 
-    @include mixins.mobile {
-      min-height: auto;
-      grid-template-columns: 1fr;
-      padding-block: 4rem 3rem;
-    }
+  &.is-empty {
+    background: tokens.$cream;
   }
+}
 
-  &__content {
-    position: relative;
+.aloha-hero__slide {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  transition: opacity var(--aloha-hero-crossfade-duration, 1s) ease;
+
+  &.is-active {
     z-index: 1;
-    max-width: 42rem;
+    opacity: 1;
   }
 
-  &__eyebrow {
-    margin: 0 0 1rem;
-    color: tokens.$color-brand;
-    font-size: 0.8rem;
-    font-weight: 800;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+}
+
+.aloha-hero__wave {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+
+  path {
+    fill: tokens.$light-blue;
+  }
+}
+
+.aloha-hero__wave--mobile {
+  display: none;
+}
+
+.aloha-hero__content {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: max(1.5rem, calc((100vw - #{tokens.$container-width}) / 2));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(1rem, 2vw, 1.75rem);
+  width: min(40vw, 28rem);
+  color: tokens.$mocha;
+  transform: translateY(-50%);
+
+  > .wp-block-group__inner-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: clamp(1rem, 2vw, 1.75rem);
   }
 
-  h1 {
-    max-width: 12ch;
-    margin: 0;
-    color: tokens.$color-heading;
+  .aloha-logo--large {
+    max-width: 100%;
+  }
+}
+
+.aloha-hero__slogan {
+  max-width: 26rem;
+  margin: 0;
+  color: tokens.$mocha;
+  font-family: tokens.$font-body;
+  font-size: clamp(1.1rem, 2vw, 1.5rem);
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+@media (max-width: 767px) {
+  .aloha-hero {
+    min-height: clamp(40rem, 150vw, 49rem);
   }
 
-  &__description {
-    max-width: 38rem;
-    margin-top: 1.5rem;
-    color: tokens.$color-ink;
-    font-size: clamp(1.05rem, 2vw, 1.25rem);
-    line-height: 1.7;
-
-    p {
-      margin-block: 0;
-    }
-
-    > :first-child {
-      margin-top: 0;
-    }
-
-    > :last-child {
-      margin-bottom: 0;
-    }
+  .aloha-hero__slides {
+    inset: 0 0 auto;
+    width: 100%;
+    height: 58%;
   }
 
-  &__button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 3.25rem;
-    margin-top: 2rem;
-    padding: 0.8rem 1.5rem;
-    border-radius: 999px;
-    background: tokens.$color-brand;
-    box-shadow: 0 0.75rem 1.75rem rgba(tokens.$color-heading, 0.18);
-    color: tokens.$color-white;
-    font-weight: 700;
-    text-decoration: none;
-    transition: transform 160ms ease, box-shadow 160ms ease;
-
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 1rem 2rem rgba(tokens.$color-heading, 0.24);
-    }
-
-    &:focus-visible {
-      outline: 3px solid tokens.$color-heading;
-      outline-offset: 4px;
-    }
+  .aloha-hero__wave--desktop {
+    display: none;
   }
 
-  &__art {
-    position: relative;
-    aspect-ratio: 1 / 1;
-    border: 1px solid rgba(tokens.$color-heading, 0.08);
-    border-radius: 50%;
-    background: rgba(tokens.$color-white, 0.45);
-    box-shadow: 0 2rem 5rem rgba(tokens.$color-heading, 0.12);
-
-    @include mixins.mobile {
-      width: min(80%, 22rem);
-      justify-self: center;
-    }
+  .aloha-hero__wave--mobile {
+    top: 38%;
+    display: block;
+    height: 62%;
   }
 
-  &__sun {
-    position: absolute;
-    top: 16%;
-    right: 18%;
-    width: 24%;
-    aspect-ratio: 1;
-    border-radius: 50%;
-    background: #ffc857;
-    box-shadow: 0 0 0 0.9rem rgba(#ffc857, 0.18);
-  }
+  .aloha-hero__content {
+    top: auto;
+    right: max(1.25rem, env(safe-area-inset-right));
+    bottom: clamp(2rem, 7vw, 3.5rem);
+    left: max(1.25rem, env(safe-area-inset-left));
+    width: auto;
+    transform: none;
 
-  &__wave {
-    position: absolute;
-    right: -12%;
-    bottom: 11%;
-    left: -12%;
-    height: 43%;
-    border-radius: 50% 50% 42% 42%;
-    transform: rotate(-6deg);
-
-    &--one {
-      bottom: 27%;
-      background: #7fc8b8;
+    > .wp-block-group__inner-container {
+      gap: 1rem;
     }
 
-    &--two {
-      bottom: 13%;
-      background: #249b91;
-      transform: rotate(8deg);
-    }
-
-    &--three {
-      bottom: -7%;
-      background: tokens.$color-brand;
-      transform: rotate(-3deg);
+    .aloha-logo--large {
+      font-size: clamp(2.4rem, 14vw, 4rem);
     }
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero__button {
+  .aloha-hero__slide {
     transition: none;
   }
 }

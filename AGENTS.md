@@ -18,41 +18,41 @@ Placement: Keep this file named AGENTS.md in the repository root. Do not also ma
    //epic-XXXNextBug	Address the first non-complete bug in that epic.
    //rollbackFeature	Safely undo the most recently worked-on feature command.
    //rollbackBug	Safely undo the most recently worked-on bug command.
-Feature and bug commands
-For //epic-XXXNextFeature, read src/vibe/epics/epic-XXX/features.txt. For //epic-XXXNextBug, read src/vibe/epics/epic-XXX/bugs.txt.
-1. Pick the first entry in written order whose status is not complete. An entry without a status counts as not started. in progress and blocked both count as non-complete: do not silently skip them. If the selected entry is blocked, first check whether the documented blocker is now resolved; avoid blindly repeating the same failed work.
-2. Work on that single entry using the implementation procedure in section 6.
-3. If the epic, file, or an unambiguous entry is missing, report the problem; do not fabricate requirements or advance to another item.
-4. Do not implement the next item automatically after finishing.
+   Feature and bug commands
+   For //epic-XXXNextFeature, read src/vibe/epics/epic-XXX/features.txt. For //epic-XXXNextBug, read src/vibe/epics/epic-XXX/bugs.txt.
+3. Pick the first entry in written order whose status is not complete. An entry without a status counts as not started. in progress and blocked both count as non-complete: do not silently skip them. If the selected entry is blocked, first check whether the documented blocker is now resolved; avoid blindly repeating the same failed work.
+4. Work on that single entry using the implementation procedure in section 6.
+5. If the epic, file, or an unambiguous entry is missing, report the problem; do not fabricate requirements or advance to another item.
+6. Do not implement the next item automatically after finishing.
    Rollback commands
    - //rollbackFeature targets the most recent feature implementation attempt not already rolled back, across all epics.
    - //rollbackBug does the same for bug implementation attempts. Attempts ending blocked also qualify.
    - Use the rollback safety protocol in section 7. Restore the selected epic entry's previous status and notes along with the code where possible.
    - Do not guess from the latest Git commit, discard unrelated edits, or undo intervening changes. If an exact rollback would overwrite subsequent work, stop and explain the conflict.
-5. //setupProject — one-time bootstrap
+7. //setupProject — one-time bootstrap
    This command is for a new React frontend, either standalone or integrated into a WordPress project. First inspect the repository structure, existing WordPress theme/plugins and frontend integration (if present), package.json, React entry point, package manager, and Git state. Identify the existing frontend root rather than assuming the repository root is the React root. If already set up, do not wipe the project, recreate files, or reinstall dependencies; explain what is already present. Preserve all user-created code, WordPress data, and configuration.
-6. Install the standard libraries using npm, retaining compatible existing versions where already installed:
+8. Install the standard libraries using npm, retaining compatible existing versions where already installed:
    - Routing: react-router-dom for standalone React frontends or projects already using client-side routing; do not add it solely to replace WordPress permalink/page routing
    - UI components: primereact
    - Icons: @fortawesome/react-fontawesome, @fortawesome/fontawesome-svg-core, @fortawesome/free-solid-svg-icons
    - SCSS compilation: sass as a development dependency
      These are the default choices for future work. Use PrimeReact first when a suitable component is needed; use Font Awesome for requested icons; do not add UI merely to demonstrate installed libraries.
-7. Remove recognisable unused React/Vite starter boilerplate only. Never delete unrelated existing code, real content, or user-owned assets. Preserve the working HTML/React mount and essential configuration.
-8. For a standalone React app, create src/pages/home.jsx and src/pages/about.jsx, plus src/routes.jsx with React Router DOM routes: / renders Home and /about renders About. Integrate the router with the existing entry point. For a WordPress-integrated frontend, preserve the existing WordPress theme mount and permalink/page resolution: add or adjust only the minimum React pages/components needed, and do not duplicate WordPress routes in React Router unless the project explicitly requires it.
-9. In the standalone setup, put a simple React Router DOM Link to About on Home and a Link to Home on About. In a WordPress-integrated setup, do not invent static pages or links that bypass WordPress-managed content and URLs. No other navigation, sample features, visual polish, or decorative CSS/SCSS.
-10. In the detected React frontend root, create these directories if missing, initially empty: src/assets/scss/, src/assets/images/, and src/components/. Do not create duplicate trees or placeholder files unless the user requests them. (Git does not track empty directories.)
-11. Preserve the root AGENTS.md. Create src/vibe/epics/ if needed and execute the //nextEpic procedure exactly once, producing epic-001 in a fresh project. Never overwrite an existing epic or its entries.
-12. Use the existing Git repository for safe rollback records. If no Git repository exists, initialise one locally, without creating commits or remotes. Never make Git commits or pushes automatically.
-13. Perform only a quick, relevant compile/startup check if practical. Do not create an unrelated suite during bootstrap; targeted feature/bug testing follows section 9.
-14. Report the files created, required dependencies, and the available commands. Explain that features and bugs are written by the user into each epic's text files. Then stop.
+9. Remove recognisable unused React/Vite starter boilerplate only. Never delete unrelated existing code, real content, or user-owned assets. Preserve the working HTML/React mount and essential configuration.
+10. For a standalone React app, create src/pages/home.jsx and src/pages/about.jsx, plus src/routes.jsx with React Router DOM routes: / renders Home and /about renders About. Integrate the router with the existing entry point. For a WordPress-integrated frontend, preserve the existing WordPress theme mount and permalink/page resolution: add or adjust only the minimum React pages/components needed, and do not duplicate WordPress routes in React Router unless the project explicitly requires it.
+11. In the standalone setup, put a simple React Router DOM Link to About on Home and a Link to Home on About. In a WordPress-integrated setup, do not invent static pages or links that bypass WordPress-managed content and URLs. No other navigation, sample features, visual polish, or decorative CSS/SCSS.
+12. In the detected React frontend root, create these directories if missing, initially empty: src/assets/scss/, src/assets/images/, and src/components/. Do not create duplicate trees or placeholder files unless the user requests them. (Git does not track empty directories.)
+13. Preserve the root AGENTS.md. Create src/vibe/epics/ if needed and execute the //nextEpic procedure exactly once, producing epic-001 in a fresh project. Never overwrite an existing epic or its entries.
+14. Use the existing Git repository for safe rollback records. If no Git repository exists, initialise one locally, without creating commits or remotes. Never make Git commits or pushes automatically.
+15. Perform only a quick, relevant compile/startup check if practical. Do not create an unrelated suite during bootstrap; targeted feature/bug testing follows section 9.
+16. Report the files created, required dependencies, and the available commands. Explain that features and bugs are written by the user into each epic's text files. Then stop.
     The setup is intentionally basic and functional. It does not define the project's future features, business rules, theme, or content.
-15. //nextEpic — epic creation
+17. //nextEpic — epic creation
     - Look at existing directories named src/vibe/epics/epic-NNN where NNN is exactly three digits and is greater than 000.
     - Create epic-001 if none exist; otherwise take the highest existing number and add one (epic-002, epic-003, etc.). Do not fill gaps, overwrite directories, or reset numbering. If epic-999 already exists, stop and ask how to continue.
     - Inside the new epic folder create exactly two truly empty text files, features.txt and bugs.txt.
     - Do not create testing.txt, implementation.txt, sample features, templates, README files, or any other epic process file.
     - Report the new epic path and stop.
-16. Epic entry conventions
+18. Epic entry conventions
     Epics contain only:
     src/vibe/epics/
     epic-001/
@@ -67,25 +67,25 @@ For //epic-XXXNextFeature, read src/vibe/epics/epic-XXX/features.txt. For //epic
     Requirements:
     - Required behaviour and acceptance criteria
       Notes: (optional)
-BUG-001: Short title
-Status: not started
-Description: What goes wrong and the expected behaviour
-Notes: (optional)
-- Valid status values for both features and bugs: not started, in progress, blocked, complete.
-- Status is attached to each item, never the whole file. Treat missing status as not started.
-- Preserve all original wording and the order of entries. Never silently add, combine, remove, reorder, or expand the user's requirements.
-- Update only the currently selected entry's status and concise implementation notes. Useful notes include a blocker, a necessary technical decision, an affected data contract, or an outstanding limitation. Avoid detailed logs.
-- Other discovered issues are out of scope. Mention significant ones in the response; do not insert a new feature or bug into an epic without authorisation.
-- features.txt and bugs.txt are the only epic workflow files. Never create or maintain testing.txt, even if an older project used one.
-6. Implementation procedure — one item per command
-7. Read: Consult this AGENTS.md, the selected feature/bug's full requirements, and only the relevant application files. Check existing components, hooks, utilities, styles, routes, and dependency APIs for reuse.
-8. Set boundaries: Identify the behaviour explicitly required. Do not infer extra functionality, validation, routes, database structures, persistence, architecture, or style. Do not modify unrelated areas.
-9. Capture rollback baseline: Before editing each affected path, save its original state using section 7, including whether it did not yet exist. If you cannot establish a safe recoverable baseline, do not proceed with destructive changes.
-10. Implement: Change the selected entry to Status: in progress, then make the smallest maintainable fix or implementation. Build a reusable component only when there is an actual present need; do not future-proof speculatively.
-11. Verify proportionately: Follow section 9. Add or update a small focused test when it protects meaningful feature or bug behaviour; run only the relevant checks. Correct errors introduced by this implementation without expanding into broad testing.
-12. Update entry: Set Status: complete when the specified behaviour is implemented with reasonable confidence. Otherwise set Status: blocked and add a short explanation of what prevents completion. Do not claim human acceptance or full test coverage.
-13. Record + stop: Save the post-change state for rollback, report the outcome concisely, and stop. Do not start another feature or bug in the same pass.
-14. Safe rollback protocol
+      BUG-001: Short title
+      Status: not started
+      Description: What goes wrong and the expected behaviour
+      Notes: (optional)
+    - Valid status values for both features and bugs: not started, in progress, blocked, complete.
+    - Status is attached to each item, never the whole file. Treat missing status as not started.
+    - Preserve all original wording and the order of entries. Never silently add, combine, remove, reorder, or expand the user's requirements.
+    - Update only the currently selected entry's status and concise implementation notes. Useful notes include a blocker, a necessary technical decision, an affected data contract, or an outstanding limitation. Avoid detailed logs.
+    - Other discovered issues are out of scope. Mention significant ones in the response; do not insert a new feature or bug into an epic without authorisation.
+    - features.txt and bugs.txt are the only epic workflow files. Never create or maintain testing.txt, even if an older project used one.
+19. Implementation procedure — one item per command
+20. Read: Consult this AGENTS.md, the selected feature/bug's full requirements, and only the relevant application files. Check existing components, hooks, utilities, styles, routes, and dependency APIs for reuse.
+21. Set boundaries: Identify the behaviour explicitly required. Do not infer extra functionality, validation, routes, database structures, persistence, architecture, or style. Do not modify unrelated areas.
+22. Capture rollback baseline: Before editing each affected path, save its original state using section 7, including whether it did not yet exist. If you cannot establish a safe recoverable baseline, do not proceed with destructive changes.
+23. Implement: Change the selected entry to Status: in progress, then make the smallest maintainable fix or implementation. Build a reusable component only when there is an actual present need; do not future-proof speculatively.
+24. Verify proportionately: Follow section 9. Add or update a small focused test when it protects meaningful feature or bug behaviour; run only the relevant checks. Correct errors introduced by this implementation without expanding into broad testing.
+25. Update entry: Set Status: complete when the specified behaviour is implemented with reasonable confidence. Otherwise set Status: blocked and add a short explanation of what prevents completion. Do not claim human acceptance or full test coverage.
+26. Record + stop: Save the post-change state for rollback, report the outcome concisely, and stop. Do not start another feature or bug in the same pass.
+27. Safe rollback protocol
     Rollback must survive different Codex sessions without depending on conversation memory. Prefer storing local command history under .git/vibe-command-history/, outside the epic folders and outside the tracked source tree.
     - Before modifying a file in a feature/bug command, capture its exact prior contents or absence, including any pre-existing uncommitted user changes. Record which item, epic, command type, and paths are involved. When the command is finished or blocked, save the resulting contents or hashes as well. Include the applicable epic text file, package.json, and lockfiles if modified.
     - Keep separate records for feature and bug attempts and record their execution order, so a later rollback can identify the latest eligible command of that type. Avoid making Git commits merely for rollback.
@@ -94,7 +94,7 @@ Notes: (optional)
     - Never run git reset --hard, git clean -fd, blanket git restore, force checkout, or any other destructive repository-wide command to implement these rollbacks.
     - If local history was removed, or safe reversal is not possible, say so. Do not pretend the rollback succeeded.
     - Do not add rollback logs to the epic directories or create testing.txt or implementation.txt for rollback purposes.
-15. Coding and architecture standards
+28. Coding and architecture standards
     Stack, folders and reuse
     - Use React with .jsx for every file containing JSX, including pages, components, and JSX-rendering providers. Use .js for plain logic, utilities, hooks without JSX, and configuration where suitable. Do not introduce TypeScript without a request.
     - Use .scss for authored styling, not .css. Do not add inline styles unless genuinely dynamic or the simplest safe implementation. Existing third-party CSS imports may remain when required by dependencies.
@@ -116,6 +116,26 @@ Notes: (optional)
     - Do not assume a WordPress plugin's frontend output, shortcodes, forms, scripts or PHP templates will work automatically inside React. Check the specific integration contract and implement only the needed adapter. Retain WordPress plugin and account capabilities where possible rather than replacing them.
     - Follow the repository's actual theme, plugin, frontend and build paths; do not assume one project layout. Treat compiled JS/CSS as build output, keep source-of-truth SCSS in the frontend, and retain the minimal style.css metadata file WordPress requires for a classic theme when applicable.
     - When a change crosses the boundary, modify the smallest necessary pieces on both sides: WordPress exposes or stores data safely, React renders it. Avoid introducing additional frameworks, databases, duplicate state, or deployments without an explicit requirement. If SEO, server rendering, or complex authenticated flows matter, identify the trade-off instead of assuming a client-rendered React shell handles them automatically.
+      WordPress plugin source and local wp-env workflow
+    - Develop and maintain custom WordPress plugins directly inside `backend/plugins/<plugin-slug>/`. Each mapped plugin directory must contain its complete source, including the main PHP file with the WordPress plugin header and all required runtime or compiled assets.
+    - Treat plugin paths listed in `.wp-env.json` as bind-mounted source directories and the repository copy as the source of truth. Do not leave a mapped plugin directory empty or keep its only complete implementation in a deployment archive.
+    - Normal local plugin updates happen by editing the mapped `backend/plugins/` source. ZIP uploads are not required in local wp-env and must not be used to replace a bind-mounted plugin, because the WordPress updater can remove or overwrite the project source directory.
+    - Restart wp-env only when a mapping or environment configuration change requires it; ordinary PHP, JavaScript, CSS and block metadata edits should remain in the mapped source directory.
+    - Generate a deployment plugin ZIP only when the user explicitly requests one. Treat that ZIP as a derived release artifact, never as the development source or the only recoverable copy of the plugin.
+      WordPress visual page editing and reusable React section blocks (WordPress + React projects only)
+    - Editorial handover is a first-class requirement: a non-technical site owner should be able to identify each major, owner-editable page section in the WordPress editor and update its approved content without editing source code. Treat the editor experience as part of delivering a finished section, not a future optional enhancement.
+    - Prefer native WordPress Gutenberg blocks (Block Editor) over installing a second page builder. Do not introduce WPBakery, Elementor, ACF Pro or another paid/third-party builder unless explicitly requested or already established by the project. Reuse existing compatible blocks and editing infrastructure before registering new ones.
+    - For each new or materially changed public-facing section containing owner-editable content (for example a hero, services, gallery, testimonial or contact section), ensure a corresponding clearly named, individually selectable/editable block or established equivalent exists in WordPress. Do not manufacture blocks for purely presentational wrappers, static technical UI or changes that have no editorial content.
+    - Make the editor visually understandable without requiring a pixel-perfect frontend preview: use descriptive block names and icons, a coherent List View hierarchy, concise field labels, logical groups, and collapsible panels when useful. Separate repeated items into understandable controls. Prefer core editor components (such as RichText, MediaUpload, URL/Link controls, InspectorControls and InnerBlocks) where appropriate rather than exposing raw HTML, JSON, shortcodes or code to the owner.
+    - WordPress editor blocks may use React and the official @wordpress/block-editor / @wordpress/components packages for their administration UI. This is distinct from the public React frontend: editor JSX exists to edit/store content; the public-facing appearance and layout remain owned by the project's React components and SCSS. Do not generate a second public-facing design in the PHP block render callback or rely on the block editor's HTML as the React component implementation.
+    - Define an explicit, stable contract between each editable WordPress block and its public React component: registered block name, editable attributes or nested item data, validation/defaults, persistence format, and how structured content reaches React. Prefer existing WordPress block serialization and REST APIs when sufficient; add a narrowly scoped, permission-aware REST adapter (for example parsing registered blocks server-side) only when the existing response cannot provide the required structured data. Never assume content.rendered can reliably replace a structured block-to-component mapping.
+    - The public React page renderer should map supported WordPress block types to their corresponding React components, passing only the validated, expected fields. Preserve the order of sections saved in WordPress where page composition is supported. Handle missing or optional content safely and handle unsupported blocks explicitly rather than silently rendering raw, untrusted HTML as a substitute.
+    - Keep design and content separate. The owner may edit the specific headings, descriptions, images, links, list entries and other fields intentionally exposed for that section; layout, styling, responsiveness, animation and component behaviour stay in React/SCSS. Do not hard-code owner-editable content into React or make its update require a code deployment.
+    - Protect the approved design using appropriate registered block capabilities, templates, templateLock/block locking, content-only editing or role/capability restrictions as supported by the WordPress version and block design. Treat these as usability safeguards, not a substitute for server-side permission enforcement. Do not assume administrators are incapable of bypassing editor restrictions.
+    - Do not grant the owner the ability to insert, delete, duplicate or reorder entire sections merely by implementing editable blocks. Follow explicit requirements and existing site behaviour: keep structure protected by default for a fixed-layout handover; enable selective insertion, removal, duplication or rearrangement only when requested, preserving React-supported layouts and valid block data.
+    - Ensure ordinary WordPress editing works across the full lifecycle: create/edit content, save or update, reopen and see values persisted, preview where supported, publish, and view the correct content on the React frontend. Respect WordPress drafts, revisions, publication status and permissions; do not expose unpublished content through public APIs.
+    - Keep Gutenberg block definitions, registrations and backend data adapters in the existing WordPress plugin/theme locations appropriate to their responsibilities; keep public React components and SCSS in the frontend. Follow the actual repository layout rather than assuming fixed folder names. Build a reusable section/block pattern only when a real section requires it, without adding speculative page-builder infrastructure.
+    - For a WordPress-editable section, include focused verification of both sides: at most a few targeted tests for data mapping or component behaviour, plus one editor-save-to-public-React smoke check when the local WordPress environment is already running. Check that displayed values persist and that protected layout controls behave as intended. If WordPress is unavailable, report the unverified integration instead of claiming Vitest mocks prove the editor works. Follow the focused feature and bug testing rules below.
       SCSS, responsiveness and design
     - Use the React frontend's src/assets/scss/ for genuinely shared variables, mixins, breakpoints, and global structural rules. Keep shared SCSS centralised and reusable; use modern Sass module conventions (@use/@forward) as appropriate. Create only the shared files actually needed.
     - Keep bespoke SCSS beside its .jsx file within the frontend: e.g., src/pages/home.scss for src/pages/home.jsx. Do not put one-off styles in global SCSS.
@@ -128,15 +148,15 @@ Notes: (optional)
     - Handle errors that can actually occur in the requested functionality. Do not silently swallow failures, expose secrets, hard-code credentials, or log sensitive information.
     - Do not invent business rules, demo data, fake integrations, placeholder content, future screens, or optional enhancements. Anything not requested should remain unimplemented.
     - Do not modify unrelated dependency versions, config, documentation, or folder structure as a side effect of a feature or bug.
-16. Focused feature and bug testing — good coverage, low overhead
+29. Focused feature and bug testing — good coverage, low overhead
     - Every implemented feature or bug gets a proportionate verification step. Prefer a small automated test for observable behaviour, logic, state changes, API-response handling, or a regression-prone bug. For a purely cosmetic change, a focused build and/or visual check is sufficient; do not create meaningless tests merely to meet a quota.
     - Prefer Vitest for the React/Vite frontend: it is lightweight and can target individual files. Reuse an existing test runner if the repository already has one. When the first meaningful frontend test is needed and no runner exists, add only Vitest as a development dependency with the minimum working configuration. Add React Testing Library and a DOM environment only when DOM/component interaction genuinely needs them. Do not introduce TestCafe, browser automation, coverage services, or large testing frameworks by default.
     - For a new feature, add or update ideally 1–3 concise tests covering the main expected behaviour and one important edge/failure case if material. For a bug, prefer a focused regression test that fails for the old behaviour and passes for the fix. Assert results visible to users or API consumers; avoid brittle implementation-detail assertions and broad snapshots.
     - Keep test files beside the relevant code or in the repository's existing test location. Maintain only tests for behaviour actually being changed; do not create a testing.txt, a separate test report, an expansive fixture library, or unrelated tests. Include any created or edited test paths in the rollback baseline and records under section 7.
     - Run the smallest useful command first, usually one relevant Vitest file with npx vitest run path/to/file.test.jsx from the frontend package (adjust to the actual package manager/scripts). Run a quick frontend build only when compilation, assets, SCSS, or bundling could be affected. Avoid a full test suite, coverage run, lint sweep, or repeated build/test cycles for each item. Re-run a check only after fixing a failure.
-    - For WordPress/PHP changes, use a focused PHP syntax check, existing WordPress test, WP-CLI command, or targeted API request as appropriate and available. A Vitest test with mocked API data does not prove the WordPress endpoint, permissions, or editor integration works. When a feature changes WordPress-editable content or its React rendering, perform one targeted end-to-end smoke check of the editor-to-public-page flow if the local site is already available; otherwise state what remains unverified rather than starting unrelated infrastructure.
+    - For WordPress/PHP changes, use a focused PHP syntax check, existing WordPress test, WP-CLI command, or targeted API request as appropriate and available. A Vitest test with mocked API data does not prove the WordPress endpoint, permissions, or editor integration works. When a feature changes WordPress-editable content or its React rendering, perform one targeted end-to-end smoke check of the editor-to-public-page flow if the local site is already available; otherwise state what remains unverified rather than starting unrelated infrastructure. For custom editable blocks, that smoke check should include locating the named block, changing one intended field, saving/reopening it, and confirming the new value appears in the public React component; check locking/reordering only when the task modifies those behaviours.
     - Keep assertions deterministic, isolated, fast, and free of external services where practical. Mock only genuine external boundaries; do not mock the functionality under test or hide integration failures. Use realistic but minimal inputs, and never store real credentials or private data in tests.
     - If the targeted check fails, fix the current task and run that check again. If verification is blocked by missing dependencies, Docker, WordPress, or environment access, state the limitation concisely. Do not claim a test was executed or passed unless it actually ran. Do not mark a task complete solely because a mocked test passed when the essential integration remains unverified.
     - Report the single most relevant test or check and result in the completion response, briefly. Stop after reasonable confidence; human acceptance and exhaustive regression testing are not claimed.
-17. Completion response
+30. Completion response
     Keep the final response short and practical: identify the command and epic item, its final status, the behaviour implemented or bug fixed, notable files changed, the relevant test/check and its actual result, and any essential blocker or assumption. Do not provide verbose test logs or claim coverage that was not measured. Then stop and await the next instruction.

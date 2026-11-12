@@ -1,71 +1,22 @@
 // App styles: compiled by Vite into CSS for the WordPress theme.
 // WordPress still needs backend/themes/alohaalpha/style.css as theme metadata.
 @use './styles/variables' as tokens;
-@use './styles/mixins' as mixins;
 @use './styles/reset';
 @use './styles/typography';
+@use './styles/themes';
+@use './styles/logo';
 
 .container {
   width: min(100% - 2.5rem, tokens.$container-width);
   margin-inline: auto;
 }
 
-.app-shell {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.site-header {
-  background: tokens.$color-white;
-  border-bottom: 1px solid tokens.$color-border;
-
-  .nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-block: 1.25rem;
-
-    @include mixins.mobile {
-      align-items: flex-start;
-      gap: 1rem;
-      flex-direction: column;
-    }
-  }
-
-  .brand {
-    color: tokens.$color-heading;
-    font-weight: 800;
-    font-size: 1.5rem;
-    text-decoration: none;
-  }
-
-  nav {
-    display: flex;
-    gap: 1.5rem;
-
-    a {
-      text-decoration: none;
-      font-weight: 600;
-    }
-  }
-}
-
 main {
-  flex: 1;
   padding-block: 3.5rem;
 }
 
 main.home-page {
   padding-block: 0;
-}
-
-.home-content {
-  padding-block: 3.5rem;
-}
-
-.page-heading {
-  margin-bottom: 2rem;
 }
 
 .wp-content {
@@ -100,10 +51,4 @@ main.home-page {
     color: tokens.$color-white;
     text-decoration: none;
   }
-}
-
-.site-footer {
-  background: tokens.$color-heading;
-  color: tokens.$color-white;
-  padding-block: 1.5rem;
 }

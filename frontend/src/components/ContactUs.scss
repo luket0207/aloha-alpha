@@ -1,0 +1,18 @@
+.contact-us__full {
+  flex: 0 0 auto;
+}
+
+.contact-us__jump {
+  position: fixed;
+  right: max(1rem, env(safe-area-inset-right));
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  z-index: 10;
+  width: max-content;
+  max-width: calc(100vw - 2rem);
+  pointer-events: none;
+
+  a {
+    max-width: 100%;
+    pointer-events: auto;
+  }
+}

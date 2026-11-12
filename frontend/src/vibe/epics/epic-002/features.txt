@@ -1,0 +1,822 @@
+# Epic-002 — Design Foundation
+
+## Overview
+
+This Epic establishes the design system for the Aloha Academy website, including:
+
+- SCSS colours and fonts.
+- Gutenberg typography blocks.
+- Reusable small and large logos.
+- Responsive navigation.
+- Wave-themed footer.
+- Responsive homepage Hero with an image slideshow.
+
+The existing architecture from Epic-001 must be preserved.
+
+WordPress remains the source of truth for content, while React handles visual presentation, layout, animations, routing and interactivity.
+
+All editable page content must remain Gutenberg block-based. Shared content should use synced patterns and reusable React components.
+
+## Critical: Implementation order
+
+This Epic has a coding prerequisite.
+
+### Phase 1 — Coding agent first
+
+Implement:
+
+1. Feature-001: Core SCSS colour and typography configuration.
+2. Feature-002: Gutenberg heading block variations and their WordPress editor styles.
+3. Feature-003: Custom Gutenberg Aloha Logo block with Small and Large variations.
+
+Extend the existing WordPress integration plugin where practical rather than creating multiple unnecessary plugins.
+
+Provide an installable WordPress plugin ZIP containing the registered editor functionality.
+
+**Stop after Phase 1 and report what must be installed or configured in WordPress. Do not proceed with the final React implementations until WordPress setup has been completed.**
+
+### Phase 2 — Manual WordPress setup
+
+The site administrator will:
+
+1. Install and activate the WordPress plugin.
+2. Verify the ten Gutenberg heading options.
+3. Update existing headings to the appropriate typography variations.
+4. Create synced patterns named `Logo — Small` and `Logo — Large`.
+5. Configure both patterns using the Media Library image `flower-icon.png`.
+6. Update the Header synced pattern with the small logo and Japanese navigation labels.
+7. Update the Footer synced pattern with the small logo.
+8. Rebuild the Home Hero's block structure with the large logo, slogan and Image blocks.
+
+### Phase 3 — Coding agent finishes
+
+After WordPress setup is confirmed:
+
+1. Verify the new Gutenberg markup is available through the existing API.
+2. Finish the logo presentation.
+3. Implement the responsive Header and navigation.
+4. Apply the Footer styling.
+5. Implement the responsive Hero and image slideshow.
+6. Complete testing and responsive checks.
+
+---
+
+# Feature-001 — SCSS Design System
+
+Status: complete
+Notes: Added the seven supplied colour tokens, four reusable theme classes, shared CSS custom properties, responsive typography, and Courgette/Yusei Magic/Klee One loading for the React frontend. The required Mocha-on-Grey pairing is retained but documented as failing WCAG contrast and is not applied to essential current content.
+
+## WordPress setup
+
+None required.
+
+## Coding requirements
+
+### Base colours
+
+Define the following SCSS variables:
+
+| Name | Value |
+|---|---|
+| Green | `#066C4C` |
+| Light Blue | `#93B7BE` |
+| Cream | `#F1FFFA` |
+| Mocha | `#4E3D42` |
+| Grey | `#6D6466` |
+| Red | `#D81E5B` |
+| Yellow | `#E8AA14` |
+
+The SCSS implementation should provide a single source of truth for these colours.
+
+Expose useful CSS custom properties so runtime components and Gutenberg-rendered HTML can access the same tokens.
+
+### Colour groups
+
+Define four reusable theme classes.
+
+**Green Group — `.theme-green`**
+
+- Background: Green
+- Text: Cream
+- Highlights: Yellow
+
+**Light Blue Group — `.theme-light-blue`**
+
+- Background: Light Blue
+- Text: Mocha
+- Highlights: Red
+
+**Cream Group — `.theme-cream`**
+
+- Background: Cream
+- Text: Green
+- Highlights: Red
+
+**Grey Group — `.theme-grey`**
+
+- Background: Grey
+- Text: Mocha
+- Highlights: Yellow
+
+Each group should set background, text and accent CSS properties that child components can inherit.
+
+Avoid individually hardcoding colours into components when the colour groups can be used instead.
+
+Do not silently change the supplied palette.
+
+Run contrast checks, flag combinations that fail WCAG requirements and avoid using low-contrast combinations for essential text without approval. In particular, Mocha text on Grey has insufficient contrast.
+
+### Typography
+
+Use Google Fonts:
+
+- Japanese heading font: Yusei Magic.
+- Latin heading font: Courgette.
+- Japanese and Latin body font: Klee One.
+
+Create reusable typography variables and font-family declarations.
+
+Use appropriate Japanese and Latin fallbacks.
+
+Ensure the fonts are loaded in both the React frontend and WordPress Gutenberg editor.
+
+Avoid duplicate font loading and unnecessary font weights. Optimise loading for Japanese text where practical.
+
+### Default typography behaviour
+
+- Normal body text inherits Klee One.
+- Paragraphs inherit Klee One.
+- Standard links inherit Klee One.
+- Ordinary inline spans inherit their surrounding text styles, defaulting to Klee One in body copy.
+- Japanese headings use Yusei Magic.
+- Latin headings use Courgette.
+- Logo wordmarks must retain Courgette, including nested spans and links.
+
+Ensure default paragraph/link/span rules do not accidentally override specialised heading or logo typography.
+
+Set sensible responsive font sizes, line heights and fallback behaviour.
+
+### Acceptance criteria
+
+- All seven colours are available as SCSS variables.
+- Four reusable theme classes exist.
+- Theme classes can be applied to existing WordPress-rendered elements.
+- All three fonts load correctly.
+- Existing typography receives appropriate default styling.
+- Japanese and Latin text render consistently.
+- No unnecessary global styling breaks existing components.
+
+---
+
+# Feature-002 — Gutenberg Typography Blocks
+
+Status: complete
+Notes: Registered ten native core/heading variations (Latin and Japanese H1–H5) with stable identifiers, semantic levels, language classes, transform scope, and active-state detection. Added editor-only Google Font loading and typography styles; existing heading content remains owned by core/heading. WordPress installation and visual editor confirmation are reserved for Phase 2.
+
+## WordPress setup completed after Phase 1
+
+The custom WordPress plugin has been installed and activated.
+
+The editor now contains ten insertable heading variations.
+
+Existing WordPress headings should be updated to use the appropriate variation.
+
+## Coding requirements
+
+Register ten custom variations of `core/heading`:
+
+| Variation | Heading level | CSS class |
+|---|---|---|
+| Latin H1 | H1 | `aloha-heading--latin` |
+| Latin H2 | H2 | `aloha-heading--latin` |
+| Latin H3 | H3 | `aloha-heading--latin` |
+| Latin H4 | H4 | `aloha-heading--latin` |
+| Latin H5 | H5 | `aloha-heading--latin` |
+| Japanese H1 | H1 | `aloha-heading--japanese` |
+| Japanese H2 | H2 | `aloha-heading--japanese` |
+| Japanese H3 | H3 | `aloha-heading--japanese` |
+| Japanese H4 | H4 | `aloha-heading--japanese` |
+| Japanese H5 | H5 | `aloha-heading--japanese` |
+
+Use native Gutenberg block variations rather than ten unrelated block implementations.
+
+Each variation must:
+
+1. Be independently discoverable in the WordPress block inserter.
+2. Use the correct semantic HTML heading level.
+3. Include the relevant language-specific CSS class.
+4. Display the correct font in the Gutenberg editor.
+5. Render correctly in the React frontend.
+6. Retain standard Heading block editing functionality.
+7. Preserve its selected heading level and typography when content is edited and saved.
+
+Use stable variation identifiers and appropriate active-state detection.
+
+Preserve user-entered content when transforming an existing Heading block.
+
+### Paragraphs, links and spans
+
+There is no requirement to create separate custom blocks for `p`, `a` or `span`.
+
+These are standard HTML elements and should inherit Klee One through the global typography system.
+
+Standard WordPress Paragraph and link editing must continue working normally.
+
+### WordPress compatibility
+
+- Follow the official Gutenberg block registration APIs.
+- Register editor assets through the plugin.
+- Use compatible frontend and editor CSS.
+- Do not rely on the React application to register WordPress editor variations.
+- Ensure the variations remain available whenever the plugin is active.
+
+### Acceptance criteria
+
+- Ten named heading options appear in the WordPress block inserter.
+- Heading level and font are correct.
+- Existing headings can be converted without losing text.
+- Headings display with the same typography in Gutenberg and React.
+- Ordinary paragraphs and links default to Klee One.
+
+---
+
+# Feature-003 — Reusable Aloha Academy Logos
+
+Status: complete
+Notes: The shared Gutenberg logo block now renders responsively from the WordPress Media Library in the Header, Footer and Hero. Small remains one line and theme-aware; Large remains two lines with fixed Green text and proportional flower positioning. Live checks at 320–1440px confirmed both variants fit without overflow.
+
+## WordPress setup completed after Phase 1
+
+Two synced patterns have been created:
+
+- `Logo — Small`
+- `Logo — Large`
+
+Both contain the custom `aloha/logo` Gutenberg block, using the appropriate size variation.
+
+Both use the existing WordPress Media Library asset `flower-icon.png`.
+
+The small pattern is inserted into the Header and Footer. The large pattern is inserted into the homepage Hero.
+
+## Coding requirements
+
+### Custom block
+
+Create a Gutenberg block named:
+
+`aloha/logo`
+
+It must expose two variants:
+
+- `small`
+- `large`
+
+Use a shared block implementation, not two unrelated blocks.
+
+The block should support selecting the flower image from the WordPress Media Library using the standard media selection interface.
+
+Store the relevant attachment information using Gutenberg block attributes.
+
+Do not assume a hardcoded WordPress attachment ID or media URL.
+
+Both variants display the words `Aloha Academy` in Courgette.
+
+The saved or server-rendered HTML must include stable wrapper classes that the React frontend can style.
+
+### Small logo
+
+Requirements:
+
+1. Flower on the left.
+2. Text `Aloha Academy` on one line.
+3. Courgette font.
+4. Font size 1.4rem under normal conditions.
+5. Flower height should visually match the text.
+6. Flower and text remain horizontally aligned.
+7. The structure must never wrap into two lines.
+8. When available width becomes limited, scale the complete logo proportionally.
+9. Text colour must adapt to the inherited theme's text colour.
+10. The image asset must preserve transparency and aspect ratio.
+
+Use CSS `currentColor` or inherited theme tokens for the wordmark rather than hardcoding its colour.
+
+The small logo must render consistently in the Header and Footer.
+
+### Large logo
+
+Requirements:
+
+1. Courgette font.
+2. Text colour always Green (`#066C4C`).
+3. Base text size 4rem.
+4. First line: `Aloha`.
+5. Second line: `Academy`.
+6. Both lines left-aligned.
+7. `Academy` has a slight indentation compared with `Aloha`.
+8. The flower is positioned in the upper-right negative space created by the shorter first line.
+9. The flower is anchored visually above the end portion of `Academy`.
+10. Default flower dimensions approximately 40×40px.
+11. Flower rotated slightly anticlockwise, approximately 10 degrees.
+12. The flower must not alter line spacing or cause text reflow.
+
+The large logo must always remain exactly two lines.
+
+Use responsive scaling so that the whole composition shrinks together when the available width becomes limited.
+
+Do not allow the flower to overlap the words or extend outside the container.
+
+### Shared requirements
+
+- Source the icon from WordPress.
+- Avoid fixed pixel widths that could cause mobile overflow.
+- Preserve the selected flower image in Gutenberg.
+- Use meaningful accessibility semantics; the decorative flower should not cause repetitive screen-reader announcements.
+- Ensure the actual image remains visible over all supported theme backgrounds.
+- Allow reuse without duplicating the implementation.
+- Preserve synced-pattern references when rendering nested reusable content.
+
+### Acceptance criteria
+
+- Both logo variations are available in Gutenberg.
+- Both logos use the existing WordPress image.
+- Small logo stays on one line.
+- Large logo stays on two lines.
+- Both shrink appropriately on narrow screens.
+- Small logo uses theme-dependent text colour.
+- Large logo always uses Green text.
+- The flower positioning and proportions remain consistent.
+
+---
+
+# Feature-004 — Responsive Header and Navigation
+
+Status: complete
+Notes: The Header parses its logo, six labels and destinations from the WordPress synced pattern, then adds the required Font Awesome route icons, Green theme, active/focus/wave states, client routing and accessible responsive menu. Browser checks covered hamburger/X animation states, overlay and scroll blocking, focus containment, Escape/overlay/link closure, route changes and the 900px layout breakpoint.
+
+## WordPress setup completed
+
+The Header synced pattern from Epic-001 has been updated.
+
+It contains:
+
+- An outer Group with class `aloha-header`.
+- A nested `Logo — Small` synced pattern.
+- A navigation Row with class `aloha-nav`.
+- Six linked Paragraph blocks.
+
+The navigation text and links are:
+
+| Label | Path |
+|---|---|
+| ホーム | `/` |
+| クラス | `/classes/` |
+| ギャラリー | `/gallery/` |
+| よくある質問 | `/faqs/` |
+| ご予約 | `/booking/` |
+| Recruit | `/recruit/` |
+
+## Coding requirements
+
+### Header layout
+
+Apply the Green Group colour scheme to the Header.
+
+Desktop layout:
+
+- Small logo on the left.
+- Navigation on the right.
+- Navigation links horizontally aligned.
+- All navigation text uses Klee One.
+- Each navigation item is presented as an individual styled block.
+- Header content is vertically centred.
+
+Preserve the Header's existing WordPress synced-pattern integration.
+
+Do not hardcode editable navigation labels in React.
+
+### Font Awesome icons
+
+Use the React Font Awesome integration to display these icons alongside navigation labels:
+
+| Path | Icon |
+|---|---|
+| `/` | `faHouse` |
+| `/classes/` | `faPersonChalkboard` |
+| `/gallery/` | `faCamera` |
+| `/faqs/` | `faQuestion` |
+| `/booking/` | `faCalendarDays` |
+| `/recruit/` | `faPersonCirclePlus` |
+
+Use:
+
+`<FontAwesomeIcon icon={...} />`
+
+Icons are presentation metadata mapped to the destination path.
+
+Navigation labels and link destinations must continue to originate from WordPress.
+
+If Font Awesome is not currently installed, add the appropriate React packages.
+
+### Navigation blocks and animation
+
+Each navigation item needs:
+
+- A normal state.
+- A hover state.
+- A clearly different active-page state.
+- Keyboard focus styling.
+
+Use playful styling while keeping the overall design clean and polished.
+
+Implement a smooth hover effect using Light Blue to create a moving wave or wave-shaped highlight within the navigation item.
+
+The wave should animate naturally rather than abruptly switching background colours.
+
+The active-page state must remain clearly visible after hover ends.
+
+Maintain sufficient text contrast during every animation state.
+
+Use `aria-current="page"` on the active navigation link.
+
+Respect `prefers-reduced-motion`.
+
+### Logo navigation
+
+The Header logo must link to `/`.
+
+Navigation should use React Router or the routing solution already present in the project.
+
+Avoid full page reloads for internal navigation.
+
+### Responsive hamburger navigation
+
+Switch from horizontal navigation to a hamburger menu before the desktop links run out of space.
+
+Use a content-appropriate breakpoint rather than allowing the menu to overlap the logo.
+
+When mobile navigation is active:
+
+- Keep the logo left-aligned.
+- Show a hamburger control on the right.
+- Hide the horizontal menu.
+- The hamburger must be created with CSS/SCSS, not an icon library.
+- Its lines should animate into an X when opened.
+- The X should animate back into the hamburger when closed.
+
+### Expanded mobile menu
+
+When opened:
+
+1. Slide the navigation panel down from the top of the page.
+2. Keep the Header logo and close control visible at the top.
+3. Display all six navigation items vertically.
+4. Retain each item's Font Awesome icon.
+5. Retain active-page styling.
+6. Retain the animated hover/interaction styling where appropriate.
+7. Cover the rest of the visible page with a dark translucent overlay.
+8. Prevent interaction with the underlying page.
+9. Prevent background page scrolling.
+10. Keep navigation usable on small or short screens by allowing the menu panel to scroll if necessary.
+
+The menu should close when:
+
+- The hamburger/X is clicked again.
+- The dark overlay is clicked.
+- Escape is pressed.
+- A navigation item is selected.
+- The route changes.
+- The layout changes to desktop width.
+
+After closing, restore background scrolling.
+
+Use accessible menu button semantics, `aria-expanded`, appropriate focus management and background interaction blocking.
+
+Do not trap the user in an inaccessible state.
+
+### Acceptance criteria
+
+- Header uses the Green Group.
+- Logo appears on the left.
+- Navigation appears on the right on desktop.
+- All six labels are correct and WordPress-controlled.
+- Font Awesome icons match the supplied mapping.
+- Each item has hover and active states.
+- Light Blue wave hover animation works.
+- Hamburger is CSS-based and animates into an X.
+- Mobile panel slides down and displays vertically stacked navigation.
+- Dark overlay blocks background interaction.
+- Menu closes correctly after navigation.
+- All functionality works on desktop, tablet and mobile.
+
+---
+
+# Feature-005 — Footer Styling
+
+Status: complete
+Notes: The WordPress-sourced Footer now uses the Light Blue theme, centres the reusable small logo and dynamic-year copyright, and adds a responsive decorative SVG wave without changing synced content. Live responsive checks confirmed the wave, colours, 2026 replacement and absence of horizontal overflow.
+
+## WordPress setup completed
+
+The Footer synced pattern from Epic-001 has been updated.
+
+It contains:
+
+- Outer Group: `aloha-footer`.
+- Nested `Logo — Small` synced pattern.
+- Copyright paragraph: `© Aloha Academy {{currentYear}}`.
+
+The content is centre-aligned.
+
+## Coding requirements
+
+1. Apply the Light Blue Group colour scheme.
+2. Render the small logo above the copyright paragraph.
+3. Maintain centre alignment.
+4. Preserve the existing dynamic year replacement.
+5. Introduce a decorative wave-shaped top boundary.
+6. Use a responsive SVG or CSS-based wave.
+7. The wave must smoothly separate the Footer from the section above.
+8. The wave should use the Footer's Light Blue colour so the transition appears seamless.
+9. The wave must resize cleanly across all viewport widths.
+10. Avoid horizontal overflow.
+11. Ensure the footer content remains readable.
+12. Do not remove or duplicate the synced-pattern integration.
+
+The wave is decorative and should not require a WordPress image block.
+
+### Acceptance criteria
+
+- Footer has a Light Blue background.
+- Footer text uses Mocha.
+- Small logo displays correctly and inherits the Footer colour scheme.
+- Copyright remains centred.
+- Current year updates dynamically.
+- Responsive wave border renders correctly.
+- WordPress content edits continue working.
+
+---
+
+# Feature-006 — Homepage Hero and Image Slideshow
+
+Status: complete
+Notes: Home now enhances the saved Gutenberg Hero with WordPress-controlled logo, slogan and ordered image metadata, plus responsive desktop/mobile SVG waves and a visibility-aware 5-second crossfade. Zero/one/many-slide logic and reduced motion are supported; four live slides cycled correctly at 320–1440px. The current WordPress slogan is an H3 without the documented class, so the renderer safely identifies and styles that authored element without hardcoding its text.
+
+## WordPress setup completed
+
+The Home page contains the existing Hero Group from Epic-001.
+
+Outer wrapper:
+
+- Anchor: `home-hero`
+- CSS class: `aloha-hero`
+
+Its block structure is:
+
+```text
+Group: aloha-hero
+│
+├── Group: aloha-hero__content
+│   ├── Synced Pattern: Logo — Large
+│   └── Paragraph: aloha-hero__slogan
+│
+└── Group: aloha-hero__slides
+    ├── Image: Slide 1
+    ├── Image: Slide 2
+    ├── Image: Slide 3
+    └── Image: Additional slides...
+```
+
+All slideshow images are native WordPress Image blocks.
+
+Their number and order are controlled by the WordPress editor.
+
+## Coding requirements
+
+### Hero layout
+
+Build a responsive Hero component that enhances the existing WordPress Gutenberg markup.
+
+On desktop:
+
+- Hero spans the available page width.
+- The image slideshow occupies the Hero background/image region.
+- A large flowing Light Blue wave covers the left portion of the Hero.
+- The wave begins at the top-left corner.
+- Its boundary flows downwards across the Hero.
+- The wave ends at approximately 60% of the Hero width near the bottom.
+- The Large Logo and slogan appear within the Light Blue wave.
+- The remaining right-hand space displays slideshow imagery.
+
+The wave should feel organic and curved, not like a straight diagonal or simple polygon.
+
+An SVG wave with a responsive viewBox is preferred if this produces a cleaner result than a CSS-only implementation.
+
+### Layering
+
+Use a layered structure:
+
+1. Slideshow images as the underlying visual layer.
+2. Light Blue wave as an overlay.
+3. Large Logo and slogan above the wave.
+
+The wave may overlap and partially obscure the images.
+
+Position and crop the images to maximise their visible subject area in the remaining space.
+
+Do not distort image aspect ratios.
+
+### Logo and slogan
+
+Use the actual `Logo — Large` synced pattern from WordPress.
+
+Do not replace it with separately hardcoded React text or a new static image.
+
+The slogan must come from the WordPress Paragraph block.
+
+The Large Logo should remain Green regardless of the Hero background.
+
+The slogan should use the Light Blue Group's text colour, Mocha, and the site's default body typography.
+
+### Image slideshow
+
+Read the WordPress Image blocks inside `.aloha-hero__slides`.
+
+Requirements:
+
+1. Support any positive number of images.
+2. Respect the order set in Gutenberg.
+3. Display one image at a time.
+4. Automatically advance through the images.
+5. Fade smoothly between images.
+6. Continue from the final image back to the first.
+7. Loop indefinitely while the Hero is active.
+8. Do not require manual configuration when images are added or removed in WordPress.
+9. Do not create a second hardcoded slideshow image list.
+
+Recommended initial timing:
+
+- Image display time: 5 seconds.
+- Crossfade duration: approximately 1 second.
+
+Keep these values centralised and configurable in code.
+
+Use opacity-based transitions and preserve the Hero's dimensions throughout image changes.
+
+Handle image loading so that the Hero does not flash blank between slides.
+
+For one image, show it statically without running an unnecessary timer.
+
+For zero images, show a sensible fallback background without breaking the layout.
+
+Avoid excessive animation or layout reflows.
+
+Pause or limit unnecessary work when the Hero is not visible, where practical.
+
+Respect reduced-motion preferences.
+
+### Responsive mobile layout
+
+On mobile, the layout changes significantly.
+
+- Images become full-width.
+- Images occupy the upper portion of the Hero.
+- The Light Blue wave moves to the lower portion of the Hero.
+- The wave forms a smooth, organic boundary across the bottom of the image region.
+- Large Logo and slogan remain inside the Light Blue wave.
+- The large logo must stay exactly two lines.
+- All content must fit within narrow mobile screens.
+- The slideshow should continue fading between images.
+- No horizontal overflow or accidental clipping of text.
+
+The transition between desktop and mobile must be clean.
+
+Do not simply shrink the desktop wave into a narrow space. Implement an appropriate mobile wave shape.
+
+### WordPress editing requirements
+
+The Hero must remain editable through Gutenberg.
+
+WordPress controls:
+
+- The presence and ordering of Image blocks.
+- The images themselves.
+- Image alt text.
+- The Large Logo synced pattern.
+- The slogan text.
+
+React controls:
+
+- Slideshow timing.
+- Fading behaviour.
+- Responsive layout.
+- Wave geometry.
+- Layering and animation.
+
+The implementation should continue working after WordPress content updates without a frontend rebuild.
+
+### Acceptance criteria
+
+- Hero renders correctly from WordPress.
+- Large Logo uses the reusable synced pattern.
+- Slogan appears below the logo.
+- Desktop wave occupies approximately the left 60% near the bottom.
+- Images remain visible to the right of the wave.
+- Slideshow supports any number of WordPress Image blocks.
+- Slides fade in sequence and loop.
+- Single-image and empty-image cases do not break.
+- Mobile images become full-width.
+- Mobile wave covers the lower image area.
+- Logo and slogan remain readable within the wave.
+- No layout overflow on small screens.
+- Reduced-motion preferences are respected.
+
+---
+
+# Final Quality Requirements
+
+## Preserve existing functionality
+
+Do not break the following Epic-001 features:
+
+- Six-page React routing.
+- WordPress page-content retrieval.
+- Reusable Header integration.
+- Reusable Footer integration.
+- Contact Us — Full.
+- Contact Us — Jump.
+- Active navigation state.
+- Dynamic copyright year.
+
+## Component architecture
+
+Use shared components and styles rather than duplicating functionality.
+
+Prefer maintaining the following logical separation:
+
+- Global design tokens.
+- Colour themes.
+- Typography.
+- Reusable logo rendering.
+- Header/navigation.
+- Footer.
+- Hero/slideshow.
+- WordPress block integration.
+
+Adapt names and directories to the existing project architecture where appropriate.
+
+Do not replace the existing routing or API implementation unless necessary.
+
+## WordPress integration
+
+Ensure custom blocks are correctly registered server-side and in Gutenberg.
+
+Prefer block metadata and supported WordPress registration APIs.
+
+Ensure the Editor previews use the same core typography and block styles as the frontend.
+
+Maintain compatibility with the existing synced-pattern API.
+
+Nested synced patterns must render correctly in the Header, Footer and Hero.
+
+Where a new WordPress block is required, implement it through the plugin rather than introducing hardcoded HTML into individual WordPress pages.
+
+## Accessibility
+
+Check:
+
+- Colour contrast.
+- Semantic headings.
+- Keyboard navigation.
+- Visible keyboard focus.
+- Mobile menu focus management.
+- Screen-reader labels.
+- Reduced motion.
+- Image alt text.
+- Touch target sizes.
+
+Report unavoidable contrast issues arising from the supplied palette.
+
+## Responsive testing
+
+Test at a minimum:
+
+- 320px wide phone.
+- 375px wide phone.
+- 768px tablet.
+- 1024px small desktop.
+- 1440px desktop.
+
+Also check the transition immediately above and below the responsive navigation breakpoint.
+
+## Completion report
+
+After finishing, report:
+
+1. Files created or modified.
+2. WordPress plugin files and installation details.
+3. Components implemented.
+4. Existing components modified.
+5. Tests performed.
+6. Outstanding issues or dependencies.
+
+Do not introduce unrelated features or redesign sections beyond the requested scope.

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "aloha/logo",
+  "version": "0.2.0",
+  "title": "Aloha Logo",
+  "category": "design",
+  "icon": "format-image",
+  "description": "Reusable Aloha Academy wordmark with a Media Library flower image.",
+  "textdomain": "alohaalpha-core",
+  "attributes": {
+    "variant": {
+      "type": "string",
+      "default": "small"
+    },
+    "imageId": {
+      "type": "integer"
+    },
+    "imageUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "imageAlt": {
+      "type": "string",
+      "default": ""
+    }
+  },
+  "supports": {
+    "html": false,
+    "reusable": true
+  },
+  "editorScript": "file:./index.js",
+  "style": "file:./style.css",
+  "editorStyle": "file:./editor.css"
+}

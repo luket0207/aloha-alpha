@@ -1,9 +1,22 @@
-// Shared design tokens. Import in component styles with @use.
-$color-ink: #172333;
-$color-brand: #006d77;
-$color-heading: #123345;
-$color-surface: #f7fafc;
+// Aloha Academy design tokens. Import in component styles with @use.
+$green: #066c4c;
+$light-blue: #93b7be;
+$cream: #f1fffa;
+$mocha: #4e3d42;
+$grey: #6d6466;
+$red: #d81e5b;
+$yellow: #e8aa14;
+
+$font-heading-latin: 'Courgette', 'Brush Script MT', cursive;
+$font-heading-japanese: 'Yusei Magic', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
+$font-body: 'Klee One', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
+
+// Existing semantic names remain available to current components.
+$color-ink: $mocha;
+$color-brand: $green;
+$color-heading: $green;
+$color-surface: $cream;
 $color-white: #fff;
-$color-border: #e3e9ec;
+$color-border: $light-blue;
 $container-width: 1080px;
 $mobile-breakpoint: 600px;

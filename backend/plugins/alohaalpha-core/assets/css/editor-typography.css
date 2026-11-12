@@ -1,0 +1,38 @@
+:root {
+    --aloha-font-heading-latin: "Courgette", "Brush Script MT", cursive;
+    --aloha-font-heading-japanese: "Yusei Magic", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    --aloha-font-body: "Klee One", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+}
+
+.editor-styles-wrapper,
+.editor-styles-wrapper p,
+.editor-styles-wrapper .wp-block-paragraph {
+    font-family: var(--aloha-font-body);
+}
+
+.editor-styles-wrapper a,
+.editor-styles-wrapper span {
+    font-family: inherit;
+}
+
+.editor-styles-wrapper h1,
+.editor-styles-wrapper h2,
+.editor-styles-wrapper h3,
+.editor-styles-wrapper h4,
+.editor-styles-wrapper h5,
+.editor-styles-wrapper .aloha-heading--japanese {
+    font-family: var(--aloha-font-heading-japanese);
+    font-weight: 400;
+    line-height: 1.35;
+}
+
+.editor-styles-wrapper .aloha-heading--latin {
+    font-family: var(--aloha-font-heading-latin);
+    line-height: 1.2;
+}
+
+.editor-styles-wrapper h1 { font-size: clamp(2.25rem, 5vw, 4rem); }
+.editor-styles-wrapper h2 { font-size: clamp(1.8rem, 4vw, 3rem); }
+.editor-styles-wrapper h3 { font-size: clamp(1.5rem, 3vw, 2.25rem); }
+.editor-styles-wrapper h4 { font-size: clamp(1.25rem, 2.5vw, 1.75rem); }
+.editor-styles-wrapper h5 { font-size: clamp(1.1rem, 2vw, 1.35rem); }

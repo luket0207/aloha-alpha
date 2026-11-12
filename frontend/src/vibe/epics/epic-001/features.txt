@@ -1,0 +1,260 @@
+# Epic-001 — Website Foundation
+
+## Overview
+
+This project uses React as the frontend and WordPress as a headless CMS.
+
+WordPress is the source of truth for page content and reusable section content. React is responsible for routing, rendering, layout composition, responsive behaviour and interactivity.
+
+All editable page content must be built using WordPress Gutenberg blocks. Reusable sections must use WordPress Synced Patterns, rendered through reusable React components.
+
+Do not hardcode WordPress-editable content into React.
+
+**Implementation order:** Feature-001 → Feature-002 → Feature-003 → Feature-004.
+
+### WordPress integration requirements
+
+- Use the existing WordPress connection and environment configuration where possible.
+- Public WordPress pages should be retrieved using the standard REST API, particularly `content.rendered`.
+- Synced patterns are stored as WordPress `wp_block` records. The native blocks REST endpoint is not suitable for unauthenticated, rendered frontend content.
+- Implement a minimal WordPress-side integration that exposes only the approved, published reusable sections through a public, read-only REST endpoint.
+- Use a dedicated WordPress plugin rather than modifying WordPress core or the active theme.
+- The proposed endpoint is `GET /wp-json/aloha/v1/sections/{slug}`.
+- Approved slugs are `header`, `footer`, `contact-us-full` and `contact-us-jump`.
+- Resolve the correct WordPress synced pattern by its actual registered slug, rather than assuming its internal numeric ID.
+- Return server-rendered block HTML, using WordPress's block renderer in the correct post context.
+- Never expose draft/private content or arbitrary patterns. Never expose WordPress administrator credentials or application passwords to the React browser.
+- If a WordPress plugin directory is already available, follow the existing project structure. Otherwise, create a self-contained, installable plugin under a `wordpress/` project directory and provide installation instructions.
+- If the actual pattern slugs differ from the proposed slugs, document and configure the mapping explicitly.
+- Preserve Gutenberg's block wrappers, CSS classes, styles and nested structure when rendering into React.
+- Sanitize externally supplied HTML appropriately without breaking supported Gutenberg content.
+- Ensure WordPress block styles used in this Epic render correctly on the frontend.
+- Support WordPress and React being hosted on different domains, accounting for REST API access and CORS.
+- Do not create separate WordPress pages for reusable components.
+
+---
+
+## Feature-001 — Reset existing components and implement a block-based Hero
+
+Status: complete
+Notes: Home now renders the published `home` page's Gutenberg content directly and in saved order. The legacy React Hero, hardcoded Header/Footer, related styling, and obsolete Hero meta fields were removed. Verified against the running local WordPress site, including a restored no-rebuild content edit smoke check.
+
+### WordPress setup completed
+
+The existing Home page has been updated in WordPress.
+
+The Hero is now built from Gutenberg blocks, inside an outer Group block.
+
+The Group has:
+
+- HTML Anchor: `home-hero`
+- Additional CSS class: `aloha-hero`
+
+The Hero content is editable using the standard WordPress block editor. It may contain Heading, Paragraph, Image and other supported blocks.
+
+There may also be an existing Hero implementation hardcoded in React.
+
+### Coding requirements
+
+1. Inspect the current React architecture, routing, WordPress integration, and existing Hero, Header and Footer components before changing anything.
+2. Remove or replace the existing hardcoded React Hero implementation. It must not duplicate the WordPress Hero.
+3. Remove the existing Header and Footer implementations, including obsolete styling and imports. They will be implemented through reusable sections in Features 002 and 003.
+4. Ensure the Home page loads its content from the published WordPress page using its `home` slug.
+5. Render the Gutenberg content in its original block order.
+6. Ensure the Hero and its nested blocks display correctly, preserving the WordPress block structure and supplied styling.
+7. Do not recreate the Hero as a separate fixed-content React component.
+8. Maintain the ability to edit the Hero entirely through WordPress without requiring a React deployment.
+
+### Acceptance criteria
+
+- The Hero appears once on the Home page.
+- The Hero content originates from WordPress Gutenberg blocks.
+- Edits made to Hero content in WordPress are reflected on the frontend.
+- The legacy Header and Footer implementations are removed.
+- There is no duplicate legacy Hero.
+
+---
+
+## Feature-002 — Pages, routing and reusable Header
+
+Status: complete
+Notes: Added the six explicit routes, reusable WordPress page renderer, shared Layout, and WordPress-sourced Header with client-side navigation and active-link state. Added the public allowlisted section endpoint and configured `contact-us-full` to the actual `contact-us` pattern slug. Live routing, endpoint, cross-domain REST, and restored no-rebuild Header edit checks passed. Existing CMS limitation: the five non-Home page bodies are empty and the Header pattern's Group lacks its documented `aloha-header` class.
+
+### WordPress setup completed
+
+Six published WordPress pages have been created:
+
+| Page | WordPress slug | React path |
+|---|---|---|
+| Home | home | `/` |
+| Classes | classes | `/classes/` |
+| Gallery | gallery | `/gallery/` |
+| FAQs | faqs | `/faqs/` |
+| Booking | booking | `/booking/` |
+| Recruit | recruit | `/recruit/` |
+
+The Home page contains its Hero and additional dummy content, all built using Gutenberg blocks.
+
+The five remaining pages each contain a Heading block displaying their page title.
+
+A WordPress Synced Pattern called `Header` has also been created.
+
+The Header contains:
+
+- An outer Group block with CSS class `aloha-header`.
+- A Row block containing six linked Paragraph blocks.
+- Links to Home, Classes, Gallery, FAQs, Booking and Recruit.
+- Root-relative frontend paths, not backend WordPress URLs.
+
+The Header pattern must be accessed through the reusable-section REST integration defined above.
+
+### Coding requirements
+
+1. Implement or update React routing for all six pages.
+2. Use the existing routing library where one is already configured. Avoid unnecessary replacements.
+3. Map `/` to the WordPress page with slug `home`.
+4. Map all other routes to their matching WordPress slugs.
+5. Build a reusable page-rendering component that fetches and displays the matching WordPress page's rendered Gutenberg content.
+6. Do not generate additional hardcoded page headings if WordPress already supplies them.
+7. Create a reusable React `Header` component that retrieves and renders the Header synced pattern.
+8. Create a shared site `Layout` component that places Header above page content.
+9. Make internal Header navigation work with React routing, without requiring full page reloads.
+10. Preserve the links and their labels from WordPress, rather than separately hardcoding navigation items into React.
+11. Use the current React path to determine which navigation link is active.
+12. Apply a simple visual highlight to the active navigation link and set `aria-current="page"`.
+13. Display the navigation horizontally. On narrow screens, allow sensible wrapping or overflow without hiding links.
+14. Avoid additional visual styling for now. The objective is functional navigation.
+
+### Acceptance criteria
+
+- All six routes work.
+- Directly visiting or refreshing any route works, including on the deployed frontend.
+- Each route displays content from the correct WordPress page.
+- The Header appears once at the top of every page.
+- Navigation links are sourced from the WordPress Header synced pattern.
+- Clicking a link navigates correctly using React routing.
+- The current page's link is highlighted.
+- Changes to Header links in WordPress are reflected in React without changing React code.
+- No duplicate page titles or navigation menus appear.
+
+---
+
+## Feature-003 — Reusable Footer
+
+Status: complete
+Notes: Added a reusable WordPress-sourced Footer to the shared Layout, with exact `{{currentYear}}` replacement and a minimal flex layout that keeps it below short-page content. Live checks across all six routes confirmed one centered Footer, correct 2026 output, no placeholder, correct section order, and restored no-rebuild WordPress edits. Existing CMS limitation: the Footer pattern contains only the centered Paragraph and lacks its documented outer Group and `aloha-footer` class.
+
+### WordPress setup completed
+
+A synced pattern called `Footer` has been created.
+
+Its structure is:
+
+- Outer Group block.
+- Additional CSS class: `aloha-footer`.
+- Centre-aligned Paragraph block.
+- Text: `© Aloha Academy {{currentYear}}`
+
+The `{{currentYear}}` value is a placeholder and must be replaced dynamically by React.
+
+### Coding requirements
+
+1. Create a reusable React `Footer` component.
+2. Fetch the rendered content from the WordPress Footer synced pattern.
+3. Replace the exact `{{currentYear}}` placeholder with the current year, calculated dynamically.
+4. Retain the WordPress-authored content and block structure.
+5. Display the Footer at the bottom of the shared site Layout.
+6. Horizontally centre the content.
+7. Use a layout that keeps the Footer at the bottom of short pages without overlapping other content.
+8. Do not separately implement the Footer in individual page components.
+9. Do not hardcode a particular year in React or WordPress.
+
+### Acceptance criteria
+
+- The Footer appears once on every page.
+- The current year displays correctly.
+- Footer text is horizontally centred.
+- The Footer remains below page content.
+- Editing the Footer synced pattern in WordPress updates the frontend.
+
+---
+
+## Feature-004 — Reusable Contact Us sections
+
+Status: complete
+Notes: Added one reusable WordPress-sourced Contact Us component to the shared Layout, with Full immediately before Footer and a fixed Jump controlled by `IntersectionObserver` without initial flashing. Jump scrolling respects reduced motion and fixed/sticky Header height, and its compact pointer-safe placement stays within the mobile viewport. All six routes, hide/show/reappear behavior, motion modes, section order, and restored no-rebuild edits to both patterns were verified. Existing CMS limitation: the Jump pattern lacks its documented `#contact-us` href and `aloha-contact-jump` class, so React supplies the missing href at runtime while preserving its authored blocks and label.
+
+### WordPress setup completed
+
+Two WordPress Synced Patterns have been created.
+
+**Contact Us — Full**
+
+- Outer Group block.
+- HTML Anchor: `contact-us`.
+- CSS class: `aloha-contact-full`.
+- A Heading block containing "Contact Us".
+- Vertical padding and visual separation from the surrounding page.
+
+**Contact Us — Jump**
+
+- Outer Group block.
+- CSS class: `aloha-contact-jump`.
+- A Button block containing `↓ Contact Us`.
+- Button link: `#contact-us`.
+
+Both patterns are managed independently within WordPress.
+
+### Coding requirements
+
+1. Create a reusable React `ContactUs` component responsible for both versions.
+2. Retrieve and render the Full synced pattern from WordPress.
+3. Place the Full version in the shared site Layout, after the current page's main content and immediately before Footer.
+4. The Full version must appear once on every page without inserting it into the individual WordPress pages.
+5. Preserve the WordPress-defined padding, separation and block structure.
+6. Retrieve the Jump synced pattern from WordPress.
+7. Display Jump as a small fixed-position floating link near the bottom of the viewport.
+8. Clicking Jump must scroll the user to the Full section, identified by `#contact-us`.
+9. Smooth scrolling should be enabled when the user has not requested reduced motion.
+10. Account for any Header obstruction when scrolling to the target.
+11. Use `IntersectionObserver`, or an equivalent reliable mechanism, to detect whether the Full Contact Us section is currently visible within the viewport.
+12. Hide the Jump version when the Full section is visible.
+13. Show the Jump version when the Full section is not visible.
+14. Prevent the Jump version from briefly flashing during initial visibility detection.
+15. Ensure keyboard accessibility and correct link semantics.
+16. The Jump must not cover essential page controls or content on narrow screens.
+17. Do not duplicate Contact Us content in page-specific React components.
+
+### Acceptance criteria
+
+- The Full Contact Us section appears once above Footer on all six pages.
+- It is rendered from the WordPress synced pattern.
+- The Jump link appears when the Full section is outside the viewport.
+- Clicking Jump scrolls to the Full section.
+- The Jump link disappears when the Full section becomes visible.
+- It reappears when the user scrolls away.
+- The behaviour works on desktop and mobile.
+- WordPress edits to either synced pattern are reflected on the frontend.
+
+---
+
+## Final integration and quality checks
+
+After completing the features:
+
+1. Verify that WordPress remains the sole source of editable content.
+2. Verify that reusable sections are implemented once and inserted through the React Layout, not duplicated across page components.
+3. Verify the public reusable-section API returns only approved published content.
+4. Verify the React application does not require WordPress authentication to display public pages or reusable sections.
+5. Verify WordPress Gutenberg block markup and basic editor styles are preserved.
+6. Verify every route works on direct load and refresh.
+7. Verify Header, Contact Us and Footer always appear in the correct order.
+8. Check for obsolete components, imports and duplicate markup.
+9. Ensure WordPress content updates do not require rebuilding React, except where frontend code itself changes.
+10. Run available project checks and report failures or outstanding dependencies.
+
+Do not add unrelated design features, animations, menus, plugins or functionality beyond the Epic's requirements.
+
+If any implementation detail is incompatible with the current project architecture, identify the conflict and apply the simplest maintainable solution that preserves the WordPress-first model.
+
+**Important deployment handoff:** If the WordPress API plugin needs to be installed separately, produce an installable plugin ZIP and clear installation instructions. Do not consider the reusable-section integration fully tested until the endpoint responds successfully from the actual WordPress installation.

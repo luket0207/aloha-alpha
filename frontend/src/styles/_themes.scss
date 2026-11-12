@@ -1,0 +1,33 @@
+@use './variables' as tokens;
+@use './mixins';
+
+:root {
+  --aloha-green: #{tokens.$green};
+  --aloha-light-blue: #{tokens.$light-blue};
+  --aloha-cream: #{tokens.$cream};
+  --aloha-mocha: #{tokens.$mocha};
+  --aloha-grey: #{tokens.$grey};
+  --aloha-red: #{tokens.$red};
+  --aloha-yellow: #{tokens.$yellow};
+  --aloha-font-heading-latin: #{tokens.$font-heading-latin};
+  --aloha-font-heading-japanese: #{tokens.$font-heading-japanese};
+  --aloha-font-body: #{tokens.$font-body};
+}
+
+.theme-green {
+  @include mixins.theme(tokens.$green, tokens.$cream, tokens.$yellow);
+}
+
+.theme-light-blue {
+  @include mixins.theme(tokens.$light-blue, tokens.$mocha, tokens.$red);
+}
+
+.theme-cream {
+  @include mixins.theme(tokens.$cream, tokens.$green, tokens.$red);
+}
+
+// Mocha on Grey is part of the supplied palette but fails WCAG contrast.
+// Do not use this theme for essential text without an approved adjustment.
+.theme-grey {
+  @include mixins.theme(tokens.$grey, tokens.$mocha, tokens.$yellow);
+}

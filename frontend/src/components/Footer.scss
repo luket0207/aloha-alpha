@@ -1,0 +1,54 @@
+@use '../styles/variables' as tokens;
+
+.site-footer {
+  position: relative;
+  flex: 0 0 auto;
+  margin-top: clamp(4rem, 8vw, 7rem);
+  padding: clamp(2rem, 5vw, 3.5rem) 1rem 2rem;
+  background: tokens.$light-blue;
+  color: tokens.$mocha;
+  text-align: center;
+  isolation: isolate;
+}
+
+.aloha-footer__wave {
+  position: absolute;
+  z-index: -1;
+  right: 0;
+  bottom: calc(100% - 1px);
+  left: 0;
+  display: block;
+  width: 100%;
+  height: clamp(4rem, 8vw, 7rem);
+  color: tokens.$light-blue;
+
+  path {
+    fill: currentColor;
+  }
+}
+
+.aloha-footer__content {
+  width: min(100%, tokens.$container-width);
+  margin-inline: auto;
+
+  > .aloha-footer,
+  > .aloha-footer > .wp-block-group__inner-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0;
+    background: transparent;
+    color: inherit;
+  }
+
+  .aloha-logo {
+    margin-inline: auto;
+  }
+
+  p {
+    margin: 0;
+    color: inherit;
+    text-align: center !important;
+  }
+}

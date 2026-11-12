@@ -1,0 +1,17 @@
+.wp-block-aloha-logo .aloha-logo__flower-placeholder {
+    display: grid;
+    place-items: center;
+    width: 1em;
+    height: 1em;
+    border: 1px dashed currentColor;
+    overflow: hidden;
+    font-family: sans-serif;
+    font-size: 0.6em;
+}
+
+.aloha-logo__media-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}

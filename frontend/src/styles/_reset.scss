@@ -7,7 +7,7 @@
 }
 
 html {
-  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-family: tokens.$font-body;
   color: tokens.$color-ink;
   background: tokens.$color-surface;
 }
@@ -17,5 +17,5 @@ body {
 }
 
 a {
-  color: tokens.$color-brand;
+  color: inherit;
 }

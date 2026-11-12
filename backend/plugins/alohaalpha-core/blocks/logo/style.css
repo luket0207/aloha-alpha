@@ -1,0 +1,70 @@
+.wp-block-aloha-logo.aloha-logo {
+    display: inline-flex;
+    max-width: 100%;
+    width: fit-content;
+    font-family: "Courgette", "Brush Script MT", cursive;
+    font-weight: 400;
+    line-height: 1;
+}
+
+.aloha-logo img.aloha-logo__flower {
+    display: block;
+    max-width: none;
+    aspect-ratio: 1;
+    object-fit: contain;
+}
+
+.aloha-logo--small {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    color: var(--aloha-theme-text, currentColor);
+    font-size: clamp(0.95rem, 4.5vw, 1.4rem);
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.aloha-logo--small .aloha-logo__flower {
+    flex: 0 0 auto;
+    width: auto;
+    height: 1em;
+}
+
+.aloha-logo--small .aloha-logo__wordmark {
+    display: block;
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+.aloha-logo--large {
+    position: relative;
+    display: inline-flex;
+    padding-right: 0.7em;
+    color: var(--aloha-green, #066c4c);
+    font-size: clamp(2.35rem, 9vw, 4rem);
+    line-height: 0.88;
+}
+
+.aloha-logo--large .aloha-logo__wordmark {
+    display: grid;
+    color: inherit;
+    white-space: nowrap;
+}
+
+.aloha-logo--large .aloha-logo__line {
+    display: block;
+}
+
+.aloha-logo--large .aloha-logo__line--academy {
+    margin-left: 0.35em;
+}
+
+.aloha-logo--large .aloha-logo__flower {
+    position: absolute;
+    top: 0.03em;
+    right: 0;
+    width: 0.625em;
+    height: 0.625em;
+    transform: rotate(-10deg);
+    transform-origin: center;
+}
