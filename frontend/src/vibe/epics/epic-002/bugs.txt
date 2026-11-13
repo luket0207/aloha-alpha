@@ -1,0 +1,312 @@
+# Epic-002 — Bugs
+
+## Bug-001 — Large Logo Sizing and Responsive Flower Position
+
+Status: complete
+
+### Issue
+
+The `Aloha Logo — Large` component is currently too small, particularly the text and flower icon.
+
+I want to increase their sizes while preserving the existing logo structure and maintaining proportional responsiveness.
+
+### Requirements
+
+**Text**
+
+- Increase the base font size from 4rem to **6rem**.
+- Continue using the Courgette font.
+- Retain Green (`#066C4C`) as the text colour.
+- Keep `Aloha` on the first line and `Academy` on the second line.
+- Maintain the existing slight indentation of `Academy`.
+- The logo must never wrap into a different arrangement.
+
+**Flower icon**
+
+At the logo's full size, I like the appearance produced by the following CSS:
+
+```scss
+position: absolute;
+top: -35px;
+right: 35px;
+width: 150px;
+height: 150px;
+transform: rotate(20deg);
+transform-origin: center;
+```
+
+Use this as the visual reference for the new flower positioning.
+
+However, these fixed pixel dimensions and offsets will not scale correctly as the logo gets smaller.
+
+Implement an equivalent responsive solution where:
+
+1. The flower scales proportionally with the text.
+2. Its relative position remains consistent as the logo shrinks.
+3. Its rotation remains 20 degrees clockwise.
+4. The flower remains anchored in the negative space above the end of `Academy`.
+5. It does not overlap the lettering or get clipped.
+6. The entire logo can shrink to fit narrow containers and mobile screens.
+
+Consider using `em`-based dimensions and positioning relative to the logo's font size, or another reliable proportional scaling method.
+
+At the base 6rem font size, the visual appearance should closely match the supplied CSS.
+
+### Acceptance criteria
+
+- Full-size text is 6rem.
+- Full-size flower is approximately 150×150px.
+- Flower position closely matches the supplied reference.
+- Flower and text scale together responsively.
+- Logo remains exactly two lines.
+- No clipping, overlap or horizontal overflow on mobile.
+- Existing WordPress logo block integration remains functional.
+
+Notes: Increased the large wordmark to a responsive 6rem maximum and converted the 150px flower size and reference offsets to proportional `em` values. Mirrored the styling in the Gutenberg block stylesheet; verified the live WordPress render from 320px to 1440px with no horizontal overflow.
+
+---
+
+## Bug-002 — Small Logo Flower Alignment
+
+Status: complete
+
+### Issue
+
+The flower icon in `Aloha Logo — Small` does not align quite correctly with the text.
+
+There are two problems:
+
+1. There isn't quite enough horizontal space between the flower and the words.
+2. The flower appears slightly lower than the bottom of the text.
+
+### Requirements
+
+- Increase the horizontal gap between the flower and `Aloha Academy` slightly.
+- Adjust the flower's vertical positioning so it appears approximately **3px higher** than it currently does, creating a little more visual space below the flower.
+- Use an appropriate margin, padding or transform adjustment without distorting the image.
+- Retain the current flower size relative to the 1.4rem text.
+- Preserve the existing Courgette typography.
+- Ensure the alignment remains visually consistent when the logo scales responsively.
+- Do not change the existing one-line structure.
+- Apply the correction everywhere the Small Logo is used, including the Header and Footer.
+
+### Acceptance criteria
+
+- Flower and text appear vertically balanced.
+- Slightly more horizontal spacing exists between them.
+- Flower sits approximately 3px higher at its normal display size.
+- No stretching or distortion.
+- Logo remains on one line.
+- Responsive scaling still works correctly.
+
+Notes: Increased the Small Logo gap from `0.3em` to `0.4em` and moved the flower upward by a responsive `0.135em` (approximately 3px at the normal 1.4rem size). Mirrored the rule in the Gutenberg block stylesheet and verified Header and Footer rendering from 320px to 1440px.
+
+---
+
+## Bug-003 — Navigation Block Styling, Hover Animation and Active State
+
+Status: complete
+
+### Issue
+
+The current navigation styling isn't quite what I want.
+
+The links are currently presented in rounded containers. I want them to behave more like full-height navigation blocks that integrate directly into the Header.
+
+I also want to refine the hover wave animation and clearly distinguish the current page.
+
+### 1. Navigation layout
+
+- Remove the rounded containers around navigation links.
+- Each navigation item should be a rectangular block occupying the **full height of the Header's navigation area**.
+- Each block should have appropriate horizontal padding.
+- Keep the existing horizontal desktop layout.
+- Vertically centre the icon and text within each block.
+- Increase the navigation text and Font Awesome icon sizes to **1rem**.
+- Keep Klee One as the navigation font.
+- Maintain the Green Group colour scheme for the Header.
+
+### 2. Default navigation state
+
+For links that are not the current page:
+
+- Background: Green (`#066C4C`), matching the Header.
+- Text: Cream (`#F1FFFA`).
+- Icon: Cream (`#F1FFFA`).
+- No rounded corners.
+
+### 3. Hover state
+
+When hovering over a navigation item:
+
+- Background transitions to **White (`#FFFFFF`)**.
+- Text transitions to **Green (`#066C4C`)**.
+- Font Awesome icon transitions to Green.
+- The text and icon should move upwards slightly, retaining the current animation behaviour.
+- Keep the existing animated wave effect.
+
+**Wave improvements**
+
+I like the current wave animation, but it needs refining:
+
+1. The wave must always remain below the text and icon rather than moving across or covering them.
+2. Add more curves to make the wave look more natural and fluid.
+3. The wave should animate smoothly into the bottom portion of the navigation block.
+4. Keep the wave visually contained within its navigation item.
+5. Ensure the wave does not obscure the green text or icon.
+6. Use Light Blue (`#93B7BE`) for the wave.
+7. The animation should feel playful and polished without being excessive.
+
+Use appropriate positioning, clipping and z-index layering to achieve this.
+
+The text/icon should remain on a higher visual layer than the wave, and the wave's visible shape should stay in the lower portion of the block.
+
+### 4. Active-page state
+
+The currently selected page must have a completely different appearance.
+
+Use:
+
+- Background: Green (`#066C4C`).
+- Text: Yellow (`#E8AA14`).
+- Font Awesome icon: Yellow (`#E8AA14`).
+- No hover animation.
+- No wave effect.
+- No text movement on hover.
+- No pointer cursor suggesting the item can be clicked.
+
+The active navigation item should not perform any navigation when selected.
+
+Use accessible semantics to indicate the current page, including `aria-current="page"`.
+
+Since the active item's background matches the Header, use a subtle static visual boundary or indicator if necessary to make the active block identifiable without changing the specified colours.
+
+### 5. Responsive behaviour
+
+Ensure these changes also work with the mobile hamburger navigation introduced in Feature-004.
+
+- Preserve all existing mobile menu functionality.
+- Keep navigation blocks vertically stacked in the mobile menu.
+- Maintain the correct active-page styling.
+- Preserve Font Awesome icons and Japanese navigation labels.
+- Ensure appropriate spacing and touch-target sizes.
+- Prevent animation clipping and layout overflow.
+- Avoid hover effects getting stuck on touchscreen devices.
+- Respect `prefers-reduced-motion`.
+
+The FAQs navigation label must remain `FAQs` in English, as configured in WordPress.
+
+### Acceptance criteria
+
+- Desktop navigation blocks occupy the full navigation height.
+- Navigation blocks have square corners.
+- Text and icons are 1rem.
+- Hover background becomes white.
+- Hover text and icons become green.
+- Wave is more curved and stays below the text/icon.
+- Existing slight upward text movement remains.
+- Active-page background is green, with yellow text and icon.
+- Active item has no hover animation or navigation action.
+- Mobile navigation still functions correctly.
+- No changes to WordPress-managed navigation content are required.
+
+Notes: Reworked navigation items as full-height square blocks with 1rem Klee One text/icons, Green/Cream defaults, and a White/Green hover state with a contained multi-curve Light Blue wave. The active page now renders as a non-interactive `aria-current="page"` item with Yellow content and a static inset indicator. Verified desktop, breakpoint, touch-menu, reduced-motion and overflow behavior from 320px to 1440px without changing WordPress content.
+
+---
+
+## Implementation Instructions
+
+Before making changes:
+
+1. Read `AGENTS.md` and the existing Epic-002 specification.
+2. Inspect the current Small Logo, Large Logo and Header navigation implementations.
+3. Identify the SCSS and React files responsible for the styling.
+4. Preserve the existing WordPress synced-pattern architecture.
+
+Implement Bug-001, Bug-002 and Bug-003 in order.
+
+Use the existing colour and typography variables rather than introducing duplicate hardcoded values.
+
+If the logo styling is also used inside the Gutenberg editor, update the relevant WordPress plugin styles to maintain consistency. Modify the locally mounted plugin source directly; do not package a ZIP unless deployment requires it.
+
+Do not modify the underlying WordPress page content or recreate existing synced patterns.
+
+After implementation, validate the changes at desktop and mobile viewport sizes, including 320px, 375px, 768px and 1440px.
+
+Run relevant build and lint checks.
+
+Update the Epic-002 bug tracking files according to the existing project conventions.
+
+**Scope restriction:** Only implement these three bugs. Do not begin another Epic or introduce unrelated functionality.
+
+
+
+## Bug-004 — Navigation Active State and Hover Wave Width
+
+Status: complete
+
+### Issue
+
+The recent navigation changes are working well, but two small styling adjustments are required.
+
+### 1. Remove the Active Page Underline
+
+The currently active navigation item has a solid yellow line along the bottom.
+
+I want this line **completely removed**.
+
+The active navigation item should retain:
+
+- Green background (`#066C4C`).
+- Yellow text (`#E8AA14`).
+- Yellow Font Awesome icon.
+- No hover animations or wave effects.
+- No navigation action when selected.
+
+Do not replace the yellow underline with another line, border or active-state indicator.
+
+The yellow text and icon are sufficient to identify the active page.
+
+### 2. Fix the Hover Wave Width
+
+The Light Blue wave animation currently does not extend across the entire width of the navigation item's white hover background.
+
+I want the wave to **span the full width of the hovered navigation block**, from its left edge to its right edge.
+
+Requirements:
+
+1. The wave must cover the entire horizontal width of the navigation item.
+2. There should be no visible gaps at either edge of the white hover background.
+3. The wave should retain its existing curved appearance and smooth animation.
+4. The wave must remain in the lower portion of the navigation block, below the text and icon.
+5. The wave must remain clipped within the rectangular navigation block.
+6. The hover background must remain white, with Green text and icons.
+7. The existing slight upward movement of the text and icon should remain.
+8. The wave must scale correctly with different navigation item widths, including Japanese and English labels.
+
+If the wave is implemented using an SVG, pseudo-element or CSS mask, adjust its positioning and dimensions so it covers the full width without introducing distortion or overflow.
+
+### Implementation Instructions
+
+1. Read `AGENTS.md` and the existing Epic-002 requirements.
+2. Inspect the current navigation SCSS and React implementation.
+3. Remove the active navigation item's yellow underline and any associated pseudo-element styling.
+4. Fix the hover wave so it spans the full width of each navigation block.
+5. Preserve all other navigation styling and animations.
+6. Verify the changes on desktop and mobile.
+7. Update the Epic-002 bug tracking file according to project conventions.
+
+### Acceptance Criteria
+
+- No yellow underline appears beneath the active page.
+- Active navigation still displays Green background with Yellow text and icon.
+- Hover wave extends across the full width of each navigation block.
+- No horizontal gaps appear at either edge.
+- Wave remains below the text and icons.
+- Existing hover animation remains smooth.
+- Mobile navigation continues working correctly.
+- No regressions to previous Epic-002 features.
+
+**Scope:** Fix Bug-004 only. Do not redesign the navigation or modify unrelated components.
+
+Notes: Removed the active navigation inset underline without adding another indicator. Made the hover wave exactly `100%` of each block and set the SVG mask to `preserveAspectRatio="none"`, allowing its curves to stretch edge-to-edge across different label widths. Verified desktop hover rendering and mobile navigation from 320px to 1440px with no overflow.

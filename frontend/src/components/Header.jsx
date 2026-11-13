@@ -228,9 +228,15 @@ export default function Header() {
 
                     return (
                       <li key={`${link.href}-${link.label}`}>
-                        {link.isInternal ? (
+                        {link.isActive ? (
+                          <span
+                            aria-current="page"
+                            className={className}
+                          >
+                            {content}
+                          </span>
+                        ) : link.isInternal ? (
                           <Link
-                            aria-current={link.isActive ? 'page' : undefined}
                             className={className}
                             onClick={() => closeMenu(!isDesktop)}
                             to={link.href}

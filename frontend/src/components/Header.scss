@@ -40,15 +40,22 @@ $header-breakpoint: 900px;
 }
 
 .aloha-header__navigation {
+  align-self: stretch;
   min-width: 0;
 
   ul {
     display: flex;
-    align-items: center;
-    gap: 0.35rem;
+    align-items: stretch;
+    gap: 0;
+    height: 100%;
     margin: 0;
     padding: 0;
     list-style: none;
+  }
+
+  li {
+    display: flex;
+    align-items: stretch;
   }
 }
 
@@ -59,56 +66,82 @@ $header-breakpoint: 900px;
   align-items: center;
   justify-content: center;
   gap: 0.45rem;
-  min-height: 2.75rem;
-  padding: 0.55rem 0.7rem;
+  height: 100%;
+  min-height: 5rem;
+  padding: 0.75rem 0.8rem;
   overflow: hidden;
-  border: 2px solid transparent;
-  border-radius: 0.8rem;
+  border: 0;
+  border-radius: 0;
+  background: tokens.$green;
   color: tokens.$cream;
   font-family: tokens.$font-body;
-  font-size: 0.9rem;
+  font-size: 1rem;
   line-height: 1.2;
   text-decoration: none;
   white-space: nowrap;
-  transition: color 180ms ease, border-color 180ms ease, transform 180ms ease;
+  isolation: isolate;
+  transition: background-color 180ms ease, color 180ms ease;
 
   &::before {
     position: absolute;
-    z-index: -1;
-    right: -15%;
-    bottom: -85%;
-    left: -15%;
-    height: 125%;
-    border-radius: 48% 52% 42% 58%;
+    z-index: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 32%;
     background: tokens.$light-blue;
     content: '';
-    transform: translateY(70%) rotate(-3deg);
+    transform: translateY(110%);
     transition: transform 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 100' preserveAspectRatio='none'%3E%3Cpath fill='white' d='M0 38 C12 8 25 62 39 34 S67 8 80 35 S98 58 120 26 V100 H0 Z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 100' preserveAspectRatio='none'%3E%3Cpath fill='white' d='M0 38 C12 8 25 62 39 34 S67 8 80 35 S98 58 120 26 V100 H0 Z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
   }
 
-  &:hover {
-    color: tokens.$mocha;
-    transform: translateY(-2px);
+  > span,
+  > svg {
+    position: relative;
+    z-index: 1;
+    transition: transform 180ms ease;
+  }
 
-    &::before {
-      transform: translateY(5%) rotate(2deg);
-    }
+  > svg {
+    font-size: 1em;
   }
 
   &:focus-visible {
-    border-color: tokens.$cream;
     outline: 3px solid tokens.$yellow;
-    outline-offset: 2px;
+    outline-offset: -3px;
   }
 
   &.is-active {
-    border-color: tokens.$yellow;
-    background: tokens.$yellow;
-    color: tokens.$mocha;
+    background: tokens.$green;
+    color: tokens.$yellow;
+    cursor: default;
     font-weight: 600;
 
     &::before {
-      opacity: 0.35;
+      display: none;
+    }
+
+    > span,
+    > svg {
+      transform: none;
+    }
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .aloha-header__navigation-link:not(.is-active):hover {
+    background: tokens.$color-white;
+    color: tokens.$green;
+
+    &::before {
+      transform: translateY(0);
+    }
+
+    > span,
+    > svg {
+      transform: translateY(-2px);
     }
   }
 }
@@ -191,8 +224,13 @@ $header-breakpoint: 900px;
     ul {
       flex-direction: column;
       align-items: stretch;
+      height: auto;
       width: min(100%, 34rem);
       margin-inline: auto;
+    }
+
+    li {
+      width: 100%;
     }
   }
 
@@ -206,9 +244,9 @@ $header-breakpoint: 900px;
   .aloha-header__navigation-link {
     justify-content: flex-start;
     width: 100%;
+    height: auto;
     min-height: 3.25rem;
     padding-inline: 1rem;
-    font-size: 1rem;
   }
 }
 
@@ -216,11 +254,16 @@ $header-breakpoint: 900px;
   .aloha-header__navigation,
   .aloha-header__navigation-link,
   .aloha-header__navigation-link::before,
+  .aloha-header__navigation-link > span,
+  .aloha-header__navigation-link > svg,
   .aloha-header__menu-button span {
     transition-duration: 0.01ms;
   }
 
-  .aloha-header__navigation-link:hover {
-    transform: none;
+  .aloha-header__navigation-link:not(.is-active):hover {
+    > span,
+    > svg {
+      transform: none;
+    }
   }
 }

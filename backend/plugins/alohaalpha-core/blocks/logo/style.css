@@ -17,7 +17,7 @@
 .aloha-logo--small {
     display: inline-flex;
     align-items: center;
-    gap: 0.3em;
+    gap: 0.4em;
     color: var(--aloha-theme-text, currentColor);
     font-size: clamp(0.95rem, 4.5vw, 1.4rem);
     line-height: 1;
@@ -28,6 +28,7 @@
     flex: 0 0 auto;
     width: auto;
     height: 1em;
+    transform: translateY(-0.135em);
 }
 
 .aloha-logo--small .aloha-logo__wordmark {
@@ -39,9 +40,10 @@
 .aloha-logo--large {
     position: relative;
     display: inline-flex;
+    overflow: visible;
     padding-right: 0.7em;
     color: var(--aloha-green, #066c4c);
-    font-size: clamp(2.35rem, 9vw, 4rem);
+    font-size: clamp(2.35rem, 9vw, 6rem);
     line-height: 0.88;
 }
 
@@ -61,10 +63,10 @@
 
 .aloha-logo--large .aloha-logo__flower {
     position: absolute;
-    top: 0.03em;
-    right: 0;
-    width: 0.625em;
-    height: 0.625em;
-    transform: rotate(-10deg);
+    top: -0.365em;
+    right: 0.365em;
+    width: 1.5625em;
+    height: 1.5625em;
+    transform: rotate(20deg);
     transform-origin: center;
 }
