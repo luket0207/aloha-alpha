@@ -1,5 +1,227 @@
+@use '../styles/variables' as tokens;
+
+$contact-footer-wave-height: clamp(4rem, 7vw, 5.5rem);
+
 .contact-us__full {
+  position: relative;
   flex: 0 0 auto;
+  padding: clamp(3rem, 6vw, 5.25rem) max(1.25rem, env(safe-area-inset-right)) $contact-footer-wave-height max(1.25rem, env(safe-area-inset-left));
+  background: tokens.$green;
+  color: tokens.$cream;
+}
+
+.contact-us__intro,
+.contact-us__form {
+  width: min(100%, 46rem);
+  margin-inline: auto;
+}
+
+.contact-us__intro {
+  text-align: center;
+
+  .wp-block-group__inner-container {
+    display: contents;
+  }
+
+  h2,
+  p {
+    color: inherit;
+    text-align: center;
+  }
+
+  p {
+    margin: 0 auto clamp(1.25rem, 3vw, 2rem);
+  }
+}
+
+.contact-us__loading {
+  text-align: center;
+}
+
+.contact-us__form {
+  display: grid;
+  gap: 1rem;
+  font-family: tokens.$font-body;
+}
+
+.contact-us__field-row {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.contact-us__field {
+  display: grid;
+  gap: 0.45rem;
+
+  label {
+    font-weight: 600;
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    border: 2px solid transparent;
+    border-radius: 0.35rem;
+    background: tokens.$cream;
+    color: tokens.$mocha;
+    font: inherit;
+
+    &:focus-visible {
+      border-color: tokens.$yellow;
+      outline: 3px solid tokens.$yellow;
+      outline-offset: 2px;
+    }
+  }
+
+  input {
+    min-height: 3rem;
+    padding: 0.65rem 0.8rem;
+  }
+
+  textarea {
+    min-height: 9rem;
+    padding: 0.8rem;
+    resize: vertical;
+  }
+}
+
+.contact-us__presets {
+  display: grid;
+  gap: 0.65rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+
+  legend {
+    margin-bottom: 0.65rem;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.contact-us__preset-buttons {
+  display: grid;
+  gap: 0.65rem;
+
+  button {
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0.65rem 0.8rem;
+    border: 1px solid tokens.$cream;
+    border-radius: 0.35rem;
+    background: transparent;
+    color: tokens.$cream;
+    font: inherit;
+    overflow-wrap: anywhere;
+    text-align: center;
+    white-space: normal;
+    cursor: pointer;
+
+    &:hover,
+    &[aria-pressed='true'] {
+      border-color: tokens.$yellow;
+      background: tokens.$yellow;
+      color: tokens.$green;
+    }
+
+    &:focus-visible {
+      outline: 3px solid tokens.$yellow;
+      outline-offset: 2px;
+    }
+  }
+}
+
+.contact-us__clear-message {
+  justify-self: end;
+  min-height: 2.75rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid tokens.$cream;
+  border-radius: 0.35rem;
+  background: transparent;
+  color: tokens.$cream;
+  font: inherit;
+  cursor: pointer;
+
+  &:hover {
+    background: tokens.$cream;
+    color: tokens.$green;
+  }
+
+  &:focus-visible {
+    outline: 3px solid tokens.$yellow;
+    outline-offset: 2px;
+  }
+}
+
+.contact-us__character-count {
+  justify-self: end;
+  font-size: 0.9rem;
+}
+
+.contact-us__error {
+  color: tokens.$yellow;
+  font-weight: 600;
+}
+
+.contact-us__honeypot {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.contact-us__submit {
+  justify-self: center;
+  min-width: 10rem;
+  min-height: 3rem;
+  padding: 0.65rem 1.25rem;
+  border: 0;
+  border-radius: 0.35rem;
+  background: tokens.$yellow;
+  color: tokens.$green;
+  font: 600 1rem/1.2 tokens.$font-body;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: wait;
+    opacity: 0.7;
+  }
+
+  &:focus-visible {
+    outline: 3px solid tokens.$cream;
+    outline-offset: 3px;
+  }
+}
+
+.contact-us__submission-status {
+  min-height: 1.75rem;
+  text-align: center;
+
+  p {
+    margin: 0;
+  }
+
+  .is-success {
+    color: tokens.$cream;
+  }
+
+  .is-error {
+    color: tokens.$yellow;
+  }
+}
+
+.contact-us__full ~ .site-footer {
+  margin-top: 0;
+
+  .aloha-footer__wave {
+    height: $contact-footer-wave-height;
+  }
 }
 
 .contact-us__jump {
@@ -14,5 +236,37 @@
   a {
     max-width: 100%;
     pointer-events: auto;
+  }
+}
+
+@media (min-width: 768px) {
+  .contact-us__field-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .contact-us__preset-buttons {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    button {
+      height: 100%;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .contact-us__full {
+    padding-inline: max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-left));
+  }
+
+  .contact-us__preset-buttons button {
+    min-height: 3rem;
+  }
+
+  .contact-us__clear-message {
+    width: 100%;
+  }
+
+  .contact-us__submit {
+    width: 100%;
   }
 }

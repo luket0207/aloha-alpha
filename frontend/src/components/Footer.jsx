@@ -1,8 +1,27 @@
 import { useEffect, useState } from 'react';
 import { getWordPressRestUrl } from '../wordpressApi.js';
+import Wave from './Wave.jsx';
 import './Footer.scss';
 
 const CURRENT_YEAR_PLACEHOLDER = '{{currentYear}}';
+
+const FOOTER_WAVE = {
+  width: 1440,
+  height: 120,
+  startY: 78,
+  curves: [
+    {
+      control1: { x: 205, y: 9 },
+      control2: { x: 405, y: 116 },
+      end: { x: 690, y: 67 },
+    },
+    {
+      control1: { x: 975, y: 18 },
+      control2: { x: 1187, y: 103 },
+      end: { x: 1440, y: 38 },
+    },
+  ],
+};
 
 export default function Footer() {
   const [html, setHtml] = useState('');
@@ -35,15 +54,7 @@ export default function Footer() {
 
   return (
     <footer className="site-footer aloha-footer theme-light-blue">
-      <svg
-        aria-hidden="true"
-        className="aloha-footer__wave"
-        focusable="false"
-        preserveAspectRatio="none"
-        viewBox="0 0 1440 120"
-      >
-        <path d="M0 78C205 9 405 116 690 67C975 18 1187 103 1440 38V120H0Z" />
-      </svg>
+      <Wave className="aloha-footer__wave" {...FOOTER_WAVE} />
       {status === 'loading' && <p>Loading footer…</p>}
       {status === 'error' && <p role="alert">Unable to load footer.</p>}
       {status === 'ready' && (

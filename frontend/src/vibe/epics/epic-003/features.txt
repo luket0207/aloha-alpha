@@ -1,0 +1,589 @@
+# Epic-003 — Homepage Hero and Contact Us Refinements
+
+## Overview
+
+This Epic covers two features:
+
+- Feature-001: Improve the homepage Hero's wave design, animated background and typography.
+- Feature-002: Implement a responsive Japanese contact form with WordPress-editable preset questions and email delivery through FluentSMTP.
+
+Both features should be implemented in one coding phase, after the manual WordPress configuration has been completed.
+
+### Project architecture
+
+Continue following the existing architecture:
+
+- React frontend.
+- WordPress headless backend.
+- Gutenberg block-based page content.
+- Synced patterns for reusable content.
+- AlohaAlpha Core plugin for custom WordPress functionality.
+- SCSS design tokens and colour groups established in Epic-002.
+- Existing WordPress REST API and reusable-section integration.
+
+Read `AGENTS.md`, Epic-001, Epic-002 and their relevant implementation files before making changes.
+
+Preserve existing functionality unless a specific change is required by this Epic.
+
+---
+
+# Feature-001 — Homepage Hero Refinements
+
+Status: complete
+
+## WordPress work
+
+No WordPress changes are required.
+
+The existing Hero structure, slideshow images, large logo and slogan must remain intact.
+
+## Coding requirements
+
+### 1. Reusable wave system
+
+The existing Footer already implements a wave-shaped boundary.
+
+I want this wave concept to become a reusable part of the site's design system.
+
+Investigate the existing implementation and extract appropriate shared functionality.
+
+The system must support:
+
+- Adjustable wave height.
+- Adjustable peak and trough positions.
+- Adjustable amplitude.
+- Adjustable curve frequency.
+- Different wave shapes for different component instances.
+- Responsive resizing.
+- Configurable direction or orientation where appropriate.
+
+Prefer a reusable SVG implementation, SCSS mixin, or a combination of both, depending on the existing architecture.
+
+A configurable React wave component is acceptable where SVG geometry needs to be generated dynamically.
+
+**Important:** Different components should have distinct wave shapes.
+
+For example, a Hero wave and a Footer wave should not have identical peaks and troughs.
+
+The shapes should be configurable and deterministic, rather than changing randomly whenever React re-renders.
+
+Avoid introducing unnecessary JavaScript animation loops or layout recalculation.
+
+### 2. Hero bottom wave
+
+Add a decorative wave to the bottom edge of the homepage Hero.
+
+Requirements:
+
+1. Replace the existing straight bottom boundary with a flowing wave.
+2. The wave must span the entire width of the Hero.
+3. The shape should be organic, with multiple smooth peaks and troughs.
+4. The wave should visually transition towards the following page section.
+5. It must work on desktop and mobile.
+6. It must not cover the Hero logo, slogan or important image content.
+7. It must not introduce horizontal overflow.
+8. Preserve the existing desktop and mobile Hero layouts.
+
+This is a new decorative bottom-edge wave, separate from the existing wave dividing the Hero's blue content and slideshow imagery.
+
+Ensure both wave elements work together without visual conflicts.
+
+### 3. Animated water-inspired gradient
+
+The current Light Blue area of the Hero uses the site's Light Blue colour:
+
+`#93B7BE`
+
+Replace the flat background with a subtle animated gradient.
+
+Requirements:
+
+- The darkest gradient colour must be `#93B7BE`.
+- The lighter colour should be a slightly lighter variation of that same blue.
+- Do not introduce unrelated colours.
+- Animate the gradient slowly and smoothly.
+- Use gentle movement resembling water or soft reflections.
+- Avoid obvious linear sweeping animations.
+- Avoid rapid colour changes, flashing or harsh transitions.
+- The animation should loop smoothly.
+- The effect should remain noticeable without distracting from the logo or slogan.
+
+Consider layered radial gradients or moving gradient backgrounds to create subtle irregular movement.
+
+Keep animation parameters centralised and reusable.
+
+Respect `prefers-reduced-motion`, providing a visually appropriate static gradient when motion is disabled.
+
+### 4. Hero H3 typography
+
+Increase H3 headings specifically within the homepage Hero to:
+
+`font-size: 2rem`
+
+Requirements:
+
+- Retain the existing font family.
+- Maintain appropriate line height.
+- Ensure the text remains responsive on smaller screens.
+- Do not change H3 typography globally.
+- Do not affect H3 headings in other page sections.
+
+Inspect the existing Hero markup and apply this styling to the correct heading element.
+
+### Feature-001 acceptance criteria
+
+- A reusable configurable wave system exists.
+- Existing Footer wave functionality is preserved.
+- Hero has a new wave-shaped bottom boundary.
+- Different wave instances can use different geometry.
+- The Light Blue background displays a subtle moving gradient.
+- The darkest gradient colour remains the original Light Blue.
+- Hero H3 typography is 2rem.
+- Existing Hero layout, logo and slideshow still work.
+- All changes work on mobile and desktop.
+
+Notes: Added a deterministic configurable SVG Wave component and migrated the Footer wave to it, with a distinct full-width Hero bottom geometry. Added a motion-aware radial water gradient and Hero-only responsive H3 sizing. Live checks at 320–1440px confirmed content clearance, distinct wave paths, slideshow progression, reduced-motion fallback and no overflow.
+
+---
+
+# Feature-002 — Japanese Contact Form
+
+Status: complete
+
+## WordPress work completed
+
+The existing `Contact Us — Full` synced pattern has been updated.
+
+It retains:
+
+- Anchor: `contact-us`
+- CSS class: `aloha-contact-full`
+
+Its content now includes:
+
+1. A Japanese heading: `お問い合わせ`
+2. An introductory Paragraph block.
+3. A Group with class `aloha-contact__presets`.
+4. A Gutenberg List block containing editable Japanese preset questions.
+
+The introductory paragraph is:
+
+`ご質問やご相談がございましたら、お気軽にお問い合わせください。`
+
+The initial preset questions are:
+
+1. `子どものクラスへの申し込みを検討しています。`
+2. `複数の子どもを、それぞれ別のクラスにまとめて申し込むことはできますか？`
+3. `子どもはいつからクラスに参加できますか？`
+
+These questions must be read dynamically from WordPress.
+
+The `Contact Us — Jump` synced pattern has also been updated to display:
+
+`↓ お問い合わせ`
+
+Its link remains `#contact-us`.
+
+## Coding requirements
+
+### 1. React contact form
+
+Build a reusable React contact form within the existing Contact Us component.
+
+Do not use Contact Form 7 or another form-building plugin.
+
+Implement the following fields:
+
+| Field | Input | Required |
+|---|---|---|
+| お名前 | Text | Yes |
+| メールアドレス | Email | Yes |
+| 電話番号 | Telephone | No |
+| お問い合わせ内容 | Textarea | Yes |
+
+Use `type="tel"` for the telephone number rather than `type="number"` to support leading zeros, hyphens and international phone numbers.
+
+Use controlled React form state and proper label associations.
+
+### 2. Preset question buttons
+
+Above the message textarea, display:
+
+`以下の質問から選ぶか、お問い合わせ内容をご自由に入力してください。`
+
+Retrieve the preset questions from the existing WordPress Contact Us synced pattern.
+
+Use the list items inside `.aloha-contact__presets` as the data source.
+
+Requirements:
+
+1. Each WordPress list item becomes a selectable button.
+2. Preserve the order configured in WordPress.
+3. Support adding and removing questions without code changes.
+4. Selecting a question populates the textarea with its exact current WordPress text.
+5. Users may edit the populated text afterwards.
+6. Users may ignore the presets and type their own message.
+7. Selecting a different preset replaces the textarea's current contents.
+8. Buttons must be functional and keyboard-accessible.
+9. Keep the button styling simple for now.
+
+The Gutenberg List block is an editorial data source, not an additional visible bulleted list.
+
+Do not display duplicate questions.
+
+Do not hardcode the initial Japanese questions as the production data source.
+
+If the WordPress data cannot be loaded, handle the error gracefully without silently substituting stale hardcoded questions.
+
+Extract preset text safely, using text content rather than interpreting list-item content as executable HTML.
+
+### 3. Textarea validation
+
+Limit the message to 1,000 characters.
+
+Implement:
+
+- `maxLength` or equivalent browser-side length enforcement.
+- Character count display.
+- Validation before submission.
+- Matching server-side length validation.
+- Clear Japanese error messages.
+
+The server must not trust client-side validation.
+
+Treat the textarea content as plain text. Do not execute, evaluate or render submitted content as HTML.
+
+Code-like input must never be allowed to execute.
+
+### 4. Japanese interface text
+
+Use the following:
+
+| Purpose | Text |
+|---|---|
+| Name | お名前 |
+| Email | メールアドレス |
+| Phone | 電話番号（任意） |
+| Message | お問い合わせ内容 |
+| Submit button | 送信する |
+| Submitting | 送信中… |
+| Name required | お名前を入力してください。 |
+| Invalid email | 有効なメールアドレスを入力してください。 |
+| Message required | お問い合わせ内容を入力してください。 |
+| Message too long | 1000文字以内で入力してください。 |
+| Submission accepted | お問い合わせを受け付けました。ありがとうございます。 |
+| Submission failed | 送信できませんでした。時間をおいてもう一度お試しください。 |
+
+Maintain consistent Japanese typography using Klee One for form text.
+
+### 5. WordPress REST API endpoint
+
+Implement a custom endpoint in the existing AlohaAlpha Core plugin.
+
+Proposed endpoint:
+
+`POST /wp-json/aloha/v1/contact`
+
+This should follow the existing plugin's API naming conventions where possible.
+
+The React form submits the following data:
+
+```json
+{
+  "name": "Customer Name",
+  "email": "customer@example.com",
+  "phone": "090-1234-5678",
+  "message": "お問い合わせ内容"
+}
+```
+
+The actual endpoint may also accept internal anti-spam fields.
+
+Register the endpoint using WordPress's supported REST API functions.
+
+The endpoint must:
+
+1. Accept only POST requests.
+2. Validate all expected fields.
+3. Reject unexpected oversized payloads.
+4. Validate the email address.
+5. Limit message length to 1,000 characters.
+6. Validate and restrict other field lengths.
+7. Sanitize all text inputs.
+8. Treat all submitted messages as plain text.
+9. Return clear JSON success or error responses.
+10. Avoid exposing sensitive server configuration or detailed internal errors.
+
+The endpoint must work for anonymous website visitors without requiring WordPress login.
+
+Do not expose WordPress administrator credentials or SMTP credentials in the React frontend.
+
+### 6. Security and spam protection
+
+The contact form is publicly accessible, so implement proportionate anti-abuse controls.
+
+At minimum:
+
+- Server-side validation.
+- Appropriate WordPress sanitisation.
+- Safe output handling.
+- Email header injection protection.
+- A hidden honeypot field.
+- Server-side request throttling or rate limiting.
+- A maximum request payload size.
+- Generic error responses that do not expose internals.
+- No execution or interpretation of user-submitted HTML or JavaScript.
+
+Do not allow visitors to control the email recipient, sender identity or arbitrary email headers.
+
+Use a fixed, trusted sender address associated with the configured mail provider.
+
+The user's validated email may be used as the Reply-To address.
+
+Do not rely on CORS restrictions, a public REST nonce or client-side validation as the sole protection against abuse.
+
+Avoid storing personal contact information unnecessarily or logging the full message.
+
+Do not introduce a CAPTCHA service unless the existing protections prove insufficient or it becomes necessary.
+
+### 7. FluentSMTP email delivery
+
+The email recipient must initially be:
+
+`lturnbull2@hotmail.co.uk`
+
+Keep this destination configured server-side, not supplied by browser requests.
+
+Use WordPress's `wp_mail()` function to send the submitted message.
+
+FluentSMTP should handle delivery through the configured SMTP/email provider.
+
+Do not attempt to make React communicate directly with FluentSMTP.
+
+Do not require Contact Form 7.
+
+The outgoing email should contain:
+
+- Customer name.
+- Customer email address.
+- Customer telephone number, if supplied.
+- Customer message.
+
+Use a clear subject, for example:
+
+`【Aloha Academy】新しいお問い合わせ`
+
+Send the email as plain text to minimise HTML-related risks.
+
+Use the configured, authenticated sender address as From.
+
+Use the customer's validated email address as Reply-To.
+
+Handle `wp_mail()` errors appropriately.
+
+A successful return from `wp_mail()` indicates that the message was accepted for processing, not guaranteed delivery to the inbox. Do not falsely report confirmed delivery.
+
+Do not expose SMTP passwords or email provider API keys in source code or frontend environment variables.
+
+### 8. Local WordPress integration
+
+The project uses Docker and `wp-env`.
+
+The AlohaAlpha Core plugin is mounted from:
+
+`backend/plugins/alohaalpha-core/`
+
+Modify the plugin source directly.
+
+Do not create a new plugin unnecessarily.
+
+Do not generate ZIP files for local installation.
+
+Do not reset, destroy or recreate the WordPress database or environment.
+
+Preserve the existing Gutenberg custom blocks and reusable-section REST API.
+
+The frontend may run on a different localhost port from WordPress. Ensure the endpoint supports the legitimate frontend origin and necessary preflight requests without opening unnecessary cross-origin access.
+
+### 9. Contact Us styling
+
+Apply the Green Group colour scheme:
+
+- Background: Green (`#066C4C`).
+- Text: Cream (`#F1FFFA`).
+- Highlights: Yellow (`#E8AA14`).
+
+The form should appear within the existing Contact Us — Full section.
+
+Requirements:
+
+1. Full-width Green section background.
+2. A centred, maximum-width form container.
+3. Heading and introductory text centred.
+4. Form content arranged clearly with consistent spacing.
+5. Labels and inputs remain easy to read and use.
+6. Fields occupy the available form width appropriately.
+7. Buttons are responsive.
+8. Inputs and textarea have clear focus states.
+9. Validation and submission messages appear near the relevant fields or form controls.
+10. The form works comfortably on narrow mobile screens.
+
+Keep the general presentation clean and relatively simple. More elaborate button styling will be implemented in a future feature.
+
+### 10. Wave boundary with Footer
+
+The Contact Us section sits immediately above the existing Footer.
+
+The Footer uses the Light Blue Group colour scheme and already has a wave-shaped top border.
+
+Refine this transition so the Footer's Light Blue wave visually overlaps the bottom of the Green Contact Us section.
+
+Requirements:
+
+- The wave should visibly extend into the lower portion of the Green section.
+- It must never overlap form fields, buttons, messages or other essential content.
+- Maintain adequate bottom padding beneath the form.
+- Avoid creating two conflicting wave boundaries at the same location.
+- Preserve the existing Footer content.
+- Use the reusable wave system implemented in Feature-001 where appropriate.
+- Maintain responsive behaviour.
+
+The result should appear as a smooth transition from Green Contact Us into the Light Blue Footer.
+
+### 11. Preserve Contact Us — Jump functionality
+
+The floating Jump component from Epic-001 must continue working.
+
+Its updated Japanese label is:
+
+`↓ お問い合わせ`
+
+It should:
+
+- Scroll to the full Contact Us section.
+- Disappear when that section is visible.
+- Reappear when the section leaves the viewport.
+- Remain functional across all pages.
+- Avoid covering important form controls on mobile.
+
+## Feature-002 acceptance criteria
+
+- Form appears in the Contact Us section on every page.
+- All form fields have correct Japanese labels.
+- Name, email and message are mandatory.
+- Phone is optional and accepts Japanese telephone formats.
+- Preset questions come from WordPress.
+- Editing a WordPress question updates the corresponding button.
+- Selecting a question populates the textarea.
+- Users can enter their own messages.
+- Message length is limited to 1,000 characters.
+- Client-side and server-side validation work.
+- Submitted content is handled securely as plain text.
+- Spam throttling and honeypot protection are implemented.
+- REST API submission works.
+- `wp_mail()` uses the WordPress mail configuration.
+- The recipient is `lturnbull2@hotmail.co.uk`.
+- The form shows useful Japanese success and error messages.
+- The Green Group styling is applied.
+- Footer wave overlaps the bottom of the section without obscuring form content.
+- The form is responsive and accessible.
+- Existing Contact Us — Jump functionality is preserved.
+
+Notes: Added a responsive controlled Japanese contact form that extracts preset button text dynamically from the WordPress synced pattern without displaying the source list. Added the anonymous `POST /wp-json/aloha/v1/contact` endpoint with strict field/payload limits, sanitisation, honeypot handling, hashed-IP throttling, fixed recipient and plain-text `wp_mail()` delivery. Live UI checks passed at 320–1440px and on all six routes; endpoint validation and mail construction passed with `wp_mail()` intercepted. FluentSMTP is not installed in local wp-env, so provider configuration and external inbox delivery remain manual verification steps.
+
+---
+
+# Implementation Workflow
+
+Complete the following in order.
+
+## 1. Preparation
+
+- Read `AGENTS.md` and Epic-003.
+- Inspect the existing Hero, Footer and Contact Us implementations.
+- Inspect the existing WordPress API and plugin architecture.
+- Confirm the WordPress preset-question markup.
+- Identify reusable wave-related code from previous Epics.
+
+## 2. Feature-001
+
+Implement the shared wave system.
+
+Then implement the Hero's bottom wave, animated gradient and H3 adjustment.
+
+Validate the Hero and existing Footer before proceeding.
+
+## 3. Feature-002
+
+Implement the React contact form and WordPress preset-question integration.
+
+Implement the WordPress REST submission endpoint.
+
+Add server-side validation, sanitisation and anti-spam controls.
+
+Connect submission to `wp_mail()`.
+
+Apply the Green Group styling and Footer wave transition.
+
+Preserve Contact Us — Jump functionality.
+
+## 4. Testing
+
+Run available lint, build and integration tests.
+
+Test responsiveness at:
+
+- 320px.
+- 375px.
+- 768px.
+- 1024px.
+- 1440px.
+
+Verify:
+
+- Wave shapes do not repeat identically.
+- Hero gradient is subtle and smooth.
+- Hero slideshow continues functioning.
+- Existing Header and Footer are unaffected.
+- Preset questions reflect WordPress edits.
+- Form field validation.
+- Character-length restrictions.
+- Request throttling.
+- Endpoint error handling.
+- Email submission through WordPress.
+- Keyboard accessibility.
+- Reduced-motion preferences.
+- Mobile form usability.
+
+Test malicious-looking input as inert text and ensure it is not executed or reflected unsafely.
+
+Where SMTP delivery cannot be tested without external credentials, report this as an outstanding manual verification rather than marking delivery as confirmed.
+
+## 5. Feature tracking and stopping rules
+
+Update the Epic-003 feature tracking files according to `AGENTS.md`.
+
+Complete both features as part of this authorised implementation.
+
+Do not automatically begin another Epic.
+
+Do not modify unrelated components.
+
+Only mark a feature complete when its acceptance criteria are satisfied.
+
+## 6. Completion report
+
+When finished, provide:
+
+1. Epic-003 completion status.
+2. Status of Features 001 and 002.
+3. Files created or modified.
+4. WordPress plugin changes.
+5. Contact API endpoint details.
+6. Validation and testing results.
+7. Exact manual steps required to configure or verify FluentSMTP.
+8. Outstanding issues or limitations.
+
+Stop after Epic-003.
+
+Do not begin Epic-004 without explicit instruction.

@@ -1,8 +1,136 @@
 import { useEffect, useRef, useState } from 'react';
+import Wave from './Wave.jsx';
 import './Hero.scss';
 
 export const SLIDE_DURATION_MS = 5000;
 export const CROSSFADE_DURATION_MS = 1000;
+export const WATER_RIPPLE_PRIMARY_DURATION_SECONDS = 16;
+export const WATER_RIPPLE_SECONDARY_DURATION_SECONDS = 23;
+
+const HERO_BOTTOM_WAVE = {
+  width: 1440,
+  height: 120,
+  startY: 58,
+  curves: [
+    {
+      control1: { x: 165, y: 8 },
+      control2: { x: 340, y: 108 },
+      end: { x: 540, y: 52 },
+    },
+    {
+      control1: { x: 735, y: 0 },
+      control2: { x: 930, y: 106 },
+      end: { x: 1120, y: 46 },
+    },
+    {
+      control1: { x: 1245, y: 17 },
+      control2: { x: 1360, y: 82 },
+      end: { x: 1440, y: 36 },
+    },
+  ],
+};
+
+function WaterSurface({ id, path, reducedMotion }) {
+  const baseGradientId = `${id}-base`;
+  const primaryRipplesId = `${id}-primary-ripples`;
+  const secondaryRipplesId = `${id}-secondary-ripples`;
+
+  return (
+    <>
+      <defs>
+        <linearGradient id={baseGradientId} x1="0%" x2="100%" y1="12%" y2="88%">
+          <stop offset="0%" stopColor="var(--aloha-hero-water-light)" />
+          <stop offset="42%" stopColor="var(--aloha-hero-water-dark)" />
+          <stop offset="100%" stopColor="var(--aloha-hero-water-light)" />
+        </linearGradient>
+
+        <pattern
+          id={primaryRipplesId}
+          height="128"
+          patternUnits="userSpaceOnUse"
+          width="240"
+          x="0"
+          y="0"
+        >
+          <path
+            d="M0 32C30 8 90 8 120 32S210 56 240 32V50C210 74 150 74 120 50S30 26 0 50Z"
+            fill="var(--aloha-hero-water-light)"
+            fillOpacity="0.3"
+          />
+          <path
+            d="M0 32C30 8 90 8 120 32S210 56 240 32"
+            fill="none"
+            stroke="var(--aloha-hero-water-light)"
+            strokeLinecap="round"
+            strokeOpacity="0.62"
+            strokeWidth="4"
+          />
+          {!reducedMotion && (
+            <>
+              <animate
+                attributeName="x"
+                dur={`${WATER_RIPPLE_PRIMARY_DURATION_SECONDS}s`}
+                from="0"
+                repeatCount="indefinite"
+                to="-240"
+              />
+              <animate
+                attributeName="y"
+                dur={`${WATER_RIPPLE_PRIMARY_DURATION_SECONDS * 0.75}s`}
+                repeatCount="indefinite"
+                values="0;10;0"
+              />
+            </>
+          )}
+        </pattern>
+
+        <pattern
+          id={secondaryRipplesId}
+          height="176"
+          patternUnits="userSpaceOnUse"
+          width="320"
+          x="-320"
+          y="0"
+        >
+          <path
+            d="M0 76C40 48 120 48 160 76S280 104 320 76V92C280 120 200 120 160 92S40 64 0 92Z"
+            fill="var(--aloha-hero-water-light)"
+            fillOpacity="0.2"
+          />
+          <path
+            d="M0 76C40 48 120 48 160 76S280 104 320 76"
+            fill="none"
+            stroke="var(--aloha-hero-water-light)"
+            strokeLinecap="round"
+            strokeOpacity="0.42"
+            strokeWidth="6"
+          />
+          {!reducedMotion && (
+            <>
+              <animate
+                attributeName="x"
+                dur={`${WATER_RIPPLE_SECONDARY_DURATION_SECONDS}s`}
+                from="-320"
+                repeatCount="indefinite"
+                to="0"
+              />
+              <animate
+                attributeName="y"
+                dur={`${WATER_RIPPLE_SECONDARY_DURATION_SECONDS * 0.7}s`}
+                repeatCount="indefinite"
+                values="0;-8;0"
+              />
+            </>
+          )}
+        </pattern>
+      </defs>
+
+      <path d={path} fill={`url(#${baseGradientId})`} />
+      <path d={path} fill={`url(#${secondaryRipplesId})`} />
+      <path d={path} fill={`url(#${primaryRipplesId})`} />
+    </>
+  );
+}
 
 function useReducedMotion() {
   const [reducedMotion, setReducedMotion] = useState(
@@ -98,7 +226,11 @@ export default function Hero({ contentHtml, slides }) {
         preserveAspectRatio="none"
         viewBox="0 0 1000 600"
       >
-        <path d="M0 0H430C515 92 442 198 521 310C601 424 558 515 620 600H0Z" />
+        <WaterSurface
+          id="aloha-hero-water-desktop"
+          path="M0 0H430C515 92 442 198 521 310C601 424 558 515 620 600H0Z"
+          reducedMotion={reducedMotion}
+        />
       </svg>
 
       <svg
@@ -108,13 +240,19 @@ export default function Hero({ contentHtml, slides }) {
         preserveAspectRatio="none"
         viewBox="0 0 400 400"
       >
-        <path d="M0 91C77 19 147 131 234 68C313 11 359 75 400 47V400H0Z" />
+        <WaterSurface
+          id="aloha-hero-water-mobile"
+          path="M0 91C77 19 147 131 234 68C313 11 359 75 400 47V400H0Z"
+          reducedMotion={reducedMotion}
+        />
       </svg>
 
       <div
         className="aloha-hero__content"
         dangerouslySetInnerHTML={{ __html: contentHtml }}
       />
+
+      <Wave className="aloha-hero__bottom-wave" {...HERO_BOTTOM_WAVE} />
     </section>
   );
 }

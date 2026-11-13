@@ -12,13 +12,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 define( 'ALOHAALPHA_CORE_VERSION', '0.2.0' );
 
+require_once __DIR__ . '/contact-api.php';
+
 /**
  * Load the three approved typefaces in the editor canvas only.
  */
 function alohaalpha_enqueue_editor_styles() {
     wp_enqueue_style(
         'alohaalpha-google-fonts',
-        'https://fonts.googleapis.com/css2?family=Courgette&family=Klee+One&family=Yusei+Magic&display=swap',
+        'https://fonts.googleapis.com/css2?family=Leckerli+One&family=Mochiy+Pop+P+One&family=Zen+Maru+Gothic:wght@400;700&display=swap',
         array(),
         null
     );

@@ -1,0 +1,332 @@
+# Epic-003 — Bugs
+
+## Bug-001 — Improve Hero Water Animation
+
+**Status:** complete
+
+### Issue
+
+The animated gradient currently used in the homepage Hero's Light Blue area is far too subtle. The movement is barely noticeable.
+
+I want to replace or significantly improve the animation to create a more recognisable **wavy water effect**.
+
+### Requirements
+
+1. Replace or improve the existing animated gradient with an effect that resembles gently moving water.
+2. The animation should contain visible flowing, rippling or undulating movement rather than simply shifting gradient colours.
+3. The movement should be noticeably more visible than the current implementation, while remaining subtle enough not to distract from the Hero's content.
+4. Retain Light Blue (`#93B7BE`) as the main colour.
+5. Use slightly lighter shades of the same blue to create movement, depth and variation.
+6. The animation should loop smoothly without obvious jumps or resets.
+7. Ensure the effect covers the entire Light Blue area of the Hero.
+8. The animation must remain behind the logo and slogan without affecting their visibility.
+9. Preserve the existing Hero wave shapes, slideshow, positioning and responsive layout.
+10. Ensure the effect works consistently on desktop and mobile.
+
+### Implementation approach
+
+I am happy for you to choose the most appropriate implementation.
+
+Consider techniques such as layered animated gradients, SVG filters, SVG wave patterns or other lightweight CSS/SVG approaches that can produce natural-looking water movement.
+
+Prioritise visual quality, smoothness and performance.
+
+Avoid unnecessarily expensive JavaScript animations or large dependencies.
+
+Respect `prefers-reduced-motion` by displaying a suitable static water-inspired background when animation is disabled.
+
+### Acceptance criteria
+
+- The animation is clearly visible without being overwhelming.
+- The background resembles gently moving water rather than a standard animated gradient.
+- The Light Blue colour scheme is preserved.
+- The animation is smooth and continuous.
+- The logo, slogan and slideshow remain unaffected.
+- No significant performance issues are introduced.
+- Mobile responsiveness is preserved.
+
+**Notes:** Replaced the single shifting radial gradient with two deterministic, counter-moving SVG ripple layers over the existing Light Blue base. The full Hero water shape now has visibly flowing wave bands on desktop and mobile, while reduced-motion mode retains the layered water texture without animation. Live checks at 320, 375, 768, 1024 and 1440px confirmed full surface coverage, content stacking, smooth movement and no horizontal overflow.
+
+---
+
+## Bug-002 — Contact Form Wave, Spacing and Layout
+
+**Status:** complete
+
+### Issue
+
+The Contact Us section is functioning correctly, but several layout issues need addressing.
+
+There is a visible white gap between the bottom of the Green Contact Us section and the Light Blue Footer wave in certain places.
+
+Additionally, the Contact Us section is too vertically tall, particularly on desktop.
+
+I want to make the section more compact while retaining its existing functionality and responsive behaviour.
+
+### 1. Fix the Footer Wave Transition
+
+The existing Footer wave should overlap the bottom of the Green Contact Us section without exposing any white background between them.
+
+Requirements:
+
+1. Remove all visible white gaps between the Contact Us section and Footer wave.
+2. Ensure the Green background continues underneath the wave wherever necessary.
+3. Retain the existing organic wave shape.
+4. The transition should appear seamless across the entire width of the page.
+5. Ensure the fix works on desktop, tablet and mobile.
+6. Avoid introducing horizontal overflow, awkward clipping or visible seams.
+7. Do not allow the wave to overlap any contact form fields, buttons or messages.
+
+Inspect the existing wave positioning, background layers, stacking order and section boundaries to identify the cause.
+
+Fix the underlying layout issue rather than hiding the gap using arbitrary fixed offsets that could break at other screen sizes.
+
+### 2. Reduce Contact Section Padding
+
+Reduce the current outer Contact Us section padding as follows:
+
+- **Top padding:** Reduce by 25% (retain 75% of its current value).
+- **Bottom padding:** Reduce by 50% (retain 50% of its current value).
+
+Apply these reductions relative to the existing padding values.
+
+Ensure the Footer wave still has sufficient space to overlap the bottom of the section without covering the form.
+
+Do not unnecessarily reduce the internal spacing between individual fields.
+
+### 3. Make the Form More Compact on Desktop
+
+The current form is vertically too tall.
+
+I would like the form to fit within the visible height of most typical desktop screens, where practical, without requiring the user to scroll.
+
+Make the following changes:
+
+**Name field**
+
+- Retain the Name field at full width.
+
+**Email and Phone Number fields**
+
+- Display Email and Phone Number next to each other on the same row at desktop widths.
+- Each field should occupy approximately half of the available form width.
+- Maintain appropriate spacing between the fields.
+- On narrower screens, return to vertically stacked fields.
+
+**Preset Question Buttons**
+
+- Display the three preset question buttons horizontally on desktop rather than vertically.
+- Distribute the buttons evenly across the available form width.
+- Allow longer Japanese question text to wrap naturally within each button.
+- Keep the buttons visually consistent in height where practical.
+- On smaller screens, stack the buttons vertically or use a responsive arrangement that avoids cramped text.
+
+**Other spacing**
+
+- Review excessive vertical margins and gaps within the form.
+- Reduce unnecessary spacing while keeping the form comfortable to use.
+- Do not make input fields or buttons too small.
+- Preserve accessibility, focus states and readable Japanese typography.
+
+The objective is a noticeably more compact desktop form, without sacrificing usability or clipping content on smaller or shorter screens.
+
+### 4. Add a Clear Message Button
+
+Add a new button directly beneath the three preset question buttons.
+
+**Button text:**
+
+`入力内容をクリア`
+
+(English: Clear entered content)
+
+Requirements:
+
+1. Clicking this button must empty the message textarea.
+2. It must work whether the textarea contains a selected preset question or manually entered text.
+3. It must not clear the Name, Email or Phone Number fields.
+4. It must not submit the form.
+5. The message character counter should reset to zero.
+6. Any message-specific validation state should update appropriately.
+7. The button must be keyboard accessible.
+8. Keep the styling relatively simple, consistent with the existing question buttons.
+
+The Clear button should remain visually distinct from the main Submit button to prevent confusion.
+
+### 5. Preserve Existing Functionality
+
+The following must remain unchanged:
+
+- Japanese form labels and text.
+- Required Name, Email and Message fields.
+- Optional Phone Number field.
+- WordPress-managed preset questions.
+- Preset buttons populating the textarea.
+- The 1,000-character textarea limit.
+- Form validation and error messages.
+- WordPress REST API submission.
+- FluentSMTP email handling.
+- Existing spam and security protections.
+- Green Group colour scheme.
+- Responsive Contact Us — Jump component.
+
+### Acceptance criteria
+
+- No white gaps appear between Contact Us and the Footer wave.
+- The wave transition looks seamless at all supported screen sizes.
+- Top padding is reduced by 25%.
+- Bottom padding is reduced by 50%.
+- Name remains full width.
+- Email and Phone Number sit side by side on desktop.
+- Preset question buttons are horizontally arranged on desktop.
+- Mobile fields and buttons stack appropriately.
+- The Clear button empties only the message textarea.
+- Character count updates correctly.
+- The form is noticeably shorter on desktop.
+- Existing submission and validation functionality remains intact.
+- No horizontal overflow or content clipping is introduced.
+
+**Notes:** Removed the positive Contact-to-Footer margin that exposed the page background and matched the contact-only Footer wave height to the reduced bottom padding, producing a seamless Green-to-Light-Blue overlap without covering the form. Reduced the section padding to 75% top and 50% bottom, compacted excess form spacing, placed Email/Phone and preset questions into responsive desktop rows, and added an accessible message-only clear button. Build and live checks passed at 320, 375, 768, 1024 and 1440px with no overflow; clear-button state, character count, validation reset and preserved identity fields were verified.
+
+---
+
+## Implementation Instructions
+
+1. Read and follow `AGENTS.md`.
+2. Review the existing Epic-003 feature requirements and implementation.
+3. Inspect the existing Hero animation and Contact Us / Footer SCSS.
+4. Implement Bug-001 and Bug-002 in their written order.
+5. Reuse the existing design tokens, components and wave utilities wherever appropriate.
+6. Avoid unrelated changes to the Header, navigation, logos or other page sections.
+7. Preserve all WordPress integrations.
+8. Run focused checks and validate the affected components at 320px, 375px, 768px, 1024px and 1440px.
+9. Update each bug's status and implementation notes in `src/vibe/epics/epic-003/bugs.txt` according to `AGENTS.md`.
+
+Only mark each bug complete when its acceptance criteria are satisfied.
+
+Do not begin another Epic or implement unrelated features.
+
+
+## Bug-003 — Replace Website Fonts
+
+**Status:** in progress
+
+### Issue
+
+I want to replace the three fonts currently used throughout the Aloha Academy website.
+
+The new fonts should be:
+
+- **Courgette → Leckerli One**
+- **Yusei Magic → Mochiy Pop P One**
+- **Klee One → Zen Maru Gothic**
+
+These changes should apply consistently throughout the entire website and within the WordPress Gutenberg editor.
+
+### 1. Update Global Typography
+
+Update the existing SCSS typography variables and font configuration.
+
+Use:
+
+**Latin Titles**
+- Font: Leckerli One
+- Applies to Latin H1, H2, H3, H4 and H5.
+
+**Japanese Titles**
+- Font: Mochiy Pop P One
+- Applies to Japanese H1, H2, H3, H4 and H5.
+
+**Body Text**
+- Font: Zen Maru Gothic
+- Applies to paragraphs, links, inline text, buttons, form fields, navigation labels and other ordinary text.
+
+Retain appropriate fallback fonts.
+
+### 2. Update Logo Typography
+
+Both existing Aloha Logo variations must now use Leckerli One.
+
+This includes:
+
+- Aloha Logo — Small.
+- Aloha Logo — Large.
+
+Preserve all existing logo styling, including:
+
+- Font sizes.
+- Word positioning and indentation.
+- Flower icon sizing and positioning.
+- Responsive scaling.
+- Text colours.
+- One-line Small Logo structure.
+- Two-line Large Logo structure.
+
+Only the font family should change. Make minimal adjustments if necessary to prevent the new font from causing clipping or overlap.
+
+### 3. Update WordPress Gutenberg
+
+Update the existing Gutenberg typography variations:
+
+- Latin H1–H5 → Leckerli One.
+- Japanese H1–H5 → Mochiy Pop P One.
+
+Ensure both fonts display correctly inside the WordPress editor.
+
+Existing Heading blocks must automatically use the new fonts without requiring me to edit or recreate them.
+
+Update the custom Aloha Logo block's editor styling to use Leckerli One.
+
+Do not rename, remove or recreate the existing blocks or variations.
+
+Preserve all saved WordPress content and synced patterns.
+
+### 4. Update Font Loading
+
+- Load the three new fonts using Google Fonts or the existing font-loading approach.
+- Remove obsolete Courgette, Yusei Magic and Klee One imports if no longer required.
+- Update the central SCSS font-family variables.
+- Avoid duplicate font imports and unnecessary font weights.
+- Ensure Japanese characters render correctly with the new fonts.
+- Verify that WordPress editor styles and React frontend styles use the same font definitions.
+
+### 5. Preserve Existing Styling
+
+This is a typography-only change.
+
+Do not modify:
+
+- Font sizes unless required to prevent visual breakage.
+- Site colour palette.
+- Heading hierarchy.
+- Navigation layout or animations.
+- Logo structure.
+- Hero layout or slideshow.
+- Contact form layout or functionality.
+- Footer styling or wave effects.
+- Responsive breakpoints.
+
+### Acceptance Criteria
+
+- No visible text continues using the three previous fonts.
+- All Latin headings use Leckerli One.
+- All Japanese headings use Mochiy Pop P One.
+- Body text, navigation and form text use Zen Maru Gothic.
+- Both Aloha logos use Leckerli One.
+- Gutenberg heading variations display the correct fonts.
+- Existing WordPress content updates automatically without manual editing.
+- Font loading works correctly on desktop and mobile.
+- No unwanted changes to existing sizes, layouts or functionality.
+
+### Implementation Instructions
+
+1. Read `AGENTS.md` and the existing Epic-002 and Epic-003 typography requirements.
+2. Inspect the current SCSS design system and font-loading configuration.
+3. Replace the fonts in the central typography system.
+4. Update the existing AlohaAlpha Core Gutenberg plugin where required.
+5. Preserve the existing WordPress block registrations and saved content.
+6. Run relevant build and validation checks.
+7. Verify typography on desktop and mobile and in Gutenberg where accessible.
+8. Update Bug-003 in `src/vibe/epics/epic-003/bugs.txt` according to project conventions.
+
+**Scope:** Implement Bug-003 only. Do not modify unrelated features or begin another Epic.

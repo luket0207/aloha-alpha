@@ -1,7 +1,7 @@
 :root {
-    --aloha-font-heading-latin: "Courgette", "Brush Script MT", cursive;
-    --aloha-font-heading-japanese: "Yusei Magic", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
-    --aloha-font-body: "Klee One", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    --aloha-font-heading-latin: "Leckerli One", "Brush Script MT", cursive;
+    --aloha-font-heading-japanese: "Mochiy Pop P One", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    --aloha-font-body: "Zen Maru Gothic", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
 }
 
 .editor-styles-wrapper,

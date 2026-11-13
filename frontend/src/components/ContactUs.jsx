@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { getWordPressRestUrl } from '../wordpressApi.js';
+import ContactForm from './ContactForm.jsx';
 import './ContactUs.scss';
 
 function useWordPressSection(slug) {
@@ -36,12 +37,36 @@ function isElementVisible(element) {
   return bounds.bottom > 0 && bounds.top < window.innerHeight;
 }
 
+function parseContactSection(html) {
+  const document = new DOMParser().parseFromString(html, 'text/html');
+  const section = document.querySelector('.aloha-contact-full') || document.body;
+  const presetGroup = section.querySelector('.aloha-contact__presets');
+  const presets = presetGroup
+    ? Array.from(presetGroup.querySelectorAll('li'))
+      .map((item) => item.textContent.trim())
+      .filter(Boolean)
+    : [];
+
+  presetGroup?.remove();
+
+  return {
+    contentHtml: section.innerHTML,
+    presets,
+    presetsStatus: presetGroup ? 'ready' : 'error',
+  };
+}
+
 export default function ContactUs() {
   const full = useWordPressSection('contact-us-full');
   const jump = useWordPressSection('contact-us-jump');
   const fullRef = useRef(null);
   const jumpRef = useRef(null);
   const [isFullVisible, setIsFullVisible] = useState(null);
+  const contactContent = useMemo(() => (
+    full.status === 'ready'
+      ? parseContactSection(full.html)
+      : { contentHtml: '', presets: [], presetsStatus: full.status }
+  ), [full.html, full.status]);
 
   useEffect(() => {
     const fullElement = fullRef.current;
@@ -110,12 +135,19 @@ export default function ContactUs() {
 
   return (
     <>
-      <section className="contact-us__full" ref={fullRef}>
-        {full.status === 'loading' && <p>Loading Contact Us…</p>}
-        {full.status === 'error' && <p role="alert">Unable to load Contact Us.</p>}
+      <section className="contact-us__full aloha-contact-full theme-green" id="contact-us" ref={fullRef}>
+        {full.status === 'loading' && <p className="contact-us__loading">お問い合わせを読み込んでいます…</p>}
+        {full.status === 'error' && <p className="contact-us__error" role="alert">お問い合わせ内容を読み込めませんでした。</p>}
         {full.status === 'ready' && (
-          <div dangerouslySetInnerHTML={{ __html: full.html }} />
+          <div
+            className="contact-us__intro"
+            dangerouslySetInnerHTML={{ __html: contactContent.contentHtml }}
+          />
         )}
+        <ContactForm
+          presets={contactContent.presets}
+          presetsStatus={contactContent.presetsStatus}
+        />
       </section>
 
       {showJump && (

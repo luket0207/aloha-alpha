@@ -1,10 +1,17 @@
 @use './variables' as tokens;
 
-@import url('https://fonts.googleapis.com/css2?family=Courgette&family=Klee+One&family=Yusei+Magic&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Leckerli+One&family=Mochiy+Pop+P+One&family=Zen+Maru+Gothic:wght@400;700&display=swap');
 
 body,
 p,
 .wp-block-paragraph {
+  font-family: tokens.$font-body;
+}
+
+button,
+input,
+select,
+textarea {
   font-family: tokens.$font-body;
 }
 
