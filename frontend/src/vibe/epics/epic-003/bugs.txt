@@ -209,7 +209,7 @@ Do not begin another Epic or implement unrelated features.
 
 ## Bug-003 — Replace Website Fonts
 
-**Status:** in progress
+**Status:** complete
 
 ### Issue
 
@@ -330,3 +330,70 @@ Do not modify:
 8. Update Bug-003 in `src/vibe/epics/epic-003/bugs.txt` according to project conventions.
 
 **Scope:** Implement Bug-003 only. Do not modify unrelated features or begin another Epic.
+
+**Notes:** Replaced the centralized frontend and Gutenberg font definitions with Leckerli One for Latin headings and both logo variations, Mochiy Pop P One for Japanese headings, and Zen Maru Gothic for body, navigation, buttons and form controls. Removed the Hero slogan override so its existing Latin heading variation applies automatically. The production build, plugin PHP syntax and active-plugin checks passed; live checks at 320–1440px found no obsolete computed fonts or overflow, and Gutenberg retained all ten heading variations and both logo variations with the new fonts loaded.
+
+
+Bug-004 — Add Wave Border to Top of Contact Us
+Status: complete
+Issue
+The Contact Us section currently has a straight top edge.
+
+I want to replace this with an elegant, wave-shaped border, consistent with the wave design already used in the homepage Hero and Footer.
+Requirements
+1. Top Wave Border
+- Add a wave-shaped border across the entire top of the Contact Us section.
+- The wave should use the existing Green Group background colour (#066C4C).
+- The Green wave should extend upwards into the section above, creating a natural transition into Contact Us.
+- The wave must have smooth, organic curves with multiple peaks and troughs.
+- It should use a different wave shape from the existing Footer and Hero waves.
+- The wave must span the full width of the section without gaps or horizontal overflow.
+2. Reuse Existing Wave System
+
+The project already has a reusable wave implementation from Epic-003 Feature-001.
+- Reuse the existing wave component, SCSS mixin or SVG implementation.
+- Configure a unique wave shape for the Contact Us top border.
+- Avoid duplicating wave generation logic.
+- Keep the shape consistent between renders rather than randomly changing it.
+- Ensure the wave scales correctly across different viewport widths.
+3. Contact Us Layout
+- Preserve the existing Green Group colour scheme.
+- Ensure the wave blends seamlessly into the Green background.
+- Do not allow the wave to overlap the Contact Us heading, introductory text or form fields.
+- Maintain sufficient space between the wave and the first content element.
+- Preserve the reduced top and bottom padding introduced in Bug-002, apart from any minimal adjustment needed to prevent overlap.
+- The new wave should work on every page where the reusable Contact Us section appears.
+4. Preserve the Footer Transition
+
+The Contact Us section already transitions into the Light Blue Footer using a wave border.
+- Keep the existing Footer wave intact.
+- Do not introduce new white gaps between Contact Us and Footer.
+- Do not alter the Footer wave geometry unnecessarily.
+- Ensure the Contact Us section now has a consistent wave transition at both its top and bottom.
+5. Responsive Behaviour
+- The top wave must work on desktop, tablet and mobile.
+- Maintain smooth curves at narrow viewport widths.
+- Prevent horizontal scrolling, clipping or visible background gaps.
+- Ensure the wave doesn't interfere with the responsive contact form layout.
+Acceptance Criteria
+- Contact Us has a Green wave-shaped top border.
+- The wave visually overlaps the section above.
+- The wave spans the entire width of the section.
+- The wave uses a distinct shape from the Hero and Footer waves.
+- No white gaps or visible seams appear around the wave.
+- Contact Us content remains fully visible.
+- Existing form functionality and styling are preserved.
+- The Footer wave remains unchanged.
+- The design works across desktop and mobile.
+Implementation Instructions
+1. Read AGENTS.md and the existing Epic-003 specifications.
+2. Inspect the reusable wave system and Contact Us component.
+3. Implement the top wave using the existing shared wave functionality.
+4. Adjust the section layering and spacing where necessary.
+5. Preserve all existing contact form functionality, validation and WordPress integrations.
+6. Test the wave on all six pages, particularly where the preceding section has a different background colour.
+7. Verify responsiveness at 320px, 375px, 768px, 1024px and 1440px.
+8. Update Bug-004 in src/vibe/epics/epic-003/bugs.txt according to the existing project conventions.
+Scope: Implement Bug-004 only. Do not modify unrelated components or start another Epic.
+
+Notes: Added a deterministic four-curve Green top border using the shared Wave component, with responsive 4–6rem sizing and reserved transition space that prevents overlap with preceding content. The new path is distinct from the Hero and Footer geometries; the existing reduced Contact padding and Footer transition remain unchanged. The production build passed, visual checks passed on desktop and mobile, and 30 live checks across all six pages at 320, 375, 768, 1024 and 1440px confirmed exact joins, full-width coverage, content clearance, preserved form interaction and no horizontal overflow.

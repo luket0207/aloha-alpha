@@ -1,7 +1,36 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { getWordPressRestUrl } from '../wordpressApi.js';
 import ContactForm from './ContactForm.jsx';
+import Wave from './Wave.jsx';
 import './ContactUs.scss';
+
+const CONTACT_TOP_WAVE = {
+  width: 1440,
+  height: 120,
+  startY: 74,
+  curves: [
+    {
+      control1: { x: 115, y: 24 },
+      control2: { x: 250, y: 108 },
+      end: { x: 395, y: 61 },
+    },
+    {
+      control1: { x: 535, y: 16 },
+      control2: { x: 670, y: 114 },
+      end: { x: 825, y: 49 },
+    },
+    {
+      control1: { x: 975, y: 3 },
+      control2: { x: 1110, y: 101 },
+      end: { x: 1265, y: 57 },
+    },
+    {
+      control1: { x: 1342, y: 35 },
+      control2: { x: 1405, y: 76 },
+      end: { x: 1440, y: 42 },
+    },
+  ],
+};
 
 function useWordPressSection(slug) {
   const [section, setSection] = useState({ html: '', status: 'loading' });
@@ -136,6 +165,7 @@ export default function ContactUs() {
   return (
     <>
       <section className="contact-us__full aloha-contact-full theme-green" id="contact-us" ref={fullRef}>
+        <Wave className="contact-us__top-wave" {...CONTACT_TOP_WAVE} />
         {full.status === 'loading' && <p className="contact-us__loading">お問い合わせを読み込んでいます…</p>}
         {full.status === 'error' && <p className="contact-us__error" role="alert">お問い合わせ内容を読み込めませんでした。</p>}
         {full.status === 'ready' && (

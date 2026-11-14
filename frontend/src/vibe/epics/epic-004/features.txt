@@ -1,0 +1,677 @@
+# Epic-004 — Reusable Page Patterns
+
+## Overview
+
+Create reusable, WordPress-editable layout patterns for the Aloha Academy website.
+
+The goal is to let a non-technical WordPress user insert predefined layouts, select images, choose styling options and edit text through Gutenberg without changing React source code.
+
+All frontend appearance, animations and responsiveness must be implemented through React and SCSS.
+
+The four features are:
+
+- Feature-001: Round Frame and Square Frame.
+- Feature-002: Image Left — Text Right section.
+- Feature-003: Text Left — Image Right section.
+- Feature-004: Image Divider with parallax and top/bottom waves.
+
+Features 002 and 003 should be combined into one configurable section called **Text Image — Side by Side**.
+
+Keep Feature-003 in the tracking file and mark it complete only when the reversed layout is implemented and verified.
+
+## Architecture
+
+Follow the existing project's WordPress/React architecture and `AGENTS.md`.
+
+### WordPress
+
+WordPress owns:
+
+- Pattern insertion.
+- Editable image selection.
+- Image alt text.
+- Frame selection.
+- Layout direction.
+- Colour scheme selection.
+- Optional section title.
+- Editable Heading and Paragraph blocks.
+- Block order and page composition.
+
+### React
+
+React owns:
+
+- Image masking and frame shapes.
+- Responsive layouts.
+- Colour scheme presentation.
+- Entrance and exit animations.
+- Scroll direction behaviour.
+- Parallax positioning.
+- Decorative wave borders.
+
+### Gutenberg implementation
+
+Register the necessary custom blocks in the existing AlohaAlpha Core plugin.
+
+Recommended block structure:
+
+- `aloha/image-frame` — one block with Round and Square variations.
+- `aloha/text-image-side-by-side` — configurable parent section.
+- `aloha/image-divider` — parallax divider section.
+
+Also register non-synced starter patterns named:
+
+- Round Frame.
+- Square Frame.
+- Text Image — Side by Side.
+- Image Divider.
+
+Each inserted instance must have independently editable content.
+
+Do not implement these as synced patterns.
+
+Use native Gutenberg editing functionality wherever possible, including MediaUpload, InspectorControls, InnerBlocks and core Heading/Paragraph blocks.
+
+For nested layouts, respect Gutenberg's single-InnerBlocks-per-block constraint. Use appropriate nested child blocks or Groups rather than attempting multiple InnerBlocks areas inside one block.
+
+Define a reliable data contract between each registered WordPress block and its corresponding React component.
+
+The React public page renderer must recognise these blocks and render the correct components in their WordPress-defined order.
+
+Do not rely on hardcoded page content or unrelated HTML parsing assumptions.
+
+---
+
+# Feature-001 — Round Frame and Square Frame
+
+**Status:** not started
+
+## Objective
+
+Create two reusable image frame styles that can be inserted independently or nested inside other page layouts.
+
+They must allow images to be selected using the WordPress Media Library.
+
+## 1. Round Frame
+
+Create an image frame called `Round Frame`.
+
+### Shape
+
+- The frame should be almost circular.
+- One portion of its circumference should be slightly flattened or pulled inward.
+- The flattened edge must transition smoothly into the rest of the circular shape.
+- The result should look like a subtle organic blob, rather than a severely distorted circle.
+- The overall silhouette should remain predominantly round.
+
+### Randomised orientation
+
+Each Round Frame instance should receive a random orientation when the public page loads.
+
+Requirements:
+
+1. The shortened edge can appear at any position around the circle.
+2. Different Round Frame instances should be able to have different orientations.
+3. The orientation is generated once per instance on page load.
+4. It must remain stable during React re-renders and scrolling.
+5. A new page load may generate a different orientation.
+6. Only the shape changes orientation; the image itself must remain upright.
+7. The image must not rotate or become distorted.
+8. The frame must not visibly spin or animate when loading.
+
+Use SVG masks, clip paths or another suitable technique that allows the outline to change orientation independently from the image content.
+
+Avoid introducing hydration mismatches or flickering during initial rendering.
+
+### Image behaviour
+
+- Maintain a roughly 1:1 frame aspect ratio.
+- Fill the available frame area without stretching the image.
+- Crop the image where necessary using appropriate object-fit behaviour.
+- Preserve image resolution and use WordPress responsive image data where available.
+- Allow images to be changed through Gutenberg.
+
+## 2. Square Frame
+
+Create an image frame called `Square Frame`.
+
+Despite the name, this should support rectangular images.
+
+### Shape
+
+- Follow the natural aspect ratio of the selected image as closely as practical.
+- Apply soft, organic waves to the image's edges.
+- Avoid perfectly straight rectangular borders.
+- The waves should resemble the existing reusable wave design system.
+- Keep the overall shape reasonably rectangular rather than heavily distorted.
+
+Use an SVG mask, clip path or similar technique.
+
+Preserve the image's proportions.
+
+The frame should scale responsively without losing its wave effect.
+
+## 3. Gutenberg controls
+
+Provide an intuitive image editor experience.
+
+Users must be able to:
+
+- Insert either frame using its name.
+- Select an image from the Media Library.
+- Replace the selected image.
+- Edit the image's alt text using supported WordPress controls.
+- Switch between Round and Square frame styles where appropriate.
+
+Prefer one underlying image-frame block with two named variations to avoid duplicated code.
+
+Both frame types must be usable independently and nested inside the Side by Side section.
+
+## Acceptance criteria
+
+- Round Frame is independently insertable.
+- Square Frame is independently insertable.
+- Image selection works through WordPress.
+- Round Frame resembles a mostly circular organic blob.
+- Round Frame orientation differs between instances/page loads.
+- Images remain upright.
+- Square Frame follows the selected image's proportions.
+- Square Frame has wavy edges.
+- Both frames work when nested inside other blocks.
+- Both are responsive.
+- Different instances retain different image content.
+
+---
+
+# Feature-002 — Image Left, Text Right
+
+**Status:** not started
+
+## Objective
+
+Create a reusable section that displays an image alongside a flexible text area.
+
+The image should initially appear on the left and the text on the right.
+
+The section must use one of the image frame styles from Feature-001.
+
+## 1. Gutenberg structure
+
+Implement a configurable parent block called:
+
+`Text Image — Side by Side`
+
+The block should contain:
+
+- An optional centred H2 section heading.
+- One image-frame block.
+- An editable text Group containing native Gutenberg blocks.
+
+The text Group must allow multiple Heading and Paragraph blocks.
+
+Do not restrict it to a single fixed heading and paragraph.
+
+Users should be able to add, remove, reorder and edit the permitted text blocks.
+
+Keep the structural relationship between the image area and text area protected against accidental deletion or invalid nesting, while leaving the actual page section removable or reorderable.
+
+## 2. Layout
+
+For the default Image Left — Text Right arrangement:
+
+- Image on the left.
+- Text on the right.
+- Both vertically centred relative to one another.
+- Image area must never exceed 40% of the available content width.
+- Text occupies the remaining content width.
+- Maintain an appropriate responsive gap between the columns.
+- Preserve natural content height.
+- Do not force the section to a fixed height.
+
+Use the same inner content width and horizontal alignment as the existing Header and Hero so all page sections share consistent margins.
+
+## 3. Optional H2 title
+
+Provide an editor option to enable a full-width H2 heading above the columns.
+
+Requirements:
+
+1. Title is optional.
+2. When enabled, it is centred across the whole section.
+3. It appears above both image and text columns.
+4. It is editable in WordPress.
+5. When disabled, no empty title space remains.
+6. It uses the existing Japanese or Latin heading typography system as appropriate.
+
+Do not hardcode the title in React.
+
+## 4. Colour scheme selection
+
+Provide a parent-block setting to choose:
+
+- Green Group.
+- Light Blue Group.
+- Cream Group.
+
+Do not offer Grey Group because of the previously identified contrast problem.
+
+Apply the appropriate existing SCSS design tokens.
+
+The selected background colour must span the **full viewport width**, not merely the inner content container.
+
+The section's content should remain aligned with the site's established horizontal margins.
+
+## 5. Scroll entrance animation
+
+When scrolling down and the section enters the viewport:
+
+**Image**
+
+- Start slightly outside its resting position on the left.
+- Slide smoothly into place from the left.
+- Combine with a subtle fade if appropriate.
+- End at its normal layout position.
+
+**Text**
+
+- Begin slightly below its resting position.
+- Fade in while moving upward.
+- Finish fully visible at its normal position.
+
+Both animations should feel coordinated and polished.
+
+Avoid excessive movement, long delays or abrupt jumps.
+
+## 6. Scroll direction behaviour
+
+The animations must respond to scroll direction.
+
+- Animate into view when scrolling down.
+- Do not replay the entrance animation simply because the user scrolls upward.
+- If the user scrolls upward and the section exits the viewport below, reverse the animation.
+- This should allow the animation to play again when the user subsequently scrolls down.
+- Do not repeatedly retrigger the animations during small scroll movements around the visibility threshold.
+- Ensure elements are not left hidden when a page loads with the section already visible.
+
+Use IntersectionObserver and scroll-direction detection, or an equivalent efficient approach.
+
+Avoid continuous unnecessary scroll-state updates.
+
+Respect `prefers-reduced-motion`.
+
+## 7. Mobile behaviour
+
+At mobile widths:
+
+- Change to a single-column layout.
+- Place text above the image.
+- Keep the optional section H2 at the top.
+- Image should use the available column width while preserving its shape.
+- Ensure text and images have comfortable spacing.
+- Avoid horizontal overflow.
+- Retain accessible content without depending on animation.
+
+## Acceptance criteria
+
+- Section can be inserted through Gutenberg.
+- Image and frame type are editable.
+- Text supports multiple Heading and Paragraph blocks.
+- Optional centred H2 works.
+- Three permitted colour schemes work.
+- Background spans full viewport width.
+- Content aligns with existing site margins.
+- Image uses at most 40% of desktop content width.
+- Image slides from the left on downward entry.
+- Text fades upward into place.
+- Upward scrolling can reverse the entrance state.
+- Mobile layout places text above image.
+- Section works when inserted multiple times on the same page.
+
+---
+
+# Feature-003 — Text Left, Image Right
+
+**Status:** not started
+
+## Objective
+
+Provide the reversed layout of Feature-002 without maintaining a separate implementation.
+
+Use the same `Text Image — Side by Side` block.
+
+## Editor setting
+
+Add a layout selector with two options:
+
+- Image Left — Text Right.
+- Text Left — Image Right.
+
+Changing this setting should update the section layout without deleting or recreating its content.
+
+## Reversed layout requirements
+
+When Text Left — Image Right is selected:
+
+1. Text appears on the left.
+2. Image appears on the right.
+3. Image remains at most 40% of the available content width.
+4. Text occupies the remaining space.
+5. Image and text remain vertically centred.
+6. Optional centred H2 remains above both columns.
+7. All colour scheme options remain available.
+8. Image Frame selection remains available.
+
+## Reversed animation
+
+Mirror the image animation:
+
+- Image enters from the right when scrolling down.
+- Image reverses towards the right when scrolling upward out of view.
+- Text still fades in and moves upward into position.
+
+## Mobile behaviour
+
+Both layout options must become:
+
+1. Optional H2 title.
+2. Text content.
+3. Image.
+
+The image must appear below the text on mobile regardless of the desktop layout selection.
+
+## Acceptance criteria
+
+- Both desktop layouts are available through one Gutenberg block.
+- Switching layouts preserves existing text and image content.
+- Reversed layout uses the correct image entrance direction.
+- Text animation remains consistent.
+- Mobile ordering remains text then image.
+- Both layouts share the same component and style architecture.
+
+Do not introduce a second separate Gutenberg block merely to reverse the columns.
+
+---
+
+# Feature-004 — Image Divider
+
+**Status:** not started
+
+## Objective
+
+Create a full-width image divider that separates page sections using a parallax image and wave-shaped top and bottom edges.
+
+The block should be named:
+
+`Image Divider`
+
+## 1. Gutenberg image controls
+
+Allow the user to:
+
+- Insert the Image Divider block.
+- Select an image from the WordPress Media Library.
+- Replace the image.
+- Edit appropriate alt text.
+
+Keep editing simple.
+
+Parallax behaviour and wave styling should be controlled by React rather than manually configured in Gutenberg.
+
+## 2. Full-width layout
+
+- The divider spans the full viewport width.
+- It must not be restricted by the page's ordinary content width.
+- Avoid horizontal scrolling caused by full-bleed positioning.
+- The image must fill the width without distortion.
+- Crop the image appropriately rather than stretching it.
+
+## 3. Divider height
+
+On desktop, the entire Image Divider must have a height of:
+
+`40vh`
+
+This includes the top and bottom wave boundaries.
+
+On smaller screens, the height may be reduced where necessary.
+
+If 40vh would cause excessive image cropping or scaling on a narrow phone, use an appropriate smaller responsive height.
+
+Do not create awkward empty space above or below the image.
+
+## 4. Parallax scroll effect
+
+Implement a smooth parallax effect.
+
+As the user scrolls down the page, the image should move upward within its frame.
+
+The image and divider must move at different apparent speeds.
+
+### Centre alignment rule
+
+When the divider is vertically centred in the viewport, the underlying image must also be at its neutral, vertically centred position.
+
+Scrolling away from that centre position should adjust the image's vertical offset.
+
+The effect must:
+
+1. Move smoothly in response to scrolling.
+2. Use bounded movement.
+3. Keep the entire divider covered by the image at all times.
+4. Avoid exposed blank areas at the top or bottom.
+5. Avoid visible jumps or snapping.
+6. Work when the divider appears anywhere on the page.
+7. Avoid unnecessary work when the divider is off-screen.
+
+Prefer transform-based movement using an efficient scroll-position calculation.
+
+Do not rely exclusively on `background-attachment: fixed`, which can behave inconsistently on mobile.
+
+Account for the image's available crop/overscan area when calculating movement.
+
+### Reduced motion
+
+For users with reduced-motion preferences:
+
+- Disable the parallax movement.
+- Keep the image centred and static.
+- Preserve the wave-shaped borders.
+
+## 5. Top Wave Border
+
+Apply a wave-shaped boundary to the top of the image.
+
+Requirements:
+
+- Use the established reusable wave system from Epic-003.
+- Create smooth, organic peaks and troughs.
+- Span the complete viewport width.
+- Allow the surrounding section background to show beyond the image's curved boundary.
+- Avoid a hard straight edge.
+- Keep the wave responsive.
+- Avoid visible white gaps or seams.
+
+## 6. Bottom Wave Border
+
+Apply a second wave-shaped boundary to the bottom of the image.
+
+Requirements:
+
+- Use the same reusable wave system.
+- Use different wave geometry from the top border.
+- Create a smooth transition into the next section.
+- Span the entire viewport width.
+- Keep the shape responsive.
+- Prevent gaps, clipping or exposed incorrect backgrounds.
+
+### Important wave behaviour
+
+Both waves should shape or mask the Image Divider itself.
+
+Do not simply overlay opaque, hardcoded background-colour shapes over the image if that would create incorrect transitions when adjoining sections have different background colours.
+
+Prefer an approach where the adjacent page background is naturally visible beyond the wave-shaped image edges.
+
+The top and bottom wave boundaries must remain visually separate and independently configurable.
+
+## 7. Responsive requirements
+
+On desktop:
+
+- Full-width image.
+- 40vh total height.
+- Parallax active unless reduced motion is requested.
+- Both waves visible.
+
+On mobile:
+
+- Full-width image.
+- Appropriately reduced height when necessary.
+- Image continues to cover the divider.
+- Wave edges remain visible and proportional.
+- Parallax must not create clipping, jitter or blank areas.
+- Disable or reduce the effect when device/browser limitations make it unreliable.
+
+## Acceptance criteria
+
+- Image Divider is insertable in Gutenberg.
+- Image is editable through the Media Library.
+- Divider spans the entire viewport width.
+- Desktop height is 40vh, including both waves.
+- Image fills the divider without distortion.
+- Image moves upward as the user scrolls down.
+- Image is vertically centred at the specified viewport centre point.
+- Parallax remains bounded and smooth.
+- Top wave is visible.
+- Bottom wave is visible.
+- The two wave shapes are distinct.
+- Both edges transition cleanly to surrounding sections.
+- No blank gaps or horizontal overflow.
+- Mobile behaviour is appropriate.
+- Reduced-motion users receive a static image.
+
+---
+
+# Implementation Order and WordPress Handover
+
+This Epic requires three phases.
+
+## Phase 1 — Coding prerequisite
+
+Implement only the functionality needed for the WordPress editor:
+
+1. Register the custom Gutenberg blocks for Features 001–004.
+2. Implement their editor controls and nested block structures.
+3. Register the four non-synced starter patterns.
+4. Implement image selection and persistence.
+5. Implement layout and colour scheme settings.
+6. Implement the optional H2 editing interface.
+7. Provide understandable Gutenberg previews, with static approximations of the eventual styling.
+8. Establish the block-to-React data contract.
+9. Build and validate the existing local AlohaAlpha Core plugin.
+
+Do not implement the final public-facing scroll animations, parallax or wave designs during Phase 1.
+
+Do not modify WordPress pages automatically.
+
+**Mandatory stop:** Once the editor functionality is ready, stop and provide manual WordPress setup instructions.
+
+Do not mark any feature fully complete merely because its editor portion is implemented.
+
+## Phase 2 — Manual WordPress configuration
+
+The user will:
+
+1. Verify the new blocks appear in Gutenberg.
+2. Insert and configure a Round Frame.
+3. Insert and configure a Square Frame.
+4. Insert a Side by Side section with Image Left selected.
+5. Insert another Side by Side section with Image Right selected.
+6. Test the optional H2 and colour schemes.
+7. Insert an Image Divider with an image.
+8. Save and reopen the page to confirm all attributes and nested content persist.
+
+The user may use a temporary development page to test these layouts without disturbing existing site content.
+
+Do not begin Phase 3 until the user explicitly confirms the WordPress setup is complete.
+
+## Phase 3 — Public React implementation
+
+Complete the remaining work in feature order:
+
+1. Feature-001 — Implement image masks, responsive proportions and per-instance Round Frame orientation.
+2. Feature-002 — Implement Side by Side layout, themes and entrance animations.
+3. Feature-003 — Implement reversed layout and animation direction.
+4. Feature-004 — Implement parallax, 40vh sizing and both wave borders.
+
+Integrate these into the existing public WordPress block renderer.
+
+Ensure newly inserted sections render in their original Gutenberg page order.
+
+Test both the individual components and their use together on one page.
+
+## Development constraints
+
+- Read `AGENTS.md` before implementation.
+- Preserve all Epic-001 through Epic-003 functionality.
+- Use the existing SCSS colour and typography system.
+- Use the current fonts established by Epic-003: Leckerli One, Mochiy Pop P One and Zen Maru Gothic.
+- Reuse the existing wave system where applicable.
+- Develop WordPress plugin functionality directly inside `backend/plugins/alohaalpha-core/`.
+- Do not generate a ZIP for local WordPress.
+- Do not reset or destroy the WordPress environment.
+- Do not introduce unnecessary external dependencies.
+- Keep animations performant and accessible.
+- Do not hardcode WordPress-editable content into React.
+- Preserve existing synced patterns and WordPress content.
+- Follow existing feature tracking and rollback rules.
+
+## Testing
+
+Verify the editor and public frontend at appropriate stages.
+
+Check at least:
+
+- Gutenberg block insertion and saving.
+- Media Library selection and image replacement.
+- Independent per-instance content.
+- Nested image frames.
+- Frame switching without content loss.
+- Colour scheme switching.
+- Optional section H2.
+- Image-left and image-right layouts.
+- Downward entrance animations.
+- Upward reverse animations.
+- Randomised Round Frame orientation.
+- Image Divider parallax.
+- Image Divider top and bottom waves.
+- Reduced-motion behaviour.
+- Responsive layouts at 320px, 375px, 768px, 1024px and 1440px.
+
+Run focused tests and relevant builds.
+
+Report unverified WordPress integration honestly if the local environment is unavailable.
+
+## Completion
+
+At the end of Phase 1, provide:
+
+- Implemented editor functionality.
+- Files changed.
+- Build and registration checks.
+- Exact WordPress instructions.
+- Outstanding frontend work.
+
+Then stop.
+
+At the end of Phase 3, provide:
+
+- Completion status of Features 001–004.
+- Files changed.
+- Gutenberg and React integration results.
+- Responsive and accessibility verification.
+- Remaining limitations or manual actions.
+
+Only mark Epic-004 complete when all feature acceptance criteria are satisfied.
+
+Do not begin Epic-005 or unrelated work.

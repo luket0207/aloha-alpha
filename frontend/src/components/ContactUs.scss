@@ -1,13 +1,33 @@
 @use '../styles/variables' as tokens;
 
 $contact-footer-wave-height: clamp(4rem, 7vw, 5.5rem);
+$contact-top-wave-height: clamp(4rem, 7vw, 6rem);
 
 .contact-us__full {
   position: relative;
   flex: 0 0 auto;
+  margin-top: calc(#{$contact-top-wave-height} - 1px);
   padding: clamp(3rem, 6vw, 5.25rem) max(1.25rem, env(safe-area-inset-right)) $contact-footer-wave-height max(1.25rem, env(safe-area-inset-left));
   background: tokens.$green;
   color: tokens.$cream;
+  isolation: isolate;
+}
+
+.contact-us__top-wave {
+  position: absolute;
+  z-index: -1;
+  right: 0;
+  bottom: calc(100% - 1px);
+  left: 0;
+  display: block;
+  width: 100%;
+  height: $contact-top-wave-height;
+  color: tokens.$green;
+  pointer-events: none;
+
+  path {
+    fill: currentColor;
+  }
 }
 
 .contact-us__intro,
