@@ -13,6 +13,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'ALOHAALPHA_CORE_VERSION', '0.2.0' );
 
 require_once __DIR__ . '/contact-api.php';
+require_once __DIR__ . '/home-hero.php';
+require_once __DIR__ . '/patterns.php';
 
 /**
  * Load the three approved typefaces in the editor canvas only.
@@ -56,7 +58,36 @@ add_action( 'enqueue_block_editor_assets', function () {
  * when WordPress needs them.
  */
 add_action( 'init', function () {
-    register_block_type( __DIR__ . '/blocks/logo' );
+    $block_directories = array(
+        'logo',
+        'image-frame',
+        'image-divider',
+        'text-image-media',
+        'text-image-content',
+        'text-image-side-by-side',
+        'home-hero',
+    );
+
+    foreach ( $block_directories as $block_directory ) {
+        $block_type = register_block_type( __DIR__ . '/blocks/' . $block_directory );
+
+        if ( 'home-hero' === $block_directory && $block_type instanceof WP_Block_Type && is_admin() ) {
+            $editor_settings = wp_json_encode(
+                array( 'logoHtml' => alohaalpha_get_large_logo_html() ),
+                JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
+            );
+
+            foreach ( $block_type->editor_script_handles as $script_handle ) {
+                wp_add_inline_script(
+                    $script_handle,
+                    'window.alohaalphaHomeHeroEditor = ' . $editor_settings . ';',
+                    'before'
+                );
+            }
+        }
+    }
+
+    alohaalpha_register_block_patterns();
 } );
 
 /**

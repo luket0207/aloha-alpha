@@ -1,5 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import Wave from './Wave.jsx';
+import { ROUND_FRAME_PATH } from './imageFrame.js';
+import { findNextPageSection, getStickyHeaderOffset } from './hero.js';
 import './Hero.scss';
 
 export const SLIDE_DURATION_MS = 5000;
@@ -90,7 +94,7 @@ function WaterSurface({ id, path, reducedMotion }) {
           patternUnits="userSpaceOnUse"
           width="320"
           x="-320"
-          y="0"
+          y="14"
         >
           <path
             d="M0 76C40 48 120 48 160 76S280 104 320 76V92C280 120 200 120 160 92S40 64 0 92Z"
@@ -118,7 +122,7 @@ function WaterSurface({ id, path, reducedMotion }) {
                 attributeName="y"
                 dur={`${WATER_RIPPLE_SECONDARY_DURATION_SECONDS * 0.7}s`}
                 repeatCount="indefinite"
-                values="0;-8;0"
+                values="14;6;14"
               />
             </>
           )}
@@ -155,6 +159,30 @@ export default function Hero({ contentHtml, slides }) {
   const reducedMotion = useReducedMotion();
 
   useEffect(() => {
+    const hero = heroRef.current;
+    const header = document.querySelector('.aloha-header');
+    if (!hero) return undefined;
+
+    const updateHeaderHeight = () => {
+      const headerHeight = header?.getBoundingClientRect().height || 0;
+      hero.style.setProperty('--aloha-hero-header-height', `${headerHeight}px`);
+    };
+
+    updateHeaderHeight();
+    window.addEventListener('resize', updateHeaderHeight);
+
+    const observer = header && 'ResizeObserver' in window
+      ? new ResizeObserver(updateHeaderHeight)
+      : null;
+    observer?.observe(header);
+
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener('resize', updateHeaderHeight);
+    };
+  }, []);
+
+  useEffect(() => {
     setActiveSlide(0);
   }, [slides]);
 
@@ -185,6 +213,22 @@ export default function Hero({ contentHtml, slides }) {
 
     return () => window.clearInterval(interval);
   }, [isDocumentVisible, isVisible, reducedMotion, slides.length]);
+
+  const scrollToNextSection = () => {
+    const nextSection = findNextPageSection(heroRef.current);
+    if (!nextSection) return;
+
+    const header = document.querySelector('.aloha-header');
+    const top = Math.max(
+      0,
+      window.scrollY + nextSection.getBoundingClientRect().top - getStickyHeaderOffset(header),
+    );
+
+    window.scrollTo({
+      behavior: reducedMotion ? 'auto' : 'smooth',
+      top,
+    });
+  };
 
   return (
     <section
@@ -251,6 +295,24 @@ export default function Hero({ contentHtml, slides }) {
         className="aloha-hero__content"
         dangerouslySetInnerHTML={{ __html: contentHtml }}
       />
+
+      <button
+        aria-label="次のセクションへ"
+        className="aloha-hero__scroll-button"
+        onClick={scrollToNextSection}
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          className="aloha-hero__scroll-button-shape"
+          focusable="false"
+          preserveAspectRatio="none"
+          viewBox="0 0 1 1"
+        >
+          <path d={ROUND_FRAME_PATH} />
+        </svg>
+        <FontAwesomeIcon aria-hidden="true" icon={faChevronDown} />
+      </button>
 
       <Wave className="aloha-hero__bottom-wave" {...HERO_BOTTOM_WAVE} />
     </section>

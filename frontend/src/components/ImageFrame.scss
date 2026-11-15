@@ -1,0 +1,37 @@
+.aloha-image-frame {
+  width: min(calc(100% - 2.5rem), 32rem);
+  margin: 1rem auto;
+}
+
+.aloha-image-frame__mask {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.aloha-image-frame__media {
+  width: 100%;
+  aspect-ratio: var(--aloha-image-frame-aspect, 1);
+  overflow: hidden;
+  transform: translateZ(0);
+}
+
+.aloha-image-frame__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.aloha-text-image__media .aloha-image-frame,
+.aloha-text-image-section__media .aloha-image-frame {
+  width: 100%;
+  margin: 1rem auto;
+}
+
+@media (max-width: 600px) {
+  .aloha-image-frame {
+    width: min(calc(100% - 2.5rem), 26rem);
+  }
+}

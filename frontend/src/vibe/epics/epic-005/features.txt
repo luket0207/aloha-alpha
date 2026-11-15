@@ -1,0 +1,477 @@
+# Epic-005 — Home Hero Improvements
+
+## Overview
+
+This Epic will improve the existing homepage Hero by converting it into a custom Gutenberg block and making several targeted visual and functional improvements.
+
+The new block must be named **Home Hero**.
+
+The Home Hero is intended exclusively for the homepage for now. A separate Secondary Hero will be developed in a future Epic, so do not attempt to implement that functionality here.
+
+The existing Hero design should remain substantially unchanged, except for the specific modifications requested in Feature-002.
+
+## Architecture
+
+Continue using the existing project architecture:
+
+- WordPress for editable content and media.
+- React for frontend rendering, layout and functionality.
+- SCSS for styling and animations.
+- AlohaAlpha Core plugin for custom Gutenberg blocks.
+- Existing Gutenberg-to-React data integration.
+
+Follow `AGENTS.md` and preserve functionality introduced in previous Epics.
+
+**This Epic requires three phases: coding prerequisite, manual WordPress configuration, and final React implementation.**
+
+---
+
+# Feature-001 — Convert Homepage Hero into a Gutenberg Block
+
+**Status:** complete
+
+## Objective
+
+Replace the current manually assembled Gutenberg Hero Group with a dedicated custom block named `Home Hero`.
+
+The block should offer a simple WordPress editing experience similar to the existing Text Image — Side by Side block.
+
+Users should be able to change the Hero slogan and slideshow images without accidentally changing its design or structure.
+
+## 1. Gutenberg Block Registration
+
+Register a custom block with the following identity:
+
+- Block name: `aloha/home-hero`
+- Display name: `Home Hero`
+- Category: Existing Aloha Academy block category.
+
+Use the existing AlohaAlpha Core plugin.
+
+Do not create a separate plugin.
+
+The Home Hero block must be discoverable through the Gutenberg block inserter.
+
+It should be a single identifiable block in List View, rather than requiring users to manually assemble several Groups.
+
+## 2. Editable Properties
+
+The new block must expose exactly two types of editable content.
+
+### Property 1 — Slogan
+
+Provide a text-editing control.
+
+Default text for new blocks:
+
+`Aloha starts here`
+
+Requirements:
+
+1. Users can edit the slogan directly in Gutenberg.
+2. The slogan can contain Japanese or Latin text.
+3. Changes are saved as part of the block's content or registered attributes.
+4. Existing slogan typography and styling must be preserved.
+5. Changes should appear in the React frontend without modifying React source code.
+6. Preserve the current homepage slogan during migration.
+
+Use an appropriate Gutenberg RichText or text-editing control.
+
+### Property 2 — Carousel Images
+
+Provide a Media Library control that supports multiple images.
+
+Users must be able to:
+
+1. Add images.
+2. Remove images.
+3. Replace images.
+4. Reorder images.
+5. See previews of the selected images.
+6. Save and reopen the block without losing their selection or order.
+
+Use the existing WordPress Media Library rather than requiring direct image URLs.
+
+Store stable image references and the metadata required for correct frontend rendering.
+
+Preserve image alternative text and responsive image information where available.
+
+The frontend carousel must dynamically reflect the saved image order.
+
+Do not introduce a fixed limit on the number of images.
+
+### Non-editable Properties
+
+The following must not be exposed as configurable settings in this block:
+
+- Logo.
+- Logo positioning.
+- Colours.
+- Wave shapes.
+- Water animation.
+- Carousel transition effects.
+- Hero layout.
+- Hero height.
+- Scroll-down button appearance.
+
+These must remain controlled by the existing React components and SCSS.
+
+Continue using the existing Large Logo implementation and its WordPress-managed reusable logo source. Do not create a second hardcoded logo.
+
+## 3. Gutenberg Editor Preview
+
+The block should offer a reasonably accurate visual representation of the Hero.
+
+It does not need to reproduce every frontend animation.
+
+Requirements:
+
+1. Display a representation of the existing Light Blue Hero design.
+2. Show the Large Logo in approximately the correct position and proportions.
+3. Display the editable slogan beneath it.
+4. Show selected carousel image previews.
+5. Present clear controls for adding, removing and reordering images.
+6. Keep the editor layout reasonably compact.
+7. Do not require users to interact with raw HTML or JSON.
+8. The block must remain usable at narrow Gutenberg editor widths.
+
+A static approximation of the waves and carousel is sufficient.
+
+The editor should prioritise clarity and ease of editing over a pixel-perfect frontend preview.
+
+## 4. Preserve the Existing Hero
+
+The current Home page contains a manually assembled Hero Group.
+
+It includes:
+
+- The Large Logo synced pattern.
+- An editable slogan.
+- WordPress Image blocks for the slideshow.
+- The existing Hero layout and animation functionality.
+
+Implement the new block so it can replace this structure without losing essential content.
+
+Provide a safe manual migration procedure.
+
+Do not automatically delete or overwrite the existing Home page content.
+
+Do not create duplicate frontend Heroes while both the old and new structures temporarily exist.
+
+Maintain the existing Hero functionality until the new block has been configured and verified.
+
+## 5. WordPress-to-React Integration
+
+Extend the existing Gutenberg block rendering integration so the public frontend recognises `aloha/home-hero`.
+
+Use a stable data contract containing the required slogan and ordered image data.
+
+The frontend must retrieve this content from WordPress and pass it into the existing Hero implementation.
+
+Do not hardcode the slogan or carousel image list in React.
+
+Avoid treating arbitrary rendered HTML as a substitute for a structured block data contract.
+
+## Acceptance Criteria
+
+- Home Hero appears in the Gutenberg block inserter.
+- Only slogan and carousel images are editable.
+- Users can add, remove and reorder carousel images.
+- Image order and slogan persist after saving and reopening the page.
+- Editor preview resembles the existing Hero.
+- Existing Large Logo integration is preserved.
+- Frontend uses WordPress-managed content.
+- Existing Hero styling and animations continue working.
+- No other Gutenberg content or page sections are affected.
+
+**Notes:** Complete. Registered the dynamic Home Hero block in the Aloha Academy Layouts category with an editable RichText slogan, unlimited ordered Media Library images, add/manage, replace, remove and move controls, a compact responsive preview and the actual synced Large Logo source. Added a structured dynamic markup contract and legacy-compatible React extraction that prefers the new block without rendering duplicate Heroes during migration. Gutenberg save/reopen, image order, replacement/removal, synced-logo preview, narrow-editor layout, PHP rendering and the production build passed. The manually migrated Home page now contains one Home Hero block with four ordered Media Library images and no legacy Hero Group; the saved block-to-React contract preserves the synced Large Logo, slogan, image metadata and carousel order.
+
+---
+
+# Feature-002 — Full-Height Hero, Scroll Button and Wave Adjustment
+
+**Status:** complete
+
+## Objective
+
+Improve the existing Hero's visual presentation and add a button that allows users to scroll to the next page section.
+
+Preserve the current design apart from the changes specified below.
+
+## 1. Full-Viewport Hero
+
+The homepage Hero should occupy the full initial viewport height.
+
+Target:
+
+`100vh`
+
+Requirements:
+
+1. The Hero should fill the initial screen rather than ending partway down the viewport.
+2. Maintain the existing desktop and mobile layouts.
+3. Preserve the existing Large Logo and slogan positions as closely as possible.
+4. Preserve the slideshow layout and image proportions.
+5. Keep the existing Light Blue wave and background animation.
+6. Prevent excessive text or image clipping at smaller viewport heights.
+7. Avoid unexpected horizontal overflow.
+
+Use modern viewport units such as `svh` or `dvh` where they improve mobile browser behaviour, with appropriate fallbacks.
+
+**Header consideration:** The intended visual result is a viewport-filling first screen. Account for the existing Header height and positioning so that stacking a normal-flow Header above a 100vh Hero does not unintentionally push the Hero's bottom beyond the first screen. If needed, calculate the Hero's available viewport height beneath the Header, without redesigning or breaking the shared Header.
+
+Ensure the responsive layout remains usable on short screens.
+
+## 2. Scroll-Down Button
+
+Add a button to the Hero that scrolls the user to the next page section.
+
+### Position
+
+- Horizontally centred.
+- Near the bottom of the Hero.
+- Positioned above the Hero's bottom wave.
+- Clearly visible without obscuring the slideshow, logo or slogan.
+- Responsive on desktop and mobile.
+
+### Icon
+
+Use the existing Font Awesome React integration.
+
+Icon:
+
+```jsx
+<FontAwesomeIcon icon={faChevronDown} />
+```
+
+Do not use a different icon library.
+
+### Button Shape
+
+The button should use the same nearly circular blob styling established by the Round Frame component in Epic-004.
+
+Requirements:
+
+1. Predominantly circular silhouette.
+2. One subtly shortened or flattened portion of the outline.
+3. Smooth organic edges.
+4. Reuse the existing Round Frame shape logic, mask or SVG geometry where practical.
+5. The shape must scale cleanly.
+6. Do not introduce a duplicate shape-generation system unnecessarily.
+
+The button does not need to change its blob orientation during hover.
+
+### Button Colours
+
+- Background: Green (`#066C4C`).
+- Chevron icon: Cream (`#F1FFFA`).
+
+Use the existing SCSS colour variables.
+
+### Hover Animation
+
+When hovered:
+
+- The button should move downwards slightly.
+- The animation should be smooth and polished.
+- Return to its original position when hover ends.
+- Avoid excessive movement or bouncing.
+- Preserve a visible keyboard focus state.
+
+Respect `prefers-reduced-motion`.
+
+### Click Behaviour
+
+When clicked:
+
+1. Find the next actual page section immediately following Home Hero.
+2. Scroll the user smoothly to that section.
+3. Account for the existing Header if it is fixed or sticky.
+4. Do not hardcode a specific destination section ID.
+5. Continue working if the following section changes in WordPress.
+6. Use semantic button behaviour and provide an accessible label.
+
+Suggested accessible label:
+
+`次のセクションへ`
+
+If no subsequent page section exists, avoid causing errors or unintended scrolling.
+
+For reduced-motion users, scroll without animation.
+
+The button should not interfere with the existing floating Contact Us — Jump component.
+
+## 3. Adjust Existing Water Animation
+
+The Light Blue background currently contains moving wave layers that create a water-like effect.
+
+I like the existing implementation and do not want it redesigned.
+
+However, approximately four-fifths of the way down the Hero, two waves travelling in opposite directions occupy exactly the same vertical position.
+
+This makes the movement look unnatural.
+
+### Requirements
+
+1. Identify the two overlapping animated wave layers.
+2. Move one of those wave layers slightly downward.
+3. Ensure they no longer perfectly overlap.
+4. Retain the movement directions.
+5. Retain existing wave speeds.
+6. Retain the existing wave shapes.
+7. Retain existing colours and opacity.
+8. Retain the existing animation timing and overall appearance.
+9. Ensure the adjusted positioning works with the new full-height Hero.
+10. Preserve desktop and mobile appearance.
+
+**Important:** This is intended to be a minimal positioning adjustment.
+
+Do not rebuild or replace the current water animation.
+
+Only change what is necessary to prevent the two wave layers from aligning perfectly.
+
+## 4. Preserve Existing Carousel Behaviour
+
+The existing carousel must continue to:
+
+- Display the WordPress-managed images.
+- Respect their saved order.
+- Fade smoothly between images.
+- Loop continuously.
+- Handle zero, one or multiple images.
+- Preserve existing image positioning and cropping.
+- Respect reduced-motion preferences.
+
+The carousel image source must now come from the new Home Hero block.
+
+Do not recreate the carousel from scratch if its existing implementation can be reused.
+
+## Acceptance Criteria
+
+- Hero fills the first viewport appropriately.
+- Existing responsive layout remains functional.
+- Scroll-down button is horizontally centred near the bottom.
+- Button uses the Round Frame-inspired blob shape.
+- Button is Green with a Cream Font Awesome chevron.
+- Hover causes a subtle downward movement.
+- Clicking scrolls to the next WordPress page section.
+- Smooth scrolling respects reduced-motion preferences.
+- Water-wave overlap is corrected.
+- The rest of the water animation remains unchanged.
+- Existing slideshow works with the new Gutenberg block.
+- No clipping or horizontal overflow is introduced.
+
+**Notes:** Complete. The Hero now uses the viewport space remaining below the measured normal-flow Header with `100vh` and `100svh` support. Added a centred semantic scroll button using the shared Round Frame path, Font Awesome chevron, design-system Green/Cream colours, keyboard focus, subtle hover motion and reduced-motion handling. It dynamically finds the first following semantic WordPress section and applies a Header offset only when the Header is fixed or sticky. Shifted only the secondary water-ripple layer downward while preserving its path, direction, speed, colour, opacity and oscillation. Live wp-env checks passed at 320px, 375px, 768px, 1024px and 1440px: exact first-viewport fit, no horizontal overflow or content/button overlap, correct next-section scrolling, four-image carousel advance, saved image order and reduced-motion freeze/instant scroll.
+
+---
+
+# Implementation Phases
+
+This Epic requires a manual WordPress handover.
+
+## Phase 1 — Gutenberg Block Prerequisite
+
+Implement:
+
+1. Home Hero Gutenberg block registration.
+2. Editable slogan field.
+3. Multi-image Media Library control.
+4. Image selection, removal and reordering.
+5. Editor preview.
+6. Stable block attributes and persistence.
+7. Initial Gutenberg-to-React data contract.
+8. Necessary plugin registration and builds.
+
+Do not automatically modify the Home page.
+
+Do not implement the final Feature-002 styling or interactions yet.
+
+When the block is ready, **stop and provide the manual WordPress migration steps**.
+
+Do not mark Feature-001 complete until the new block works on the public frontend.
+
+## Phase 2 — Manual WordPress Configuration
+
+I will:
+
+1. Open the WordPress Home page.
+2. Insert the new Home Hero block.
+3. Transfer the current slogan.
+4. Select and order the existing carousel images.
+5. Save and reopen the page to verify persistence.
+6. Remove the original Hero Group after confirming the new block is configured.
+7. Update the Home page.
+
+Do not perform this phase automatically.
+
+Wait for my explicit confirmation before proceeding.
+
+## Phase 3 — Final React Implementation
+
+After I confirm Phase 2 is complete:
+
+1. Finish Home Hero frontend integration.
+2. Preserve the existing logo, content layout, slideshow and water effects.
+3. Implement the viewport-height Hero.
+4. Implement the scroll-down button and blob styling.
+5. Add smooth scrolling to the next page section.
+6. Make the minimal correction to the overlapping water waves.
+7. Complete responsive and accessibility testing.
+8. Verify the block-to-React integration.
+
+Complete both features as part of this phase.
+
+---
+
+# Development Rules
+
+- Read `AGENTS.md` before implementation.
+- Preserve functionality from Epics 001–004.
+- Use the existing design system and current fonts.
+- Reuse existing React components and SCSS utilities.
+- Preserve WordPress synced patterns.
+- Develop the plugin directly in `backend/plugins/alohaalpha-core/`.
+- Do not generate ZIP files for local WordPress development.
+- Do not reset or destroy the WordPress environment.
+- Do not automatically modify existing WordPress page content.
+- Do not introduce unrelated functionality.
+- Do not implement the future Secondary Hero.
+- Keep all WordPress-editable content in WordPress.
+
+## Testing
+
+Verify:
+
+- Gutenberg insertion and editing.
+- Slogan persistence.
+- Image selection, removal and reordering.
+- Editor preview functionality.
+- Existing and new Hero compatibility during migration.
+- Correct WordPress-to-React data mapping.
+- Slideshow transitions.
+- Viewport-height behaviour.
+- Scroll-down button positioning and interaction.
+- Scroll destination selection.
+- Water-wave positioning.
+- Reduced-motion behaviour.
+- Responsive rendering at 320px, 375px, 768px, 1024px and 1440px.
+
+Run focused tests and relevant build checks.
+
+Where WordPress integration cannot be verified, report that explicitly.
+
+## Feature Tracking and Completion
+
+Follow the existing repository status and rollback conventions.
+
+During Phase 1, do not mark Feature-001 fully complete merely because the editor implementation exists.
+
+After Phase 3, update the status of each feature independently.
+
+Only mark Epic-005 complete when both features satisfy their acceptance criteria.
+
+Stop after Epic-005.
+
+Do not begin Epic-006 or unrelated work.
+
+At the end of each coding phase, report the completed work, modified files, tests performed, outstanding dependencies and any required manual WordPress actions.

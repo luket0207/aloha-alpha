@@ -1,0 +1,54 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "aloha/text-image-side-by-side",
+  "version": "0.2.0",
+  "title": "Text Image — Side by Side",
+  "category": "design",
+  "icon": "align-pull-left",
+  "description": "Selectable image-left or image-right layout with protected media and flexible text columns.",
+  "textdomain": "alohaalpha-core",
+  "attributes": {
+    "layout": {
+      "type": "string",
+      "default": "image-left",
+      "enum": ["image-left", "image-right"]
+    },
+    "colorScheme": {
+      "type": "string",
+      "default": "cream",
+      "enum": ["green", "light-blue", "cream"]
+    },
+    "showTitle": {
+      "type": "boolean",
+      "default": false
+    },
+    "title": {
+      "type": "string",
+      "default": ""
+    },
+    "titleStyle": {
+      "type": "string",
+      "default": "japanese",
+      "enum": ["japanese", "latin"]
+    },
+    "topWave": {
+      "type": "boolean",
+      "default": false
+    },
+    "bottomWave": {
+      "type": "boolean",
+      "default": false
+    },
+    "imageWidth": {
+      "type": "integer",
+      "default": 40
+    }
+  },
+  "supports": {
+    "html": false,
+    "reusable": true
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./editor.css"
+}

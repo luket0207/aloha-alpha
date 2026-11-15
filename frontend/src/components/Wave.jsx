@@ -10,6 +10,18 @@ export function buildWavePath({ width, height, startY, curves, fillEdge = 'botto
   return `M0 ${startY}${curvePath}${closingPath}`;
 }
 
+export function WaveClipPath({ id, path }) {
+  return (
+    <svg aria-hidden="true" focusable="false" height="0" width="0">
+      <defs>
+        <clipPath clipPathUnits="objectBoundingBox" id={id}>
+          <path d={path} />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+}
+
 export default function Wave({
   className,
   curves,

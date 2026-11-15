@@ -1,0 +1,49 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "aloha/image-frame",
+  "version": "0.2.0",
+  "title": "Image Frame",
+  "category": "media",
+  "icon": "format-image",
+  "description": "Media Library image with a selectable Aloha frame style.",
+  "textdomain": "alohaalpha-core",
+  "attributes": {
+    "frameType": {
+      "type": "string",
+      "default": "round",
+      "enum": ["round", "square"]
+    },
+    "imageId": {
+      "type": "integer"
+    },
+    "imageUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "imageAlt": {
+      "type": "string",
+      "default": ""
+    },
+    "imageWidth": {
+      "type": "integer"
+    },
+    "imageHeight": {
+      "type": "integer"
+    },
+    "imageSrcSet": {
+      "type": "string",
+      "default": ""
+    },
+    "imageSizes": {
+      "type": "string",
+      "default": "(max-width: 767px) 100vw, 40vw"
+    }
+  },
+  "supports": {
+    "html": false,
+    "reusable": true
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./editor.css"
+}

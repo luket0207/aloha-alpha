@@ -1,0 +1,28 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "aloha/home-hero",
+  "version": "0.2.0",
+  "title": "Home Hero",
+  "category": "aloha-layouts",
+  "icon": "slides",
+  "description": "Homepage Hero with an editable slogan and ordered Media Library slideshow.",
+  "textdomain": "alohaalpha-core",
+  "attributes": {
+    "slogan": {
+      "type": "string",
+      "default": "Aloha starts here"
+    },
+    "images": {
+      "type": "array",
+      "default": []
+    }
+  },
+  "supports": {
+    "html": false,
+    "reusable": true
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./editor.css",
+  "render": "file:./render.php"
+}

@@ -1,0 +1,83 @@
+.editor-styles-wrapper .wp-block-aloha-home-hero.aloha-home-hero-editor {
+    --aloha-home-hero-background: var(--aloha-light-blue, #93b7be);
+    --aloha-home-hero-text: var(--aloha-mocha, #4e3d42);
+    padding: clamp(1.25rem, 4vw, 2.5rem);
+    overflow: hidden;
+    background: var(--aloha-home-hero-background);
+    color: var(--aloha-home-hero-text);
+}
+
+.editor-styles-wrapper .aloha-home-hero-editor__preview {
+    display: grid;
+    gap: 1rem;
+}
+
+.editor-styles-wrapper .aloha-home-hero-editor__logo {
+    width: min(100%, 28rem);
+}
+
+.editor-styles-wrapper .aloha-home-hero-editor__logo .aloha-logo--large {
+    font-size: clamp(2.35rem, 8vw, 5rem);
+}
+
+.editor-styles-wrapper .aloha-home-hero-editor__logo-missing,
+.editor-styles-wrapper .aloha-home-hero-editor__empty {
+    margin: 0;
+    padding: 0.75rem;
+    border: 1px dashed currentColor;
+}
+
+.editor-styles-wrapper .aloha-home-hero-editor__slogan {
+    max-width: 28rem;
+    margin: 0;
+    color: inherit;
+}
+
+.editor-styles-wrapper .aloha-home-hero-editor__images {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.editor-styles-wrapper .aloha-home-hero-editor__image-item {
+    min-width: 0;
+    padding: 0.75rem;
+    background: rgba(241, 255, 250, 0.82);
+}
+
+.editor-styles-wrapper .aloha-home-hero-editor__image {
+    margin: 0;
+}
+
+.editor-styles-wrapper .aloha-home-hero-editor__image img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+}
+
+.editor-styles-wrapper .aloha-home-hero-editor__image figcaption {
+    margin-top: 0.35rem;
+    color: var(--aloha-home-hero-text);
+    font-size: 0.8rem;
+}
+
+.editor-styles-wrapper .aloha-home-hero-editor__image-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.75rem;
+}
+
+.editor-styles-wrapper .aloha-home-hero-editor__gallery-control {
+    margin-top: 1rem;
+}
+
+@media (max-width: 480px) {
+    .editor-styles-wrapper .aloha-home-hero-editor__images {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

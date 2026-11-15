@@ -1,0 +1,18 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "aloha/text-image-content",
+  "version": "0.2.0",
+  "title": "Side by Side — Text Area",
+  "category": "design",
+  "icon": "text-page",
+  "description": "Flexible Heading and Paragraph content for the Side by Side section.",
+  "textdomain": "alohaalpha-core",
+  "parent": ["aloha/text-image-side-by-side"],
+  "supports": {
+    "html": false,
+    "inserter": false,
+    "reusable": false
+  },
+  "editorScript": "file:./index.js"
+}

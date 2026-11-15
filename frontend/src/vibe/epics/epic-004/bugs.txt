@@ -1,0 +1,649 @@
+# Epic-004 — Bugs
+
+## Bug-001 — Side by Side Spacing and Scroll Animations
+
+**Status:** complete
+
+### Issue
+
+The Text Image — Side by Side component has excessive vertical spacing, and its entrance animations happen too quickly and too early.
+
+I want to make the sections more compact and improve the timing of the animations so users can actually see them entering the page as they scroll.
+
+### 1. Section Padding
+
+Update the section's vertical padding to:
+
+```scss
+padding: clamp(2rem, 7vw, 3rem) 0;
+```
+
+Requirements:
+
+- Apply consistently to both layout directions.
+- Apply to all available colour schemes.
+- Preserve the existing content-width constraints and horizontal alignment with the Header and Hero.
+- Remove or override any conflicting styles responsible for excessive vertical spacing.
+
+### 2. H2 Bottom Margin
+
+Reduce the margin underneath the optional centred H2 heading to:
+
+```scss
+margin: 0 0 clamp(1rem, 5vw, 1rem);
+```
+
+This effectively sets the bottom margin to 1rem.
+
+Ensure no unnecessary empty space remains when the optional H2 is disabled.
+
+### 3. Image Frame Margins
+
+Change the image frame margins to:
+
+```scss
+margin: 1rem auto;
+```
+
+Requirements:
+
+- Remove existing excessive top and bottom margins.
+- Maintain horizontal centring within the image column.
+- Preserve vertical alignment with the adjacent text content.
+- Apply to both Round Frame and Square Frame.
+- Ensure the change works on desktop and mobile.
+
+### 4. Delay the Scroll Animations
+
+The image and text currently animate into view too early.
+
+I want the animation to wait until the user has scrolled to either:
+
+- 50% of the way down the element.
+- 300px from the top of the element.
+
+Whichever threshold is reached first.
+
+Calculate the threshold as:
+
+```js
+const triggerDistance = Math.min(sectionHeight * 0.5, 300);
+```
+
+Use the section's actual position relative to the viewport to determine when the scroll position crosses this threshold.
+
+Do not trigger the animations immediately when the section first becomes visible at the bottom of the viewport.
+
+The intention is that the section should begin entering visually once the user has scrolled far enough into it to notice the animation.
+
+Preserve the existing direction-sensitive behaviour:
+
+1. Scrolling down across the trigger activates the entrance animations.
+2. Scrolling upwards must not replay the entrance animation.
+3. If the section exits the viewport while scrolling upwards, reverse the animation.
+4. Scrolling down into the section again should allow the entrance animation to replay.
+5. Avoid repeated animation triggers around the threshold.
+6. Handle initial page loads, browser restoration and anchor navigation without leaving content permanently hidden.
+
+Use efficient scroll tracking or IntersectionObserver as appropriate.
+
+### 5. Animation Duration
+
+Increase the animation duration to **1 second**.
+
+**Image animation**
+
+- Slide in from the left for Image Left — Text Right.
+- Slide in from the right for Text Left — Image Right.
+- Duration: 1 second.
+- Use a smooth easing curve.
+
+**Text animation**
+
+- Fade in while moving upwards slightly.
+- Duration: 1 second.
+- Coordinate its timing with the image animation.
+
+Maintain the existing reverse animation behaviour.
+
+Respect `prefers-reduced-motion`.
+
+### Acceptance Criteria
+
+- Section padding uses `clamp(2rem, 7vw, 3rem) 0`.
+- H2 bottom margin is 1rem.
+- Image frame margin is `1rem auto`.
+- Animations trigger at the earlier of 50% section height or 300px from the top.
+- Both animations last 1 second.
+- Image entrance direction matches the layout.
+- Text fades upward smoothly.
+- Upward scrolling retains the intended reverse behaviour.
+- No excessive whitespace or unwanted layout changes.
+- Mobile layouts remain functional.
+
+**Notes:** Reduced Side by Side section padding, optional-title spacing and image-frame margins to the specified values. Replaced immediate intersection reveals with a requestAnimationFrame-throttled position threshold using `min(50% of section height, 300px)`, while preserving downward entrance, upward reset, replay, restoration/anchor handling and reduced motion. Image and text transitions now run for one second. Focused tests, the production build and live checks at 320–1440px passed for both layout directions, exact computed spacing/timing, delayed activation, reverse/replay behavior and horizontal overflow.
+
+---
+
+## Bug-002 — Side by Side Gutenberg Settings and Image Frame Previews
+
+**Status:** complete
+
+### Issue
+
+I want to improve the functionality and Gutenberg editing experience of Text Image — Side by Side.
+
+This includes optional wave borders, improved image previews, frame selection from the parent block and adjustable image/text column widths.
+
+### 1. Optional Top and Bottom Wave Borders
+
+Add two independent boolean settings to the Text Image — Side by Side block.
+
+**Settings**
+
+- Top Wave: Enabled / Disabled
+- Bottom Wave: Enabled / Disabled
+
+Both settings should default to Disabled.
+
+When enabled:
+
+1. Apply the existing reusable wave system.
+2. Display the wave at the selected edge of the section.
+3. Use the current section colour scheme for the wave colour.
+4. Ensure the wave transitions naturally into adjacent page sections.
+5. Allow different wave geometry for the top and bottom.
+6. Span the full viewport width.
+7. Prevent white gaps, seams and horizontal overflow.
+8. Ensure waves do not overlap text or images.
+9. Preserve the section's existing inner content alignment.
+
+The two settings must work independently or together.
+
+Reuse the existing shared wave component or utilities rather than creating a separate implementation.
+
+### 2. Improve Gutenberg Image Frame Previews
+
+Currently, portrait images can appear at their full natural height inside Gutenberg, making the editor difficult to use.
+
+I want the previews to more closely resemble how the frames will appear on the public website.
+
+**Round Frame**
+
+- Display an approximately square preview.
+- Constrain its maximum dimensions.
+- Preserve its blob-shaped frame.
+- Crop images using `object-fit: cover` or equivalent.
+- Prevent unusually tall images from expanding the editor.
+
+**Square Frame**
+
+- Preserve the image's approximate natural aspect ratio.
+- Apply a sensible maximum preview height.
+- Retain the existing wavy frame shape.
+- Prevent extremely tall portrait images from dominating the editor.
+
+**General requirements**
+
+- Maintain image aspect ratios without distortion.
+- Work within the nested Side by Side block.
+- Ensure previews remain usable at different editor widths.
+- Do not unnecessarily restrict frontend image sizes.
+- Preserve image selection, replacement and alt-text functionality.
+
+### 3. Frame Selection From the Parent Block
+
+Currently, I must select the nested Image Frame block to change its frame type.
+
+Add the same option to the Text Image — Side by Side parent block settings.
+
+**Setting: Image Frame Type**
+
+Options:
+
+- Round Frame
+- Square Frame
+
+Requirements:
+
+1. Add the selector to the parent's Gutenberg Inspector Controls.
+2. Keep the existing selector inside the Image Frame block.
+3. Both selectors must control the same nested frame.
+4. Changing either selector must update the other.
+5. Preserve the currently selected image when switching frames.
+6. Do not create duplicate image blocks.
+7. Save the selected frame type correctly.
+8. Ensure existing Side by Side blocks remain compatible.
+
+Prefer a single authoritative frame-type attribute on the nested block, with the parent updating it using supported Gutenberg APIs.
+
+Avoid duplicated state or synchronisation loops.
+
+### 4. Adjustable Image/Text Column Width
+
+Add a slider to the Text Image — Side by Side parent block.
+
+**Setting: Image Width**
+
+| Property | Value |
+|---|---|
+| Minimum | 20% |
+| Maximum | 80% |
+| Default | 40% |
+| Step | 5% |
+
+The text column must automatically occupy the remaining width.
+
+Examples:
+
+| Image | Text |
+|---|---|
+| 20% | 80% |
+| 30% | 70% |
+| 40% | 60% |
+| 50% | 50% |
+| 60% | 40% |
+| 70% | 30% |
+| 80% | 20% |
+
+**Requirements**
+
+1. Use a Gutenberg range slider.
+2. Display the currently selected percentage.
+3. Update the editor preview immediately when changed.
+4. Store the selected value as a persistent block attribute.
+5. Apply the value on the public React frontend.
+6. Calculate both column widths within the available container space, accounting for the gap between them.
+7. Prevent either column from extending beyond its allocated width.
+8. Keep the image vertically aligned with the text.
+9. Support both desktop layout directions.
+10. Existing blocks without a saved width must default to 40%.
+
+**Mobile behaviour**
+
+- Continue using the existing vertically stacked layout.
+- Text must appear above the image.
+- Both elements should use the available content width.
+- The desktop slider value must not create narrow columns or horizontal overflow on mobile.
+
+### 5. Preserve Existing Functionality
+
+Do not break:
+
+- Gutenberg block insertion and saving.
+- Round Frame and Square Frame blocks.
+- Existing images and their attributes.
+- Layout direction selector.
+- Optional centred H2.
+- Editable text blocks.
+- Green, Light Blue and Cream colour schemes.
+- Scroll animations.
+- Responsive layouts.
+- Image masks.
+- Existing WordPress content.
+
+### Acceptance Criteria
+
+- Top and Bottom Wave toggles work independently.
+- Both waves use the existing shared wave system.
+- Gutenberg image previews are sensibly constrained.
+- The parent block can change the nested frame style.
+- Parent and nested frame controls remain synchronised.
+- Switching frame types preserves the selected image.
+- Image Width slider supports 20–80%.
+- Default image width remains 40%.
+- Text width updates automatically.
+- Editor and frontend layouts reflect the selected percentage.
+- Existing saved blocks remain functional.
+- All new settings persist after saving and reopening WordPress.
+- Mobile layouts remain responsive.
+
+**Notes:** Added independent Top/Bottom Wave attributes and shared React Wave rendering, constrained Round/Square Gutenberg previews, a parent Image Frame Type control backed directly by the nested frame attribute, and a persistent 20â€“80% Image Width control with exact post-gap fractional columns. Added a legacy save definition for existing blocks. Focused tests, production build, PHP syntax, real Gutenberg save/reopen and parent/nested synchronization, existing Home block validity, and public checks at 320â€“1440px passed; the temporary smoke page was removed.
+
+---
+
+## Bug-003 — Image Divider Height, Parallax, Wave Shapes and Horizontal Overflow
+
+**Status:** complete
+
+### Issue
+
+The Image Divider currently has several issues:
+
+1. Its height cannot be configured.
+2. The parallax image does not centre correctly within the divider.
+3. The parallax movement is too limited.
+4. The top and bottom waves look too similar.
+5. **The divider is wider than the viewport, creating an unwanted horizontal scrollbar across the page.**
+
+I want these problems corrected while preserving the existing WordPress image selection and overall component functionality.
+
+### 1. Adjustable Divider Height
+
+Add a Gutenberg setting named:
+
+**Divider Height**
+
+Configuration:
+
+| Property | Value |
+|---|---|
+| Minimum | 20% |
+| Maximum | 100% |
+| Default | 50% |
+| Step | 5% |
+| CSS unit | `vh` |
+
+The user should see the setting as a percentage of viewport height.
+
+Examples:
+
+- 20% → `20vh`
+- 40% → `40vh`
+- 50% → `50vh`
+- 75% → `75vh`
+- 100% → `100vh`
+
+Requirements:
+
+1. Implement a Gutenberg range slider.
+2. Display the selected percentage.
+3. Save it as a block attribute.
+4. Update the editor preview when changed.
+5. Apply the height on the frontend.
+6. Include both wave borders within the specified total height.
+7. Existing blocks without a saved height should default to 50vh.
+8. Keep the chosen height usable on mobile.
+
+This replaces the original fixed 40vh requirement.
+
+### 2. Correct Image Centre Alignment
+
+The image must be vertically centred within the divider when the divider itself is vertically centred within the viewport.
+
+Specifically:
+
+**When the vertical centre of the Image Divider is at 50% of the viewport height, the vertical centre of the image must align with the divider's centre.**
+
+Requirements:
+
+1. Measure the divider's position relative to the viewport.
+2. Calculate the divider's vertical centre.
+3. Calculate the viewport's vertical centre.
+4. When the two centres align, apply a neutral parallax offset.
+5. Ensure the image itself is correctly centred at this point.
+6. Recalculate when the viewport size or divider dimensions change.
+7. Do not use arbitrary fixed offsets to approximate alignment.
+
+The centre alignment must be mathematically accurate rather than visually guessed.
+
+### 3. Increase Parallax Movement
+
+I want significantly more movement from the image as the user scrolls.
+
+The effect should use as much of the available image height as possible without exposing blank space.
+
+**Desired behaviour**
+
+When scrolling through the divider:
+
+**Beginning of visibility**
+
+- As the top of the divider enters the viewport, the visible crop should favour the lower portion of the image.
+- Almost the bottom of the available image should be visible, while remaining safely covered by the wave mask.
+
+**Middle of visibility**
+
+- When the divider's centre aligns with the viewport's centre, the image should be vertically centred.
+- The image should be approximately halfway through its available parallax travel.
+
+**End of visibility**
+
+- As the divider's bottom approaches leaving the viewport, the visible crop should favour the upper portion of the image.
+- Almost the top of the available image should be visible, while maintaining safe coverage.
+
+Use this lower-to-centre-to-upper crop progression as the intended visual outcome when calculating the image transform.
+
+### 4. Use the Full Available Image Height
+
+Requirements:
+
+1. Determine the rendered image dimensions after scaling to cover the divider.
+2. Calculate the total available vertical travel.
+3. Use nearly the full safe range rather than restricting movement to an arbitrary small number of pixels.
+4. Centre the travel range around the neutral midpoint.
+5. Smoothly interpolate between the safe extremes as the user scrolls.
+6. Clamp movement to avoid exposing image boundaries.
+7. Ensure the image always covers the entire visible area.
+8. Never distort the image aspect ratio.
+9. If the image is too short for meaningful movement, use appropriate cover scaling or overscan where possible.
+10. Avoid sudden jumps during resizing or scrolling.
+
+Use an efficient, transform-based implementation.
+
+Prefer `requestAnimationFrame` or another lightweight mechanism to avoid unnecessary layout recalculations on every scroll event.
+
+### 5. Account for Wave Depth
+
+The parallax image sits behind top and bottom wave masks.
+
+The image must remain large enough to cover the entire visible area while moving.
+
+Requirements:
+
+- Calculate or account for the maximum wave depth.
+- Include sufficient overscan beyond the visible mask boundaries.
+- Ensure the image's straight rectangular edges never become visible during parallax movement.
+- Prevent transparent strips, white gaps and exposed background areas.
+- Preserve complete image coverage throughout the scroll range.
+- Account for changes in divider height and viewport width.
+
+The decorative wave mask must define the visible edges of the divider, not the underlying image boundaries.
+
+### 6. Make the Top and Bottom Waves Different
+
+The two existing waves appear too similar, making the divider resemble a ribbon.
+
+I want them to look noticeably different.
+
+Requirements:
+
+1. Use unique wave geometry for the top and bottom.
+2. Vary peaks and troughs.
+3. Vary wave heights and depths.
+4. Vary the curve lengths and spacing.
+5. Avoid simply mirroring the same wave path.
+6. Keep both shapes organic and smooth.
+7. Preserve the existing reusable wave system.
+8. Keep the geometry stable between React re-renders.
+9. Ensure the shapes remain responsive.
+
+The result should feel naturally irregular, rather than symmetrical.
+
+### 7. Fix Horizontal Overflow
+
+**This is a critical part of Bug-003.**
+
+The Image Divider is currently extending beyond the viewport width, causing the entire page to develop a horizontal scrollbar.
+
+This must be corrected.
+
+**Requirements**
+
+1. Identify exactly which element is causing horizontal overflow.
+2. Inspect the Image Divider's outer container, image layer, wave masks, SVGs, transforms and positioning rules.
+3. Ensure the visible divider spans the full viewport width without exceeding it.
+4. Do not let parallax transforms or wave graphics increase the page's scrollable width.
+5. Ensure the issue is fixed at all responsive breakpoints.
+6. Preserve the full-bleed appearance of the divider.
+7. Ensure the divider aligns correctly with the viewport edges.
+8. Account for scrollbar widths and any surrounding page-container padding.
+9. Avoid unnecessary fixed-width calculations.
+10. Ensure SVGs and masks remain correctly constrained to the divider.
+
+**Important:** Fix the actual source of the overflow rather than hiding it by applying `overflow-x: hidden` to the entire `body` or `html` element.
+
+A local clipping container is acceptable where necessary for parallax and wave rendering, provided it does not hide the intended divider shape.
+
+Inspect any use of:
+
+```scss
+width: 100vw;
+margin-left: calc(50% - 50vw);
+transform: translateX(...);
+```
+
+These techniques can introduce overflow depending on the parent layout and scrollbar width.
+
+Use a robust full-bleed implementation appropriate to the project's existing React and WordPress content structure.
+
+**Expected result**
+
+- The Image Divider fills the viewport horizontally.
+- The left and right edges align with the visible page.
+- Neither the image nor its wave masks extend the document's horizontal scroll width.
+- No horizontal scrollbar appears as a result of the divider.
+- The rest of the page layout remains unaffected.
+
+### 8. Responsive Behaviour
+
+Verify the updated Image Divider on mobile, tablet and desktop.
+
+Requirements:
+
+- Height slider values remain functional.
+- Image covers the entire divider.
+- Parallax movement stays within safe bounds.
+- Wave edges remain visible and distinct.
+- No horizontal or unwanted internal scrollbars.
+- No image distortion.
+- Avoid scroll jitter on mobile.
+- Respect reduced-motion preferences by disabling parallax and displaying a static centred image.
+
+### Acceptance Criteria
+
+- Gutenberg height slider supports 20–100%.
+- Default height is 50vh.
+- Existing blocks remain compatible.
+- Selected height persists after saving.
+- Image is correctly centred when the divider is centred in the viewport.
+- Parallax uses nearly the full available safe image movement.
+- Image cropping moves from the lower portion towards the upper portion as the divider passes through the viewport.
+- No straight image edges become visible through the wave masks.
+- Top and bottom waves use visibly different geometry.
+- Divider fills the viewport width without overflowing.
+- The unwanted horizontal scrollbar is eliminated.
+- The fix works on mobile, tablet and desktop.
+- Reduced-motion mode works correctly.
+- Existing WordPress image editing remains functional.
+
+**Notes:** Added a persistent 20â€“100vh Divider Height control with a 50vh backward-compatible default and live editor preview. Replaced the fixed-rate parallax with intrinsic-aspect cover geometry, wave-depth overscan and an entry-to-centre-to-exit calculation that uses nearly the full safe travel while keeping image edges covered; reduced motion remains centred. Redesigned the stable top/bottom wave paths. Fixed the actual overflow source by replacing the `100vw`/`50%`/negative-viewport-margin root sizing with divider-local measured client-width alignment. Focused tests, production build, PHP syntax, Gutenberg save/reopen, legacy Home block validity and live 320â€“1440px checks at 20/50/100vh passed with zero overflow; the temporary smoke page was removed.
+
+---
+
+# Implementation Instructions
+
+These are fixes to the existing Epic-004 implementation.
+
+## 1. Preparation
+
+Before making changes:
+
+1. Read `AGENTS.md` and all applicable project rules.
+2. Read the original Epic-004 requirements.
+3. Inspect the existing React components, SCSS styles and Gutenberg block definitions.
+4. Review the reusable wave system.
+5. Identify any shared implementation that can be reused rather than duplicated.
+6. Preserve existing WordPress content and block attributes.
+
+## 2. Implementation Order
+
+Complete the bugs in their numbered order.
+
+**Bug-001**
+
+Correct spacing, animation trigger timing and animation duration in Text Image — Side by Side.
+
+**Bug-002**
+
+Implement the optional wave borders, constrained Gutenberg image previews, parent-level frame selector and image-width slider.
+
+**Bug-003**
+
+Implement configurable divider height, accurate parallax centring, stronger movement, different wave shapes and the horizontal overflow fix.
+
+## 3. WordPress Integration
+
+The local environment uses `wp-env` and Docker.
+
+Plugin source:
+
+`backend/plugins/alohaalpha-core/`
+
+Requirements:
+
+- Modify the existing mapped plugin directly.
+- Do not generate ZIP files for local development.
+- Do not delete or recreate existing blocks.
+- Preserve previously saved Gutenberg content.
+- Apply backward-compatible defaults for new attributes.
+- Ensure newly added editor settings persist when the page is saved and reopened.
+- Preserve the existing block-to-React data contract, extending it where necessary.
+
+## 4. Validation
+
+Run focused automated tests and relevant build checks.
+
+Test at least:
+
+- 320px.
+- 375px.
+- 768px.
+- 1024px.
+- 1440px.
+
+Specifically verify:
+
+- Side by Side spacing.
+- Scroll animation threshold and duration.
+- Both layout directions.
+- Optional top and bottom waves.
+- Frame preview dimensions in Gutenberg.
+- Parent/nested frame selector synchronisation.
+- Image-width slider and responsive columns.
+- Divider height slider and saved values.
+- Divider parallax at entry, midpoint and exit.
+- Image coverage behind both wave masks.
+- Distinct top and bottom wave geometry.
+- **No horizontal overflow with the Image Divider present.**
+- Existing functionality from previous Epics.
+
+Where possible, test the divider at its minimum, default and maximum heights.
+
+Do not rely solely on mocked tests for Gutenberg persistence or WordPress integration.
+
+## 5. Feature Tracking
+
+Update the appropriate entries in:
+
+`src/vibe/epics/epic-004/bugs.txt`
+
+Follow the repository's existing status and rollback conventions.
+
+Only mark a bug complete when its acceptance criteria are satisfied.
+
+Do not change unrelated requirements or begin another Epic.
+
+## 6. Completion Report
+
+When finished, report:
+
+1. Status of each bug.
+2. Files modified.
+3. Gutenberg changes.
+4. React and SCSS changes.
+5. Test and build results.
+6. Specific cause and fix for the horizontal overflow.
+7. Any outstanding limitations or manual verification required.
+
+Stop after the authorised bug fixes.

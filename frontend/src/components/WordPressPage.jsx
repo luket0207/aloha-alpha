@@ -1,14 +1,21 @@
 import { useEffect, useMemo, useState } from 'react';
 import { getWordPressRestUrl } from '../wordpressApi.js';
 import Hero from './Hero.jsx';
+import WordPressContent from './WordPressContent.jsx';
 
 function extractHomeHero(html) {
   const document = new DOMParser().parseFromString(html, 'text/html');
-  const hero = document.querySelector('.aloha-hero');
+  const customHero = document.querySelector('.wp-block-aloha-home-hero');
+  const legacyHero = document.querySelector('.aloha-hero');
+  const hero = customHero || legacyHero;
   if (!hero) return null;
 
-  const contentGroup = hero.querySelector('.aloha-hero__content');
-  const slidesGroup = hero.querySelector('.aloha-hero__slides');
+  const contentGroup = hero.querySelector(
+    customHero ? '.aloha-home-hero__content' : '.aloha-hero__content',
+  );
+  const slidesGroup = hero.querySelector(
+    customHero ? '.aloha-home-hero__slides' : '.aloha-hero__slides',
+  );
   if (!contentGroup || !slidesGroup) return null;
 
   const content = contentGroup.querySelector(':scope > .wp-block-group__inner-container') || contentGroup;
@@ -16,7 +23,8 @@ function extractHomeHero(html) {
     || Array.from(content.children).find((element) => !element.matches('.aloha-logo'));
   slogan?.classList.add('aloha-hero__slogan');
 
-  const slides = Array.from(slidesGroup.querySelectorAll('figure.wp-block-image img')).map((image) => ({
+  const slideSelector = customHero ? 'figure.aloha-home-hero__slide img' : 'figure.wp-block-image img';
+  const slides = Array.from(slidesGroup.querySelectorAll(slideSelector)).map((image) => ({
     alt: image.getAttribute('alt') || '',
     className: image.getAttribute('class') || undefined,
     height: image.getAttribute('height') || undefined,
@@ -27,7 +35,9 @@ function extractHomeHero(html) {
   })).filter((slide) => slide.src);
 
   const contentHtml = content.innerHTML;
-  hero.remove();
+  document.querySelectorAll('.wp-block-aloha-home-hero, .aloha-hero').forEach((heroElement) => {
+    heroElement.remove();
+  });
 
   return {
     contentHtml,
@@ -84,14 +94,14 @@ export default function WordPressPage({ slug }) {
     return (
       <main className="home-page" key={page.id}>
         <Hero contentHtml={homeContent.contentHtml} slides={homeContent.slides} />
-        <article className="wp-content" dangerouslySetInnerHTML={{ __html: homeContent.remainingHtml }} />
+        <WordPressContent className="wp-content" html={homeContent.remainingHtml} />
       </main>
     );
   }
 
   return (
     <main className={slug === 'home' ? 'home-page' : 'container'} key={page.id}>
-      <article className="wp-content" dangerouslySetInnerHTML={{ __html: page.content.rendered }} />
+      <WordPressContent className="wp-content" html={page.content.rendered} />
     </main>
   );
 }

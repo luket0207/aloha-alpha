@@ -84,7 +84,7 @@ Do not rely on hardcoded page content or unrelated HTML parsing assumptions.
 
 # Feature-001 — Round Frame and Square Frame
 
-**Status:** not started
+**Status:** complete
 
 ## Objective
 
@@ -181,11 +181,15 @@ Both frame types must be usable independently and nested inside the Side by Side
 - Both are responsive.
 - Different instances retain different image content.
 
+**Notes:** Phase 1 editor prerequisite complete. Added one Media Library-backed Image Frame block with Round and Square variations, replace/remove controls, editable alt text, responsive image attributes, independent saved content, static editor previews and two non-synced starter patterns. Public masks, responsive frame rendering and per-load Round orientation remain pending Phase 3 after the required WordPress handover.
+
+**Notes:** Phase 3 complete. The public React renderer now maps saved `aloha/image-frame` markup to a responsive Image Frame component. Round frames use a stable per-instance, per-load orientation applied only to an organic SVG clip path so images remain upright; Square frames use their saved natural aspect ratio with a distinct softly waved SVG edge. Standalone and nested instances share the same component and responsive image data.
+
 ---
 
 # Feature-002 — Image Left, Text Right
 
-**Status:** not started
+**Status:** complete
 
 ## Objective
 
@@ -327,11 +331,15 @@ At mobile widths:
 - Mobile layout places text above image.
 - Section works when inserted multiple times on the same page.
 
+**Notes:** Phase 1 editor prerequisite complete. Added the Text Image — Side by Side parent block with a protected image-frame slot, a flexible text slot restricted to native Heading and Paragraph blocks, an optional editable centred H2 with Japanese/Latin typography selection, Green/Light Blue/Cream settings, an image-left static preview and a non-synced starter pattern. Public full-width layout, responsive ordering and scroll-direction animation remain pending Phase 3 after the required WordPress handover.
+
+**Notes:** Phase 3 complete. Saved image-left sections now map to a public React component with full-viewport theme backgrounds, the shared 1080px inner alignment, a maximum 40% image column, natural content height, optional WordPress-authored H2 and unrestricted saved Heading/Paragraph order. A visibility observer and ref-only scroll-direction tracker coordinate the left image slide and upward text fade, reset only after an upward exit below the viewport, and expose all content immediately for reduced-motion or unsupported observers. Mobile order is title, text, then image.
+
 ---
 
 # Feature-003 — Text Left, Image Right
 
-**Status:** not started
+**Status:** complete
 
 ## Objective
 
@@ -390,11 +398,15 @@ The image must appear below the text on mobile regardless of the desktop layout 
 
 Do not introduce a second separate Gutenberg block merely to reverse the columns.
 
+**Notes:** Phase 1 editor prerequisite complete. The existing Text Image — Side by Side block now has Image Left — Text Right and Text Left — Image Right layout options. Switching the selector preserves the same protected image and editable text content, updates the static desktop preview, and keeps text above image in the mobile editor preview. Public responsive layout and mirrored scroll animation remain pending Phase 3 after the required WordPress handover.
+
+**Notes:** Phase 3 complete. The same public Text Image component now maps the saved image-right setting to a text-first desktop grid with the image capped at 40% on the right. Its frame enters and reverses toward the right while sharing the Feature-002 text animation, theme, title, observer and motion architecture. Both saved layouts collapse to title, text, then image on mobile without changing WordPress content.
+
 ---
 
 # Feature-004 — Image Divider
 
-**Status:** not started
+**Status:** complete
 
 ## Objective
 
@@ -549,6 +561,10 @@ On mobile:
 - No blank gaps or horizontal overflow.
 - Mobile behaviour is appropriate.
 - Reduced-motion users receive a static image.
+
+**Notes:** Phase 1 editor prerequisite complete. Added the Image Divider block with Media Library selection, replace/remove controls, editable alt text, persisted responsive image attributes, a static full-width editor approximation and a non-synced starter pattern. Public full-bleed sizing, responsive height, bounded parallax, reduced-motion behaviour and distinct reusable wave masks remain pending Phase 3 after the required WordPress handover.
+
+**Notes:** Phase 3 complete. The public renderer maps the saved divider image to a full-viewport React component with a 40vh desktop frame, responsive mobile height and responsive WordPress image sources. The shared Wave utility now supplies a reusable SVG clip-path primitive; one closed mask band combines independently configured, visibly distinct top and bottom curves so adjacent backgrounds remain exposed naturally. Visibility-gated requestAnimationFrame updates centre and bound the overscanned image parallax, while reduced-motion keeps it centred and static.
 
 ---
 

@@ -1,0 +1,40 @@
+.aloha-image-divider {
+  position: relative;
+  width: var(--aloha-image-divider-viewport-width, 100%);
+  max-width: none !important;
+  height: calc(var(--aloha-image-divider-height, 50) * 1vh);
+  margin: 0;
+  margin-left: var(--aloha-image-divider-bleed-offset, 0px);
+  overflow: clip;
+}
+
+.aloha-image-divider > svg {
+  position: absolute;
+}
+
+.aloha-image-divider__media {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.aloha-image-divider .aloha-image-divider__media > img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: block;
+  width: var(--aloha-image-divider-rendered-width, 100%);
+  max-width: none;
+  height: var(--aloha-image-divider-rendered-height, 144%);
+  max-height: none;
+  object-fit: cover;
+  transform: translate3d(-50%, calc(-50% + var(--aloha-image-divider-offset, 0px)), 0);
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aloha-image-divider .aloha-image-divider__media > img {
+    transform: translate3d(-50%, -50%, 0) !important;
+    will-change: auto;
+  }
+}

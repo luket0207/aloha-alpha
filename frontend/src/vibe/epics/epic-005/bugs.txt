@@ -1,0 +1,174 @@
+# Epic-005 — Bug-001
+
+## Bug-001 — Identify and Fix Horizontal Page Overflow
+
+**Status:** complete
+
+### Issue
+
+There is still an element somewhere on the website that extends beyond the width of the viewport.
+
+This is causing an unwanted horizontal scrollbar to appear at the bottom of the page.
+
+I want you to investigate the entire page, identify exactly which element or elements are responsible, and correct their sizing or positioning so they remain within the viewport.
+
+**Do not simply hide horizontal overflow. Fix the element causing it.**
+
+## 1. Investigate the Cause
+
+Before making changes, inspect the existing React components, Gutenberg-rendered elements and SCSS styles to identify the source of the overflow.
+
+Pay particular attention to:
+
+- Homepage Hero and its slideshow.
+- Animated water backgrounds.
+- Decorative wave components and SVGs.
+- Image Divider.
+- Text Image — Side by Side sections.
+- Round and Square image frames.
+- Contact Us and Footer wave transitions.
+- Header and responsive navigation.
+- Absolutely positioned elements.
+- Elements using transforms or animations.
+- Full-width sections using viewport-based dimensions.
+
+Check whether any elements use CSS such as:
+
+```scss
+width: 100vw;
+margin-left: calc(50% - 50vw);
+transform: translateX(...);
+position: absolute;
+```
+
+These are not necessarily incorrect, but they can cause horizontal overflow depending on their parent containers, positioning and the presence of a vertical scrollbar.
+
+### Browser Investigation
+
+Where browser testing is available:
+
+1. Compare `document.documentElement.scrollWidth` against `document.documentElement.clientWidth`.
+2. Identify elements whose rendered bounding rectangles extend beyond either viewport edge.
+3. Inspect their computed CSS properties and parent containers.
+4. Check whether the overflow is caused by static layout, an animation, or an element being translated off-screen.
+5. Repeat the checks after images and fonts load and while animations are running.
+6. Determine whether more than one element contributes to the problem.
+
+Do not assume the Image Divider is still the cause simply because it caused a similar issue previously.
+
+Identify the actual offending element or elements before applying a fix.
+
+## 2. Fix the Underlying Problem
+
+Once identified, correct the relevant component or SCSS.
+
+Requirements:
+
+1. No component should unnecessarily extend the page's scrollable width beyond the viewport.
+2. Full-width sections must continue to visually span the available viewport width.
+3. Decorative waves, masks and SVGs must remain correctly constrained.
+4. Images must scale responsively without forcing their containers wider.
+5. Animations must not introduce unwanted horizontal page scrolling.
+6. Absolutely positioned children must not create unintended document overflow.
+7. Flexbox and grid layouts must shrink appropriately on smaller screens.
+8. Preserve existing layouts, animations and visual styling wherever possible.
+9. Ensure WordPress-rendered content respects the available container width.
+10. Correct any additional overflow sources discovered during the investigation.
+
+### Important Restriction
+
+**Do not fix this by applying the following to `html` or `body`:**
+
+```scss
+overflow-x: hidden;
+```
+
+Do not use a global `overflow-x: clip` rule merely to conceal the problem either.
+
+These approaches can hide the scrollbar while leaving incorrectly sized elements in place.
+
+Local clipping is acceptable for decorative elements or animations where it is intentional and does not interfere with the visible design.
+
+The objective is to fix the actual layout problem.
+
+## 3. Responsive Requirements
+
+Verify the fix at these viewport widths:
+
+- 320px
+- 375px
+- 768px
+- 1024px
+- 1440px
+
+Also check intermediate sizes where responsive breakpoints change.
+
+At every width:
+
+- The page must not have an unwanted horizontal scrollbar.
+- All content should remain within its intended layout.
+- Full-width elements must align correctly with the viewport.
+- Images and decorative waves must not cause overflow.
+- Responsive navigation must continue working.
+- No content should be unintentionally clipped.
+
+Test with the mobile navigation both open and closed, and while relevant animations are running.
+
+Check all six site pages, not just the homepage, because shared components may be responsible.
+
+## 4. Preserve Existing Functionality
+
+Do not unnecessarily change:
+
+- Hero design or slideshow behaviour.
+- Water animations.
+- Wave shapes.
+- Image Divider parallax.
+- Side by Side scroll animations.
+- Header and Footer styling.
+- Contact form functionality.
+- WordPress Gutenberg integration.
+- Responsive layouts.
+
+This is a targeted layout correction, not a redesign.
+
+## 5. Acceptance Criteria
+
+- The element or elements causing horizontal overflow have been identified.
+- The underlying sizing or positioning issue is corrected.
+- No unwanted horizontal scrollbar appears on any page.
+- `document.documentElement.scrollWidth` does not exceed `document.documentElement.clientWidth` due to page content.
+- Full-width components still span the viewport correctly.
+- All decorative waves and images remain correctly positioned.
+- Animations do not create horizontal scrolling.
+- The fix works on desktop, tablet and mobile.
+- No global overflow-hiding workaround is introduced.
+- No existing functionality is broken.
+
+## Implementation Instructions
+
+1. Read and follow `AGENTS.md`.
+2. Review the existing Epic-005 implementation and relevant shared components.
+3. Investigate the actual source of horizontal overflow.
+4. Explain the root cause before or alongside implementing the fix.
+5. Make the smallest maintainable changes necessary.
+6. Verify the correction at multiple viewport widths and across all pages.
+7. Run appropriate build and regression checks.
+8. Update Bug-001 in `src/vibe/epics/epic-005/bugs.txt`.
+
+### Completion Report
+
+When finished, report:
+
+1. **Root cause:** Which element or elements caused horizontal overflow.
+2. **Explanation:** Why those elements exceeded the viewport width.
+3. **Fix:** The changes made to correct the problem.
+4. **Files modified.**
+5. **Testing:** Which viewport widths and pages were checked.
+6. **Result:** Whether horizontal overflow has been eliminated.
+
+Do not claim the issue has been fully resolved unless the fix has been verified in a browser. If browser verification is unavailable, report what remains unverified.
+
+**Scope:** Fix Epic-005 Bug-001 only. Do not implement unrelated features or begin another Epic.
+
+**Notes:** Complete. The Home page Text Image sections used `width: 100vw` with `left: 50%` and `margin-inline: -50vw`; desktop viewport units included the 15px scrollbar, so each section extended 7.5px beyond both edges and added 8px to document scroll width. The sections now use the already full-width React content column with `width: 100%` and zero inline margin. Browser checks across all six routes at 320px, 375px, 768px, 899px, 900px, 1024px and 1440px, including open/closed mobile navigation and active reveal/parallax animation states, reported `scrollWidth === clientWidth`. No global overflow-hiding rule was added.

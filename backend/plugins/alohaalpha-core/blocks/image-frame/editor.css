@@ -1,0 +1,37 @@
+.editor-styles-wrapper .wp-block-aloha-image-frame {
+    width: min(100%, 32rem);
+    margin-inline: auto;
+}
+
+.editor-styles-wrapper .wp-block-aloha-image-frame .aloha-image-frame__image {
+    display: block;
+    width: 100%;
+    max-width: none;
+    object-fit: cover;
+}
+
+.editor-styles-wrapper .wp-block-aloha-image-frame.aloha-image-frame--round .aloha-image-frame__image {
+    width: min(100%, 32rem, 60vh);
+    height: auto;
+    aspect-ratio: 1;
+    max-height: min(32rem, 60vh);
+    margin-inline: auto;
+    border-radius: 48% 52% 46% 54% / 52% 45% 55% 48%;
+}
+
+.editor-styles-wrapper .wp-block-aloha-image-frame.aloha-image-frame--square .aloha-image-frame__image {
+    width: auto;
+    max-width: 100%;
+    max-height: min(28rem, 60vh);
+    height: auto;
+    margin-inline: auto;
+    border-radius: 7% 4% 8% 5% / 5% 8% 4% 7%;
+    object-fit: contain;
+}
+
+.editor-styles-wrapper .aloha-image-frame__controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
