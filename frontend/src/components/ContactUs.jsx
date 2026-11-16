@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { getWordPressRestUrl } from '../wordpressApi.js';
+import ContactDecorations from './ContactDecorations.jsx';
 import ContactForm from './ContactForm.jsx';
+import { contactSurfboardFromElement } from './contactDecorations.js';
 import Wave from './Wave.jsx';
 import './ContactUs.scss';
 
@@ -37,6 +39,7 @@ function useWordPressSection(slug) {
 
   useEffect(() => {
     const controller = new AbortController();
+    setSection({ html: '', status: 'loading' });
 
     fetch(getWordPressRestUrl(`aloha/v1/sections/${slug}`), {
       signal: controller.signal,
@@ -70,6 +73,8 @@ function parseContactSection(html) {
   const document = new DOMParser().parseFromString(html, 'text/html');
   const section = document.querySelector('.aloha-contact-full') || document.body;
   const presetGroup = section.querySelector('.aloha-contact__presets');
+  const surfboardElement = section.querySelector('.aloha-contact__surfboard');
+  const surfboard = contactSurfboardFromElement(surfboardElement);
   const presets = presetGroup
     ? Array.from(presetGroup.querySelectorAll('li'))
       .map((item) => item.textContent.trim())
@@ -77,11 +82,13 @@ function parseContactSection(html) {
     : [];
 
   presetGroup?.remove();
+  surfboardElement?.remove();
 
   return {
     contentHtml: section.innerHTML,
     presets,
     presetsStatus: presetGroup ? 'ready' : 'error',
+    surfboard,
   };
 }
 
@@ -90,11 +97,12 @@ export default function ContactUs() {
   const jump = useWordPressSection('contact-us-jump');
   const fullRef = useRef(null);
   const jumpRef = useRef(null);
+  const submitRef = useRef(null);
   const [isFullVisible, setIsFullVisible] = useState(null);
   const contactContent = useMemo(() => (
     full.status === 'ready'
       ? parseContactSection(full.html)
-      : { contentHtml: '', presets: [], presetsStatus: full.status }
+      : { contentHtml: '', presets: [], presetsStatus: full.status, surfboard: null }
   ), [full.html, full.status]);
 
   useEffect(() => {
@@ -166,6 +174,13 @@ export default function ContactUs() {
     <>
       <section className="contact-us__full aloha-contact-full theme-green" id="contact-us" ref={fullRef}>
         <Wave className="contact-us__top-wave" {...CONTACT_TOP_WAVE} />
+        {full.status === 'ready' && (
+          <ContactDecorations
+            sectionRef={fullRef}
+            submitRef={submitRef}
+            surfboard={contactContent.surfboard}
+          />
+        )}
         {full.status === 'loading' && <p className="contact-us__loading">お問い合わせを読み込んでいます…</p>}
         {full.status === 'error' && <p className="contact-us__error" role="alert">お問い合わせ内容を読み込めませんでした。</p>}
         {full.status === 'ready' && (
@@ -177,6 +192,7 @@ export default function ContactUs() {
         <ContactForm
           presets={contactContent.presets}
           presetsStatus={contactContent.presetsStatus}
+          submitRef={submitRef}
         />
       </section>
 

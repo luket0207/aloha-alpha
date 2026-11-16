@@ -55,28 +55,32 @@ export default function WordPressPage({ slug }) {
     setStatus('loading');
     setPage(null);
 
-    fetch(getWordPressRestUrl(`wp/v2/pages?slug=${encodeURIComponent(slug)}&_fields=id,slug,content`), {
-      signal: controller.signal,
-    })
-      .then((response) => {
+    async function loadPage() {
+      try {
+        const response = await fetch(
+          getWordPressRestUrl(`wp/v2/pages?slug=${encodeURIComponent(slug)}&_fields=id,slug,content`),
+          { signal: controller.signal },
+        );
         if (!response.ok) throw new Error(`WordPress API error ${response.status}`);
-        return response.json();
-      })
-      .then((pages) => {
+        const pages = await response.json();
+
         if (!pages.length) {
           setStatus('missing');
           return;
         }
 
+        if (controller.signal.aborted) return;
         setPage(pages[0]);
         setStatus('ready');
-      })
-      .catch((error) => {
+      } catch (error) {
         if (error.name !== 'AbortError') {
           console.error(error);
           setStatus('error');
         }
-      });
+      }
+    }
+
+    loadPage();
 
     return () => controller.abort();
   }, [slug]);
@@ -86,7 +90,11 @@ export default function WordPressPage({ slug }) {
     return extractHomeHero(page.content.rendered);
   }, [page, slug]);
 
-  if (status === 'loading') return <main className="container"><p>Loading page…</p></main>;
+  const isCurrentPage = page?.slug === slug;
+
+  if (status === 'loading' || (status === 'ready' && !isCurrentPage)) {
+    return <main className="container"><p>Loading page…</p></main>;
+  }
   if (status === 'missing') return <main className="container"><h1>Page not found</h1><p>Create and publish the <strong>{slug}</strong> page in WordPress.</p></main>;
   if (status === 'error') return <main className="container"><h1>Unable to load WordPress content</h1><p>Check that WordPress is running and its REST API is accessible.</p></main>;
 

@@ -100,6 +100,7 @@ function alohaalpha_section_pattern_slugs() {
         'footer'          => 'footer',
         'contact-us-full' => 'contact-us',
         'contact-us-jump' => 'contact-us-jump',
+        'logo-large'      => 'logo-large',
     );
 }
 
@@ -115,6 +116,25 @@ function alohaalpha_get_section( WP_REST_Request $request ) {
             'alohaalpha_section_not_found',
             'Section not found.',
             array( 'status' => 404 )
+        );
+    }
+
+    if ( 'logo-large' === $requested_slug ) {
+        $logo_html = alohaalpha_get_large_logo_html();
+
+        if ( '' === $logo_html ) {
+            return new WP_Error(
+                'alohaalpha_section_not_found',
+                'Section not found.',
+                array( 'status' => 404 )
+            );
+        }
+
+        return rest_ensure_response(
+            array(
+                'slug' => $requested_slug,
+                'html' => $logo_html,
+            )
         );
     }
 

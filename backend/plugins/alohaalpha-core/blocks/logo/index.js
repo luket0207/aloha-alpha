@@ -58,7 +58,7 @@
         apiVersion: 3,
         title: __('Aloha Logo', 'alohaalpha-core'),
         description: __('Reusable Aloha Academy wordmark with a Media Library flower image.', 'alohaalpha-core'),
-        category: 'design',
+        category: 'aloha-layouts',
         icon: 'format-image',
         attributes,
         supports: {

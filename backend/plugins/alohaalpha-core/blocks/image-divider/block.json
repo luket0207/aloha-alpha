@@ -4,7 +4,7 @@
   "name": "aloha/image-divider",
   "version": "0.2.0",
   "title": "Image Divider",
-  "category": "media",
+  "category": "aloha-layouts",
   "icon": "format-image",
   "description": "Media Library image used as a full-width divider between page sections.",
   "textdomain": "alohaalpha-core",

@@ -4,7 +4,7 @@
   "name": "aloha/text-image-side-by-side",
   "version": "0.2.0",
   "title": "Text Image — Side by Side",
-  "category": "design",
+  "category": "aloha-layouts",
   "icon": "align-pull-left",
   "description": "Selectable image-left or image-right layout with protected media and flexible text columns.",
   "textdomain": "alohaalpha-core",

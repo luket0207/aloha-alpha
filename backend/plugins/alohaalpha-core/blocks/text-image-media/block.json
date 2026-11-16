@@ -4,7 +4,7 @@
   "name": "aloha/text-image-media",
   "version": "0.2.0",
   "title": "Side by Side — Image Area",
-  "category": "design",
+  "category": "aloha-layouts",
   "icon": "format-image",
   "description": "Protected image-frame slot for the Side by Side section.",
   "textdomain": "alohaalpha-core",

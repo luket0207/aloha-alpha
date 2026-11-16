@@ -37,7 +37,7 @@ function validate(values) {
   return errors;
 }
 
-export default function ContactForm({ presets, presetsStatus }) {
+export default function ContactForm({ presets, presetsStatus, submitRef }) {
   const [values, setValues] = useState(INITIAL_VALUES);
   const [errors, setErrors] = useState({});
   const [submissionStatus, setSubmissionStatus] = useState('idle');
@@ -194,7 +194,7 @@ export default function ContactForm({ presets, presetsStatus }) {
         </label>
       </div>
 
-      <button className="contact-us__submit" disabled={isSubmitting} type="submit">
+      <button className="contact-us__submit" disabled={isSubmitting} ref={submitRef} type="submit">
         {isSubmitting ? '送信中…' : '送信する'}
       </button>
 

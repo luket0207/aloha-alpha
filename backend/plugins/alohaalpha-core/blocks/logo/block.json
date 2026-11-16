@@ -4,7 +4,7 @@
   "name": "aloha/logo",
   "version": "0.2.0",
   "title": "Aloha Logo",
-  "category": "design",
+  "category": "aloha-layouts",
   "icon": "format-image",
   "description": "Reusable Aloha Academy wordmark with a Media Library flower image.",
   "textdomain": "alohaalpha-core",

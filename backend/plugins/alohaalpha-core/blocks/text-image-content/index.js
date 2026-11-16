@@ -12,7 +12,7 @@
     registerBlockType('aloha/text-image-content', {
         apiVersion: 3,
         title: __('Side by Side — Text Area', 'alohaalpha-core'),
-        category: 'design',
+        category: 'aloha-layouts',
         icon: 'text-page',
         parent: ['aloha/text-image-side-by-side'],
         supports: { html: false, inserter: false, reusable: false },

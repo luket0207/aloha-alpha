@@ -76,6 +76,8 @@ export default function Header() {
 
   useEffect(() => {
     const controller = new AbortController();
+    setHeader({ logoHtml: '', links: [] });
+    setStatus('loading');
 
     fetch(getWordPressRestUrl('aloha/v1/sections/header'), {
       signal: controller.signal,

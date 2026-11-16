@@ -63,7 +63,7 @@
         apiVersion: 3,
         title: __('Image Divider', 'alohaalpha-core'),
         description: __('Media Library image used as a full-width divider between page sections.', 'alohaalpha-core'),
-        category: 'media',
+        category: 'aloha-layouts',
         icon: 'format-image',
         attributes,
         supports: { align: ['wide', 'full'], html: false, reusable: true },

@@ -29,6 +29,8 @@ export default function Footer() {
 
   useEffect(() => {
     const controller = new AbortController();
+    setHtml('');
+    setStatus('loading');
 
     fetch(getWordPressRestUrl('aloha/v1/sections/footer'), {
       signal: controller.signal,

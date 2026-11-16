@@ -1,0 +1,1056 @@
+# Epic-006 — Bugs
+
+## Bug-001 — Shaka and Surfboard Styling and Animations
+
+**Status:** complete
+
+### Issue
+
+I want to improve the size, positioning and animations of the decorative Shaka SVG and Surfboard PNG in the Contact Us section.
+
+The existing WordPress integration and scroll-trigger behaviour should remain in place.
+
+### 1. Increase Shaka Size
+
+On desktop, set the Shaka width to:
+
+```scss
+--aloha-contact-shaka-width: 14rem;
+```
+
+Requirements:
+
+1. The Shaka should be noticeably larger than its current size.
+2. Desktop target width is 14rem.
+3. Increase its mobile size as well, while ensuring it remains responsive.
+4. Preserve the SVG's aspect ratio.
+5. Ensure its rotation and animation do not create horizontal overflow.
+6. Keep it within the available decorative space where possible.
+7. Do not allow it to obscure desktop form fields or buttons.
+
+On mobile, retain the existing ability for the Shaka to appear behind the form content.
+
+### 2. Adjust Shaka Horizontal Position
+
+I want slightly more separation between the Shaka and the Contact Us content to its left.
+
+The following desktop positioning worked well:
+
+```scss
+right: max(
+  1.5rem,
+  calc(
+    (100% - 70rem) / 2
+    - var(--aloha-contact-shaka-width)
+    - 1rem
+  )
+);
+```
+
+Use this as the preferred positioning rule, adapting it where necessary to maintain responsiveness.
+
+Requirements:
+
+- Keep sufficient spacing between the Shaka and form content.
+- Respect the site's established content-width alignment.
+- Preserve a minimum margin from the viewport edge.
+- Adapt at narrower desktop and tablet widths.
+- Avoid overlap with form controls.
+- Do not introduce horizontal scrolling.
+
+Inspect the actual available side margins before applying a final responsive solution.
+
+### 3. Correct the Shaka SVG Fill
+
+The Shaka currently renders with a solid white fill.
+
+**I do not want a solid silhouette.**
+
+I want the Shaka to appear as an outlined drawing, with the background visible through its interior.
+
+Requirements:
+
+1. Remove the solid fill.
+2. Render the SVG using an outline/stroke.
+3. The interior must remain transparent.
+4. Preserve the original Shaka geometry and recognisable appearance.
+5. Ensure any internal contours and finger details remain visually clear.
+6. Use rounded stroke joins and caps where appropriate.
+7. Choose a sufficiently thick stroke to match the site's existing outlined illustration style.
+8. Avoid clipping the stroke at the SVG viewBox boundaries.
+9. Preserve `currentColor` so the SVG can be recoloured through SCSS.
+
+For example, investigate using:
+
+```jsx
+<path
+  fill="none"
+  stroke="currentColor"
+  strokeWidth="6"
+  strokeLinecap="round"
+  strokeLinejoin="round"
+  d={existingShakaPath}
+/>
+```
+
+The stroke width is illustrative and should be adjusted to produce the intended appearance.
+
+The existing source uses a filled compound path. Inspect its path geometry carefully to ensure converting it to an outline does not create unwanted lines or lose important visual detail.
+
+Do not replace the artwork with a different Shaka icon.
+
+**Colour requirements:**
+
+- Desktop Contact Us: White (`#FFFFFF`) outline.
+- Mobile Contact Us: Dark Green (`#033626`) outline.
+
+The inside of the Shaka must remain transparent in both cases.
+
+### 4. Adjust Shaka Shake Animation
+
+The current shake animation is too fast, and it waits before performing its first shake.
+
+I want the Shaka to shake immediately after its entrance animation finishes.
+
+**New animation sequence:**
+
+1. Shaka enters the Contact Us section.
+2. Shaka reaches its resting position at -30 degrees.
+3. Immediately perform the first shake.
+4. The shake lasts 1.5 seconds.
+5. Pause at -30 degrees for 3.5 seconds.
+6. Repeat the shake for 1.5 seconds.
+7. Continue this cycle while Contact Us remains active.
+
+Preserve the existing four back-and-forth movements within each shake.
+
+**Angles:**
+
+- Rest: -30 degrees.
+- First extreme: -15 degrees.
+- Second extreme: -45 degrees.
+- Return to -30 degrees.
+
+Use smooth easing.
+
+The complete repeating cycle should last 5 seconds:
+
+- 1.5 seconds shaking.
+- 3.5 seconds resting.
+
+The first cycle must start with shaking, not the pause.
+
+Keep the shaking centred on the SVG's visual centre.
+
+Do not restart the shake unnecessarily during React re-renders.
+
+### 5. Increase Surfboard Size
+
+Update the Surfboard width variable to:
+
+```scss
+--aloha-contact-surfboard-width: clamp(12rem, 7vw, 14rem);
+```
+
+Preserve the PNG's natural aspect ratio.
+
+Use the existing WordPress-managed image source.
+
+Do not replace the Surfboard with a hardcoded React asset.
+
+### 6. Adjust Surfboard Horizontal Position
+
+The following positioning worked better:
+
+```scss
+left: max(
+  1rem,
+  calc(
+    (100% - 76rem) / 2
+    - var(--aloha-contact-surfboard-width)
+    - 1rem
+  )
+);
+```
+
+Use this as the preferred desktop positioning rule, making appropriate responsive adjustments.
+
+Requirements:
+
+- Keep the Surfboard in the left margin.
+- Maintain sufficient spacing from the Contact Us form.
+- Align the bottom of the Surfboard approximately with the bottom of the Submit button.
+- Recalculate positioning when form dimensions change.
+- Prevent horizontal overflow.
+- Preserve the existing mobile behaviour, where the Surfboard is hidden.
+
+### 7. Change Surfboard Entrance Animation
+
+The current Surfboard animation moves the image vertically, making it look like it is falling down the page.
+
+This is not the effect I want.
+
+Instead, the Surfboard should rotate into position around its bottom-centre point, as though it is swinging inward towards the form.
+
+**Starting position:**
+
+```scss
+transform: rotate(-15deg);
+opacity: 0;
+```
+
+**Resting position:**
+
+```scss
+transform: rotate(15deg);
+opacity: 1;
+```
+
+**Transform origin:**
+
+```scss
+transform-origin: center bottom;
+```
+
+Requirements:
+
+1. Do not animate the Surfboard's vertical position.
+2. Do not use `translateY` as part of the entrance animation.
+3. Animate its rotation from -15 degrees to +15 degrees.
+4. Rotate around the bottom-centre point of the image.
+5. Fade from transparent to fully visible.
+6. Use a smooth, natural easing curve.
+7. Preserve the existing trigger when the Submit button enters the viewport.
+8. Preserve its alignment with the bottom of the Submit button.
+9. Do not loop the Surfboard animation.
+
+The Surfboard should feel as though it is rotating inward towards the Contact Us form.
+
+### 8. Animation Reset
+
+Keep the existing reset behaviour.
+
+When Contact Us is completely outside the viewport:
+
+- Reset the Shaka entrance state.
+- Stop and reset its repeating shake.
+- Reset the Surfboard rotation and opacity.
+- Cancel any pending animation timers.
+
+When Contact Us becomes visible again, the entrance animations should be able to play again.
+
+Respect `prefers-reduced-motion` by presenting both decorations at their final resting positions without animation.
+
+### Acceptance Criteria
+
+- Desktop Shaka is 14rem wide.
+- Mobile Shaka is larger but remains responsive.
+- Shaka has appropriate spacing from the form.
+- Shaka is outlined, not solid-filled.
+- Shaka interior is transparent.
+- Desktop outline is White.
+- Mobile outline is Dark Green.
+- Shaka shakes immediately after entering.
+- Each shake lasts 1.5 seconds.
+- Each pause lasts 3.5 seconds.
+- Four oscillations are preserved.
+- Surfboard uses the requested width and positioning.
+- Surfboard rotates from -15 to +15 degrees.
+- Surfboard pivots around its bottom centre.
+- Surfboard does not move vertically.
+- Surfboard fades in.
+- Existing scroll triggers and reset behaviour work.
+- No horizontal overflow.
+- Contact form functionality remains unaffected.
+
+**Notes:** Complete. The reusable Shaka now renders the existing compound geometry as a transparent, rounded 5-unit `currentColor` outline with visible stroke overflow. Contact Us uses the requested 14rem Shaka and 12rem Surfboard at full desktop width, larger responsive mobile Shaka sizing, and constrained-desktop scaling where the fixed artwork would otherwise overlap controls. The Shaka's five-second cycle now performs four oscillations during the first 1.5 seconds immediately after its 700ms entrance, then rests for 3.5 seconds. The Surfboard now pivots from -15 to +15 degrees around its bottom centre with opacity only and no translation. Browser checks at 320, 375, 768, 1024 and 1440px confirmed the requested colours, sizing, WordPress PNG source, reset behavior, no desktop control overlap or horizontal overflow; reduced-motion decorations remain static at their final positions.
+
+---
+
+## Bug-002 — Sticky Header Position and Bottom Border
+
+**Status:** complete
+
+### Issue
+
+The Header now uses sticky positioning, but it still moves upward slightly as the user scrolls.
+
+This causes the top padding to become cropped, making the Header appear shorter while scrolling.
+
+I want the Header to retain its full height and appearance at all times.
+
+I also want to add a Dark Green bottom border.
+
+### 1. Correct Sticky Positioning
+
+Investigate why the Header moves or becomes partially cropped when scrolling.
+
+Requirements:
+
+1. The Header must remain fully visible at the top of the viewport.
+2. The entire Header, including its top padding, must remain visible.
+3. The Header must not move upward when scrolling begins.
+4. Preserve the same overall height before and after scrolling.
+5. Preserve existing vertical alignment and navigation spacing.
+6. Ensure sticky positioning works throughout the full page.
+7. Inspect any parent containers, transforms, positioning rules or overflow settings interfering with sticky positioning.
+8. Fix the underlying issue rather than compensating with arbitrary offsets.
+9. Ensure the Header remains above page content.
+10. Preserve desktop and mobile behaviour.
+
+If `position: sticky` cannot function correctly because of the current component structure, adjust the structure or use an appropriate equivalent.
+
+Avoid introducing layout shifts.
+
+### 2. Add Dark Green Bottom Border
+
+Add the following border to the Header:
+
+```scss
+border-bottom: 2px solid var(--aloha-dark-green);
+```
+
+Use the existing global Dark Green colour:
+
+`#033626`
+
+If the project's CSS custom property uses a different naming convention, use the existing equivalent.
+
+Requirements:
+
+- Border must be 2px thick.
+- Border colour must be Dark Green.
+- Border should span the full Header width.
+- Border remains visible while scrolling.
+- Border must not create unwanted changes in Header height.
+- Preserve existing Header colours and hover styling.
+
+Use appropriate box-sizing to account for the border.
+
+### 3. Preserve Existing Functionality
+
+Do not break:
+
+- Small Logo.
+- Desktop navigation.
+- Mobile hamburger navigation.
+- Hamburger-to-X animation.
+- Active navigation states.
+- Hover effects and decorative waves.
+- Header scroll offsets.
+- Home Hero scroll button.
+- Contact Us Jump.
+- Responsive behaviour.
+
+Ensure scroll targets still account for the complete sticky Header height, including its new border.
+
+### Acceptance Criteria
+
+- Header remains fixed visually at the top while scrolling.
+- Top padding is never cropped.
+- Header maintains its full height.
+- 2px Dark Green bottom border is visible.
+- Navigation remains functional.
+- Mobile navigation remains functional.
+- No layout shifts or horizontal overflow.
+- Scroll targets are not obscured by the Header.
+
+**Notes:** Complete. The movement was caused by the site Header using `top: 0` while WordPress placed logged-in pages below its 32px desktop or 46px mobile admin toolbar. The Header now uses the matching toolbar-aware sticky inset, and the mobile toolbar remains fixed so neither bar moves during initial scrolling. A 2px Dark Green bottom border is included within the existing 80px desktop and 72px mobile Header heights, preserving the established scroll offsets. Live checks confirmed constant Header position and height from 0–600px scroll, the correct `#033626` border, no horizontal overflow, and working six-link mobile navigation with overlay, scroll lock and Escape close.
+
+---
+
+## Bug-003 — Remove Full-Screen Loading Screen
+
+**Status:** complete
+
+### Issue
+
+I am not happy with the loading screen introduced in Epic-006 Feature-005.
+
+I want to remove it completely for now.
+
+I may revisit a loading screen design in a future Epic, but for the moment I do not want any full-screen loading animation.
+
+### 1. Remove Loading Screen
+
+Remove the loading screen introduced in Epic-006.
+
+This includes:
+
+- Full-screen Light Blue overlay.
+- Large Logo inside the loading screen.
+- Loading screen Shaka animation.
+- 読み込み中 text.
+- Minimum one-second display timer.
+- Loading overlay transitions.
+- Any loading screen-specific animation logic.
+
+Do not replace it with another branded loading screen or spinner.
+
+### 2. Remove Unnecessary Logic
+
+Clean up code that exists exclusively to support the loading screen.
+
+Requirements:
+
+1. Remove unused loading screen components.
+2. Remove associated SCSS.
+3. Remove unused timers and hooks.
+4. Remove loading-screen-specific state and effects.
+5. Remove unnecessary imports.
+6. Remove artificial delays introduced to keep the screen visible for one second.
+7. Ensure no invisible overlay remains and blocks interaction.
+8. Avoid leaving dead code behind.
+
+### 3. Preserve Application Loading
+
+Removing the visual loading screen must not break normal data fetching or navigation.
+
+Requirements:
+
+- Preserve WordPress API requests.
+- Preserve route navigation.
+- Preserve existing error handling.
+- Preserve cancellation or protection against stale requests.
+- Do not introduce unnecessary artificial delays.
+- Avoid displaying stale content from another route.
+
+The website should simply render normally as its content becomes available.
+
+Do not remove underlying data-loading safeguards that are still necessary for correct operation.
+
+### 4. Preserve Shared Components
+
+The Shaka SVG must remain available because it is still used in Contact Us.
+
+The Large Logo must also remain because it is used elsewhere in the website.
+
+Do not remove these shared components merely because the loading screen used them.
+
+Only remove their loading-screen-specific implementations.
+
+### Acceptance Criteria
+
+- No full-screen loading overlay appears.
+- No branded loading animation appears.
+- No artificial one-second loading delay remains.
+- Pages load and navigate normally.
+- WordPress content continues to render.
+- Error handling remains functional.
+- Contact Us Shaka remains intact.
+- Large Logo remains intact.
+- No unused loading screen code remains.
+
+**Notes:** Complete. Removed the full-screen overlay, WordPress-backed loader Logo request, loading Shaka/text/error UI, minimum-display and timeout timers, retry coordinator, interaction lock, first-Hero-image preload and all loader-only components, styles, state helpers and tests. Header, Footer, Contact Us and page requests retain their own loading/error states and `AbortController` cleanup. The page renderer also checks the returned WordPress slug against the current route so previous-route content cannot render while a new request starts. Live checks at 320, 375, 768, 1024 and 1440px confirmed no overlay, body lock, `inert` or hidden layout; all routes and error rendering work, the Contact Us Shaka and Hero Large Logo remain, and no horizontal overflow was introduced.
+
+---
+
+## Bug-004 — Remove Duplicate AlohaAlpha Core Plugins
+
+**Status:** complete
+
+### Issue
+
+Inside the WordPress Plugins screen, there are currently five versions or copies of the AlohaAlpha Core plugin.
+
+- One is active and is required by the website.
+- Four are inactive and unused.
+
+I want to keep the active plugin and remove the four inactive copies.
+
+When I attempt to delete the unused plugins through WordPress, they initially disappear, but after refreshing the page they return.
+
+This suggests the duplicate plugin directories may be recreated or restored by the local WordPress/Docker development environment.
+
+I want the actual cause identified and corrected.
+
+### 1. Identify the Active Plugin
+
+**This step is mandatory before deleting anything.**
+
+Investigate the existing WordPress installation and identify:
+
+1. The active AlohaAlpha Core plugin.
+2. Its exact WordPress plugin directory and entry file.
+3. The corresponding local source directory.
+4. Whether it is mounted into Docker through `wp-env`.
+5. Its registration in any relevant configuration files.
+
+The expected local development source is:
+
+`backend/plugins/alohaalpha-core/`
+
+However, verify this against the actual environment rather than assuming it is the active installation.
+
+**The active plugin must not be deleted, deactivated, replaced or modified unnecessarily.**
+
+### 2. Identify the Four Inactive Copies
+
+For each inactive AlohaAlpha Core plugin:
+
+1. Identify its WordPress directory.
+2. Identify its plugin entry file.
+3. Confirm that WordPress reports it as inactive.
+4. Determine whether it maps to a local source directory.
+5. Determine whether it is copied, mounted, generated or restored by the environment.
+6. Check whether it is referenced by any project configuration.
+7. Confirm it is not required by another active component.
+
+Document which four copies are safe to remove.
+
+Do not identify plugins by display name alone.
+
+Use their actual plugin paths and activation states.
+
+### 3. Investigate Why They Reappear
+
+Inspect the local development configuration.
+
+Pay particular attention to:
+
+- `.wp-env.json`.
+- WordPress plugin directories.
+- `backend/plugins/`.
+- Docker bind mounts.
+- `wp-env` configuration and startup behaviour.
+- Plugin installation or copying scripts.
+- Build or setup scripts.
+- Any generated directories that contain old plugin versions.
+
+Determine why deleting the copies inside WordPress does not permanently remove them.
+
+Possible causes include plugin directories being mounted from the local filesystem or restored by development setup scripts.
+
+Do not assume a particular cause without verifying it.
+
+### 4. Permanently Remove the Four Inactive Copies
+
+Once their identities and sources are confirmed:
+
+1. Remove the four unused plugin copies.
+2. Remove obsolete source directories or configuration entries that recreate them, where appropriate.
+3. Preserve the active plugin and its source directory.
+4. Preserve the active plugin's data, functionality and settings.
+5. Avoid unnecessary modifications to WordPress itself.
+6. Do not delete unrelated plugins.
+7. Do not delete media, pages, posts, patterns or database content.
+8. Do not reset the WordPress environment.
+
+If the duplicate directories are being restored from local project files, correct the corresponding local source or configuration.
+
+Do not rely exclusively on deleting them through the WordPress Plugins screen.
+
+If an inactive copy cannot be confidently identified as safe to remove, stop and report the ambiguity rather than risking the active plugin.
+
+### 5. Verify Permanent Removal
+
+After removing the duplicates:
+
+1. Refresh the WordPress Plugins page.
+2. Confirm only the active AlohaAlpha Core plugin remains.
+3. Verify that it is still active.
+4. Verify its Gutenberg blocks are registered.
+5. Verify existing WordPress pages and synced patterns continue working.
+6. Verify React can still access its required WordPress endpoints.
+7. Restart the local development environment through the normal non-destructive procedure if necessary.
+8. Refresh the Plugins page again.
+9. Confirm the deleted copies do not return.
+
+Do not use destructive reset commands such as `wp-env destroy`.
+
+### Acceptance Criteria
+
+- The active AlohaAlpha Core plugin is positively identified.
+- All four inactive copies are identified.
+- The underlying reason for their reappearance is established.
+- Four inactive copies are permanently removed.
+- Only the intended active AlohaAlpha Core plugin remains.
+- The active plugin stays activated.
+- Existing Gutenberg blocks work.
+- Existing REST endpoints work.
+- WordPress pages and patterns remain intact.
+- Duplicate plugins do not reappear after refresh or normal environment restart.
+
+**Notes:** Complete. The active plugin is the version 0.2.0 bind mount `backend/plugins/alohaalpha-core/` → `/var/www/html/wp-content/plugins/alohaalpha-core`, with basename `alohaalpha-core/alohaalpha-core.php`; `.wp-env.json` contains only that plugin mapping. The four inactive copies were `alohaalpha-core-0.2.0-ArOQ4jMBqXaTiOH5`, `alohaalpha-core-0.2.0-hSet71yi0AzTm5ZX`, `alohaalpha-core-0.2.0-iB4dddYwHePgCy5D` and `alohaalpha-core-0.2.0-MHU22S91sSO2Ftb1` in wp-env's persistent host WordPress plugin directory. They came from malformed historical ZIP extractions: Windows path separators were stored as literal filename characters, so WordPress normalized them into apparent nested plugin basenames but could not reopen or reliably delete those paths. The current deployment ZIP uses valid forward-slash entries and the stable `alohaalpha-core` directory. Removed only the four malformed directories after backing them up. Before and after a normal wp-env restart, WP-CLI and a refreshed Plugins screen showed exactly one active AlohaAlpha Core 0.2.0 plugin; seven `aloha/*` blocks, all six published synced patterns, all six published pages and the Header, Footer, Contact Us and Home REST responses remained available.
+
+---
+
+# Epic-006 Bug Implementation Instructions
+
+## Preparation
+
+Before implementing the bugs:
+
+1. Read and follow `AGENTS.md`.
+2. Read the original Epic-006 specification.
+3. Review the existing Contact Us decorations and their animation logic.
+4. Review the Header's sticky implementation.
+5. Review the loading screen introduced in Feature-005.
+6. Inspect the local WordPress and Docker configuration before investigating duplicate plugins.
+
+## Implementation Order
+
+Complete bugs in the following order:
+
+**Bug-001:** Shaka and Surfboard size, positioning, outline and animations.
+
+**Bug-002:** Sticky Header height and Dark Green bottom border.
+
+**Bug-003:** Remove the loading screen and its unnecessary code.
+
+**Bug-004:** Investigate and permanently remove the four inactive plugin copies.
+
+Do not modify unrelated features.
+
+## WordPress Integration
+
+Preserve the existing AlohaAlpha Core architecture.
+
+The active plugin is expected to be developed through the local mapped directory:
+
+`backend/plugins/alohaalpha-core/`
+
+Verify the actual mapping before making any changes related to Bug-004.
+
+Do not generate ZIP files for the local development workflow.
+
+Do not alter existing WordPress content or synced patterns.
+
+## Testing
+
+Run focused automated checks and relevant builds.
+
+Verify the website at:
+
+- 320px.
+- 375px.
+- 768px.
+- 1024px.
+- 1440px.
+
+Specifically test:
+
+- Shaka sizing and transparent outline.
+- Desktop and mobile Shaka colours.
+- Entrance and repeating shake timing.
+- Surfboard positioning and pivot animation.
+- Animation resets.
+- Sticky Header scrolling and navigation.
+- Absence of the loading screen.
+- Normal WordPress data loading.
+- Active plugin functionality.
+- Removal of duplicate plugins.
+- No horizontal overflow.
+
+For Bug-004, verify the actual WordPress environment rather than relying solely on frontend tests.
+
+## Bug Tracking
+
+Update:
+
+`src/vibe/epics/epic-006/bugs.txt`
+
+Follow all existing status and rollback conventions in `AGENTS.md`.
+
+Only mark a bug complete when its acceptance criteria are satisfied.
+
+## Completion Report
+
+After each bug, report:
+
+1. Bug status.
+2. Files changed.
+3. Changes implemented.
+4. Tests performed.
+5. Outstanding limitations.
+
+For Bug-004, specifically identify:
+
+- The active plugin directory.
+- The four removed duplicate directories.
+- Why they were reappearing.
+- What was changed to prevent their return.
+- Whether the active plugin was verified after removal.
+
+Do not claim that plugins were removed unless they have actually been removed and the environment has been checked.
+
+**Scope:** Complete only the authorised Epic-006 bug fixes. Do not begin Epic-007 or unrelated work.
+
+
+
+## Bug-005 — Image Divider Mobile Sizing and Wave Borders
+
+**Status:** complete
+
+### Issue
+
+On mobile devices, the Image Divider currently does not adapt its image dimensions appropriately.
+
+I want the image's width to be restricted to **100% of the available page width**, with the divider's height adapting to the resulting image dimensions.
+
+It is acceptable for the divider to become significantly shorter on mobile.
+
+The priority is ensuring the entire divider looks natural, with no hard image edges visible and a wave-shaped border at both the top and bottom.
+
+### 1. Restrict Image Width on Mobile
+
+At mobile breakpoints:
+
+- The underlying image must not render wider than 100% of the viewport width.
+- Do not enlarge the image horizontally beyond the available page width to maintain a fixed divider height.
+- Maintain the image's original aspect ratio.
+- Do not stretch or distort the image.
+- Ensure the divider itself spans the full available viewport width.
+- Do not introduce horizontal scrolling.
+
+The mobile implementation should prioritise the image's natural scaled dimensions over the desktop height setting.
+
+### 2. Adaptive Divider Height
+
+The divider currently has a configurable height between 20vh and 100vh.
+
+Preserve this Gutenberg setting for desktop and other applicable layouts.
+
+On mobile, calculate a suitable divider height based on the image's actual rendered dimensions.
+
+Requirements:
+
+1. Determine the selected image's intrinsic aspect ratio.
+2. Calculate its natural height when scaled to the available viewport width.
+3. Adapt the divider height to fit within the image's available vertical area.
+4. Allow the divider to become much shorter than the configured desktop height.
+5. Do not enlarge the image beyond the available viewport width merely to maintain the desktop height.
+6. Avoid unnecessary letterboxing or empty space.
+7. Recalculate when viewport dimensions change or the selected image changes.
+8. Avoid layout shifts where the image dimensions are already known.
+
+If necessary, use a mobile-specific height calculation rather than relying exclusively on the existing `vh` value.
+
+### 3. Preserve Top and Bottom Waves
+
+Both wave borders must remain visible on mobile.
+
+Requirements:
+
+- The top edge must always have a wave-shaped boundary.
+- The bottom edge must always have a wave-shaped boundary.
+- Preserve the existing distinct top and bottom wave geometry.
+- Do not show any straight horizontal image edges.
+- Ensure the waves span the full divider width.
+- Adapt wave depth proportionally for shorter dividers.
+- Prevent the waves from overlapping so much that the image becomes visually unusable.
+- Prevent white gaps, transparent strips or unintended background exposure.
+- Keep the surrounding page section transitions seamless.
+
+The waves should continue to mask the image itself, rather than relying on fixed background-colour overlays.
+
+### 4. Mobile Parallax Behaviour
+
+The existing desktop parallax effect should remain unchanged.
+
+On mobile, the natural image dimensions may provide little or no spare vertical space for parallax movement.
+
+Requirements:
+
+1. Recalculate the available vertical travel after applying the mobile dimensions.
+2. Never allow parallax to expose the underlying image's straight edges.
+3. Reduce the parallax travel when insufficient vertical overscan is available.
+4. Disable parallax movement on mobile when the image has no safe vertical travel.
+5. Do not artificially enlarge the image beyond 100% of the viewport width to create additional parallax movement.
+6. Keep the image correctly centred when parallax is disabled.
+7. Preserve reduced-motion support.
+
+**Wave integrity and image coverage take priority over preserving parallax movement on mobile.**
+
+### 5. Preserve Desktop Behaviour
+
+Do not unnecessarily modify:
+
+- Gutenberg Divider Height slider.
+- Desktop height calculations.
+- Desktop parallax movement.
+- Existing image centring.
+- Image selection and replacement.
+- Top and bottom wave geometry.
+- Full-width divider layout.
+
+This is primarily a mobile-specific correction.
+
+### Acceptance Criteria
+
+- Mobile image width never exceeds 100% of the available viewport width.
+- Original image aspect ratio is preserved.
+- Divider height adapts to the scaled image.
+- Divider may become significantly shorter on mobile.
+- Both wave borders remain visible.
+- No straight image edges are visible.
+- No gaps appear during scrolling.
+- Mobile parallax is safely limited or disabled.
+- Desktop parallax and height settings remain functional.
+- No horizontal overflow.
+- Existing WordPress-managed images continue working.
+
+**Notes:** Complete. Added mobile-only natural image geometry while preserving the existing desktop cover calculation and Gutenberg height setting. At widths below 900px, the image renders at exactly the available divider width with its intrinsic aspect ratio; divider height is capped at the resulting natural image height, and parallax uses only genuine remaining vertical overscan or stays centred at zero when none exists. Intrinsic dimensions provide an immediate CSS height fallback to avoid avoidable layout shifts, with JavaScript recalculation on image load, resize and breakpoint changes. The existing object-bounding-box mask continues scaling the distinct top and bottom wave geometry with the adaptive height. The real WordPress Home divider was verified at 320, 375, 768, 1024 and 1440px: mobile width never exceeded the viewport, 320/375px dividers collapsed to 213/250px with zero parallax, 768px travel was safely bounded, desktop retained 60vh behavior, all scroll positions remained image-covered and no horizontal overflow appeared.
+
+---
+
+## Bug-006 — Improve Mobile Hamburger and Close Icon
+
+**Status:** complete
+
+### Issue
+
+The mobile navigation hamburger animates into an X when the menu opens.
+
+I like the existing animation and want to preserve it.
+
+However, the resulting X is noticeably lopsided and does not form a clean, symmetrical shape.
+
+I also want the lines used for both the hamburger and the X to be **1px thicker** than they currently are.
+
+### 1. Correct the X Shape
+
+Inspect the existing hamburger-to-X animation and identify why the final shape is asymmetrical.
+
+Requirements:
+
+1. Ensure the two diagonal lines form a clean, symmetrical X.
+2. Both diagonals must have the same length.
+3. The diagonals must cross at their exact centre.
+4. Use matching rotation angles, typically +45° and -45°.
+5. Correct any inconsistent transform origins or positioning offsets.
+6. Ensure both lines share the same visual centre.
+7. Preserve the existing icon dimensions unless a minor adjustment is necessary.
+8. Ensure the X looks balanced at all mobile viewport widths.
+
+The final icon should resemble a conventional, well-proportioned close icon rather than two unevenly positioned lines.
+
+### 2. Increase Line Thickness
+
+Increase the thickness of the existing hamburger bars by exactly 1px.
+
+For example, if the current bars are 2px thick, change them to 3px.
+
+Requirements:
+
+- Apply to all three hamburger bars.
+- Apply the same thickness to both diagonal lines of the X.
+- Keep line widths consistent.
+- Preserve existing colours.
+- Avoid visually uneven line ends or overlapping artefacts.
+
+Use the existing CSS variable for bar thickness if one exists.
+
+Otherwise, introduce a shared variable so the thickness remains consistent across both states.
+
+Do not change the overall icon colour scheme.
+
+### 3. Preserve the Existing Animation
+
+Keep the existing hamburger-to-X animation.
+
+Requirements:
+
+1. Preserve the overall transition style.
+2. Preserve the existing animation duration.
+3. Preserve the existing easing where possible.
+4. Ensure the bars move smoothly into their new positions.
+5. Ensure the middle bar disappears appropriately.
+6. Ensure the reverse animation works when closing the menu.
+7. Avoid sudden jumps or changes in position.
+8. Keep the icon centred inside its button throughout the transition.
+
+The objective is to improve the final geometry without redesigning the animation.
+
+### 4. Preserve Mobile Navigation Functionality
+
+Do not affect:
+
+- Menu opening and closing.
+- Navigation links.
+- Mobile menu overlay.
+- Header sticky positioning.
+- Hamburger button size.
+- Keyboard accessibility.
+- `aria-expanded` behaviour.
+- Focus states.
+- Existing responsive breakpoints.
+
+Ensure the updated icon remains easy to recognise and interact with.
+
+### Acceptance Criteria
+
+- Hamburger bars are 1px thicker.
+- X diagonals are also 1px thicker.
+- X is visually symmetrical.
+- Both diagonals have equal lengths.
+- Both lines intersect at the centre.
+- Existing transition animation is preserved.
+- Reverse animation works correctly.
+- No visual jumping or misalignment.
+- Mobile navigation remains fully functional.
+- No horizontal overflow.
+
+**Notes:** Complete. Replaced flow-and-margin-based bar positioning with three absolutely positioned bars sharing the button's exact centre and a common inset. The closed state uses symmetrical -8px, 0 and +8px vertical offsets; the open state brings the first and third bars to the same centre before applying matching +45° and -45° rotations. A shared 3px thickness variable increases every hamburger and X line by exactly 1px. The existing 48px button, colours, 180ms opacity transition, 240ms transform transition, easing, breakpoint and markup are preserved. Live checks at 320, 375, 430 and 768px confirmed equal bar lengths, exact diagonal intersection, smooth open/reverse states, overlay and navigation behavior, `aria-expanded`, Escape focus restoration and zero overflow; 1024 and 1440px retained the six-link desktop navigation with the menu button hidden.
+
+---
+
+# Implementation Instructions
+
+These bugs belong to Epic-006.
+
+## Preparation
+
+1. Read and follow `AGENTS.md`.
+2. Read the existing Epic-006 requirements and completed bug history.
+3. Inspect the Image Divider's mobile sizing and wave implementation.
+4. Inspect the Header's hamburger icon markup and SCSS animations.
+5. Preserve existing behaviour outside the requested changes.
+
+## Implementation Order
+
+### Bug-005
+
+Correct the Image Divider's mobile image sizing, adaptive height, wave masking and safe parallax behaviour.
+
+### Bug-006
+
+Correct the mobile hamburger-to-X geometry and increase bar thickness by 1px.
+
+## Testing
+
+Run focused tests and relevant frontend builds.
+
+Verify the Image Divider using images with different aspect ratios:
+
+- Landscape.
+- Square.
+- Portrait.
+
+Test the mobile navigation in both open and closed states.
+
+Verify at:
+
+- 320px.
+- 375px.
+- 430px.
+- 768px.
+
+Also verify desktop regressions at 1024px and 1440px.
+
+Check for unwanted horizontal scrolling at every size.
+
+## Tracking
+
+Update the corresponding bug entries in:
+
+`src/vibe/epics/epic-006/bugs.txt`
+
+Follow the existing status, rollback and completion conventions.
+
+Only mark each bug complete when its acceptance criteria have been satisfied.
+
+## Completion Report
+
+For each bug, report:
+
+1. Changes implemented.
+2. Files modified.
+3. Tests performed.
+4. Responsive verification.
+5. Remaining limitations.
+
+Do not modify unrelated features or begin another Epic.
+
+
+
+## Bug-007 — Remove Unwanted Shaka SVG Outline
+
+**Status:** complete
+
+### Issue
+
+The Shaka SVG currently has an additional outline that is not part of the original artwork.
+
+I want the Shaka to display exactly as it does in the original SVG file, without any additional strokes, borders or outlines being applied.
+
+### 1. Restore Original SVG Appearance
+
+Inspect the existing reusable Shaka React component and compare it against the original SVG source supplied in Epic-006 Feature-003.
+
+Requirements:
+
+1. Use the original SVG path geometry exactly.
+2. Remove any additional stroke applied to the SVG or its paths.
+3. Remove unnecessary `strokeWidth`, `strokeLinecap` and `strokeLinejoin` properties.
+4. Remove any CSS `border`, `outline`, `filter`, `drop-shadow` or similar styling responsible for the unwanted outline.
+5. Preserve the original SVG's `viewBox`.
+6. Preserve the original path's fill-rule behaviour and transparency.
+7. Do not modify the path geometry to compensate for unwanted styling.
+8. Do not replace the artwork with a different Shaka design.
+
+**Important:** The original SVG uses `fill="currentColor"` and `fill-rule="evenodd"`. Restore the original rendering approach rather than adding a separate stroke around the path.
+
+The objective is to reproduce the original SVG artwork faithfully, not generate a new outlined interpretation.
+
+### 2. Preserve Dynamic Colours
+
+The Shaka must continue to support colours through `currentColor`.
+
+Maintain:
+
+- Desktop Contact Us: White (`#FFFFFF`).
+- Mobile Contact Us: Dark Green (`#033626`).
+
+Do not hardcode a colour directly into the SVG path.
+
+### 3. Preserve Existing Functionality
+
+Do not change:
+
+- Shaka dimensions.
+- Desktop or mobile positioning.
+- Entrance animation.
+- Resting rotation of -30 degrees.
+- Shake duration of 1.5 seconds.
+- Pause duration of 3.5 seconds.
+- Four back-and-forth oscillations.
+- Animation reset behaviour.
+- Responsive scaling.
+
+The Shaka must remain a reusable React component.
+
+### 4. Verify Both Locations
+
+The same SVG component was previously used in:
+
+- Contact Us.
+- The loading screen.
+
+The loading screen has since been removed in Bug-003.
+
+Ensure the Contact Us implementation works correctly and that no obsolete loading-screen-specific styling is affecting the SVG.
+
+### Acceptance Criteria
+
+- The unwanted additional outline is removed.
+- The SVG matches the original supplied artwork.
+- No additional stroke or border is visible.
+- Original path geometry and transparent regions are preserved.
+- Desktop and mobile colours remain correct.
+- All existing Shaka animations continue functioning.
+- No horizontal overflow or clipping is introduced.
+
+### Implementation Instructions
+
+1. Read `AGENTS.md`.
+2. Inspect the original Shaka SVG in Epic-006 Feature-003.
+3. Compare it with the current React Shaka component.
+4. Identify which SVG attributes or SCSS rules introduce the extra outline.
+5. Remove the unwanted styling without modifying the original artwork.
+6. Test the component on desktop and mobile.
+7. Update Bug-007 in `src/vibe/epics/epic-006/bugs.txt`.
+
+**Scope:** Correct the SVG appearance only. Do not modify unrelated features or begin another Epic.
+
+**Notes:** Complete. The reusable Shaka path now matches the original Feature-003 SVG rendering: `currentColor` even-odd fill with no stroke, stroke-width, line-cap, line-join or stroke-overflow attributes. The original path geometry, viewBox, responsive dimensions, positioning and animation rules are unchanged. The production build and seven focused frontend tests pass. Live Contact Us checks at desktop and mobile widths confirmed White (`#FFFFFF`) and Dark Green (`#033626`) fills respectively, no stroke/effect styling, the existing 5-second animation and -30-degree resting rotation, and zero horizontal overflow.

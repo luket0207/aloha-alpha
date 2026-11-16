@@ -93,7 +93,7 @@
         apiVersion: 3,
         title: __('Text Image — Side by Side', 'alohaalpha-core'),
         description: __('Selectable image-left or image-right layout with protected media and flexible text columns.', 'alohaalpha-core'),
-        category: 'design',
+        category: 'aloha-layouts',
         icon: 'align-pull-left',
         attributes,
         supports: { html: false, reusable: true },

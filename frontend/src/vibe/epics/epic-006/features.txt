@@ -63,7 +63,7 @@ On resuming `//completeEpic-006`, inspect the existing feature statuses and Phas
 
 # Feature-001 — Organise Gutenberg Blocks
 
-**Status:** not started
+**Status:** complete
 
 ## Objective
 
@@ -135,11 +135,13 @@ Do not otherwise restructure `AGENTS.md`.
 - Synced patterns remain unchanged.
 - Future block development follows the new category convention.
 
+**Notes:** Complete. Home Hero and all six remaining registered `aloha/*` block types now use `aloha-layouts`; Round/Square Frame and Small/Large Logo variations inherit that parent category, while the two protected Text Image child blocks retain disabled inserters. The ten native Heading variations remain registered against `core/heading` and functional, but Gutenberg's block-variation API does not support assigning an independent category without moving or duplicating the native Heading block, so they remain discoverable with Heading as the least disruptive compatible behavior. Synced patterns and starter patterns were not converted or renamed. Added the requested permanent default-category convention to `AGENTS.md`.
+
 ---
 
 # Feature-002 — Correct Overlapping Home Hero Waves
 
-**Status:** not started
+**Status:** complete
 
 ## Issue
 
@@ -178,11 +180,13 @@ I like the existing water animation and do not want it redesigned or rebuilt.
 - Existing water animation behaves as before.
 - No visual or responsive regressions.
 
+**Notes:** Complete. Identified the remaining near-alignment between the primary and secondary repeating ripple patterns around the lower quarter of the Light Blue water surface. Moved only the secondary pattern baseline 14 SVG units farther down (`y="14"` to `y="28"`) and shifted its existing vertical animation values by the same amount (`14;6;14` to `28;20;28`). Its path geometry, eight-unit oscillation, 23-second opposing horizontal movement, colours, opacity and timing are unchanged. The production build and desktop/mobile visual checks passed.
+
 ---
 
 # Feature-003 — Animated Shaka and Surfboard in Contact Us
 
-**Status:** not started
+**Status:** complete
 
 ## Objective
 
@@ -459,11 +463,13 @@ Do not automatically edit the live WordPress pattern.
 - Reduced-motion behaviour works.
 - No horizontal overflow.
 
+**Notes:** Complete. Phase 1 added the exact reusable Shaka SVG, Dark Green token, threshold/reset state logic, responsive presentation and WordPress-managed Surfboard adapter. After the Phase 2 handover, the live `Contact Us — Full` synced pattern supplies Media Library image 105 through `aloha-contact__surfboard`; the React renderer extracts that source, removes the editorial block from normal content and renders one decoration. Desktop and mobile browser checks confirmed the real PNG loads without duplication, aligns approximately with the Submit button, stays outside the form, resets off-screen, remains hidden on mobile and introduces no horizontal overflow. Focused decoration tests and the production build pass.
+
 ---
 
 # Feature-004 — Sticky Header
 
-**Status:** not started
+**Status:** complete
 
 ## Objective
 
@@ -507,11 +513,13 @@ Use appropriate scroll offsets or `scroll-margin-top` so content is not hidden u
 - Scroll destinations are not hidden behind the Header.
 - No layout shifts or horizontal overflow.
 
+**Notes:** Complete. The existing Header now uses in-flow sticky positioning at the top of the viewport with its established stacking context, so its logo, active states, hover treatment and mobile menu behavior are unchanged. Shared desktop/mobile Header-height tokens provide native scroll padding and anchor margins, while the existing Hero and Contact Jump handlers continue using the measured sticky height. Browser checks on all six routes at desktop and mobile sizes confirmed a zero-offset sticky Header, one active navigation item, no horizontal overflow, preserved menu focus/inert behavior, and unobscured Hero and Contact targets.
+
 ---
 
 # Feature-005 — Branded Full-Screen Loading Screen
 
-**Status:** not started
+**Status:** complete
 
 ## Objective
 
@@ -678,6 +686,8 @@ Do not create a Gutenberg block for it.
 - Mobile and desktop layouts work.
 - Accessibility and reduced-motion requirements are met.
 - Existing website functionality remains intact.
+
+**Notes:** Complete. Added a full-viewport Light Blue loading coordinator for the six routed pages and shared Header, Footer, Contact patterns and WordPress-backed Large Logo. It preloads the Home Hero's first image, enforces the one-second minimum without restarting it on renders, aborts stale page requests, imposes a finite critical-load timeout, and provides a Japanese error/retry state. The opaque overlay uses the existing Large Logo and reusable Dark Green Shaka, blocks the underlying layout with `inert`/`aria-hidden`, locks background scrolling and restores interaction after readiness. Browser checks passed at 320, 375, 768, 1024 and 1440px, including reduced motion, delayed loading, an injected essential-resource failure and retry, and rapid route changes; focused loading-state tests, PHP syntax and the production build also pass.
 
 ---
 

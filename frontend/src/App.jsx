@@ -12,6 +12,10 @@ const pages = [
   { path: '/recruit/', slug: 'recruit' },
 ];
 
+function NotFoundPage() {
+  return <main className="container"><h1>Not found</h1></main>;
+}
+
 export default function App() {
   return (
     <BrowserRouter>
@@ -20,7 +24,7 @@ export default function App() {
           {pages.map(({ path, slug }) => (
             <Route key={slug} path={path} element={<WordPressPage slug={slug} />} />
           ))}
-          <Route path="*" element={<main className="container"><h1>Not found</h1></main>} />
+          <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

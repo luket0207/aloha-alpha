@@ -32,6 +32,22 @@
   will-change: transform;
 }
 
+@media (max-width: 899px) {
+  .aloha-image-divider {
+    height: var(
+      --aloha-image-divider-mobile-height,
+      min(
+        calc(var(--aloha-image-divider-height, 50) * 1vh),
+        calc(100vw / var(--aloha-image-divider-image-aspect-ratio, 1))
+      )
+    );
+  }
+
+  .aloha-image-divider .aloha-image-divider__media > img {
+    max-width: 100%;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .aloha-image-divider .aloha-image-divider__media > img {
     transform: translate3d(-50%, -50%, 0) !important;

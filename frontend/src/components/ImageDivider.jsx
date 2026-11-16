@@ -3,6 +3,7 @@ import { WaveClipPath } from './Wave.jsx';
 import {
   buildWaveBandPath,
   calculateImageCoverGeometry,
+  calculateMobileImageGeometry,
   calculateParallaxOffset,
   IMAGE_DIVIDER_BOTTOM_WAVE,
   IMAGE_DIVIDER_TOP_WAVE,
@@ -12,6 +13,7 @@ import useReducedMotion from './useReducedMotion.js';
 import './ImageDivider.scss';
 
 const DIVIDER_MASK_PATH = buildWaveBandPath(IMAGE_DIVIDER_TOP_WAVE, IMAGE_DIVIDER_BOTTOM_WAVE);
+const MOBILE_MEDIA_QUERY = '(max-width: 899px)';
 
 export default function ImageDivider({ dividerHeight: requestedDividerHeight, image }) {
   const sectionRef = useRef(null);
@@ -26,6 +28,7 @@ export default function ImageDivider({ dividerHeight: requestedDividerHeight, im
     if (!section || !imageElement) return undefined;
 
     imageElement.style.setProperty('--aloha-image-divider-offset', '0px');
+    const mobileMedia = window.matchMedia(MOBILE_MEDIA_QUERY);
 
     let active = false;
     let maxOffset = 0;
@@ -44,12 +47,28 @@ export default function ImageDivider({ dividerHeight: requestedDividerHeight, im
 
       const imageWidth = imageElement.naturalWidth || Number(imageElement.getAttribute('width'));
       const imageHeight = imageElement.naturalHeight || Number(imageElement.getAttribute('height'));
-      const geometry = calculateImageCoverGeometry({
-        imageHeight,
-        imageWidth,
-        sectionHeight: section.clientHeight,
-        sectionWidth: section.clientWidth,
-      });
+      let geometry;
+
+      if (mobileMedia.matches) {
+        geometry = calculateMobileImageGeometry({
+          imageHeight,
+          imageWidth,
+          preferredSectionHeight: window.innerHeight * (dividerHeight / 100),
+          sectionWidth: section.clientWidth,
+        });
+        section.style.setProperty(
+          '--aloha-image-divider-mobile-height',
+          `${geometry.sectionHeight.toFixed(2)}px`,
+        );
+      } else {
+        section.style.removeProperty('--aloha-image-divider-mobile-height');
+        geometry = calculateImageCoverGeometry({
+          imageHeight,
+          imageWidth,
+          sectionHeight: section.clientHeight,
+          sectionWidth: section.clientWidth,
+        });
+      }
 
       maxOffset = geometry.maxOffset;
       imageElement.style.setProperty('--aloha-image-divider-rendered-height', `${geometry.renderedHeight.toFixed(2)}px`);
@@ -96,6 +115,7 @@ export default function ImageDivider({ dividerHeight: requestedDividerHeight, im
     }
 
     window.addEventListener('resize', queueGeometryUpdate);
+    mobileMedia.addEventListener('change', queueGeometryUpdate);
     imageElement.addEventListener('load', queueGeometryUpdate);
     updateGeometry();
 
@@ -121,18 +141,28 @@ export default function ImageDivider({ dividerHeight: requestedDividerHeight, im
       observer?.disconnect();
       resizeObserver?.disconnect();
       window.removeEventListener('resize', queueGeometryUpdate);
+      mobileMedia.removeEventListener('change', queueGeometryUpdate);
       imageElement.removeEventListener('load', queueGeometryUpdate);
       if (positionFrame !== null) window.cancelAnimationFrame(positionFrame);
       if (geometryFrame !== null) window.cancelAnimationFrame(geometryFrame);
     };
-  }, [reducedMotion]);
+  }, [dividerHeight, reducedMotion]);
+
+  const intrinsicWidth = Number(image.width);
+  const intrinsicHeight = Number(image.height);
+  const imageAspectRatio = intrinsicWidth > 0 && intrinsicHeight > 0
+    ? intrinsicWidth / intrinsicHeight
+    : 1;
 
   return (
     <figure
       className="aloha-image-divider"
       data-divider-height={dividerHeight}
       ref={sectionRef}
-      style={{ '--aloha-image-divider-height': dividerHeight }}
+      style={{
+        '--aloha-image-divider-height': dividerHeight,
+        '--aloha-image-divider-image-aspect-ratio': imageAspectRatio,
+      }}
     >
       <WaveClipPath id={clipId} path={DIVIDER_MASK_PATH} />
       <div

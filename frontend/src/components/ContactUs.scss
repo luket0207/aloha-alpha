@@ -31,9 +31,77 @@ $contact-top-wave-height: clamp(4rem, 7vw, 6rem);
 }
 
 .contact-us__intro,
+.contact-us__form,
+.contact-us__loading,
+.contact-us__error {
+  position: relative;
+  z-index: 1;
+}
+
+.contact-us__intro,
 .contact-us__form {
   width: min(100%, 46rem);
   margin-inline: auto;
+}
+
+.contact-us__decorations {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  overflow: clip;
+  pointer-events: none;
+}
+
+.contact-us__shaka {
+  --aloha-contact-shaka-width: 14rem;
+  position: absolute;
+  top: clamp(2rem, 8%, 5rem);
+  right: max(1.5rem, calc((100% - 70rem) / 2 - var(--aloha-contact-shaka-width) - 1rem));
+  width: var(--aloha-contact-shaka-width);
+  color: tokens.$color-white;
+  opacity: 0;
+  transform: translate3d(calc(100% + 3rem), -20%, 0) rotate(-30deg);
+  transform-origin: center;
+  transition: opacity 700ms ease, transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.contact-us__shaka.is-entered {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) rotate(-30deg);
+}
+
+.contact-us__shaka-graphic {
+  display: block;
+  width: 100%;
+  height: auto;
+  transform-origin: center;
+}
+
+.contact-us__shaka.is-entered .contact-us__shaka-graphic {
+  animation: aloha-shaka-cycle 5s ease-in-out 700ms infinite;
+}
+
+.contact-us__surfboard-decoration {
+  --aloha-contact-surfboard-width: clamp(12rem, 7vw, 14rem);
+  position: absolute;
+  bottom: var(--aloha-contact-surfboard-bottom, 0px);
+  left: max(1rem, calc((100% - 76rem) / 2 - var(--aloha-contact-surfboard-width) - 1rem));
+  width: var(--aloha-contact-surfboard-width);
+  opacity: 0;
+  transform: rotate(-15deg);
+  transform-origin: center bottom;
+  transition: opacity 800ms ease, transform 800ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.contact-us__surfboard-decoration.is-entered {
+  opacity: 1;
+  transform: rotate(15deg);
+}
+
+.contact-us__surfboard-decoration img {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 .contact-us__intro {
@@ -273,6 +341,29 @@ $contact-top-wave-height: clamp(4rem, 7vw, 6rem);
   }
 }
 
+@media (min-width: 900px) and (max-width: 1399px) {
+  .contact-us__shaka {
+    --aloha-contact-shaka-width: clamp(8rem, calc(25.5vw - 8.3rem), 14rem);
+  }
+
+  .contact-us__surfboard-decoration {
+    --aloha-contact-surfboard-width: clamp(2rem, calc(31vw - 15.5rem), 12rem);
+  }
+}
+
+@media (max-width: 899px) {
+  .contact-us__shaka {
+    --aloha-contact-shaka-width: clamp(8rem, 42vw, 13rem);
+    top: clamp(5rem, 14%, 9rem);
+    right: -1.5rem;
+    color: tokens.$dark-green;
+  }
+
+  .contact-us__surfboard-decoration {
+    display: none;
+  }
+}
+
 @media (max-width: 480px) {
   .contact-us__full {
     padding-inline: max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-left));
@@ -288,5 +379,25 @@ $contact-top-wave-height: clamp(4rem, 7vw, 6rem);
 
   .contact-us__submit {
     width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-us__shaka,
+  .contact-us__surfboard-decoration {
+    opacity: 1;
+    transition: none;
+  }
+
+  .contact-us__shaka {
+    transform: translate3d(0, 0, 0) rotate(-30deg);
+  }
+
+  .contact-us__shaka-graphic {
+    animation: none !important;
+  }
+
+  .contact-us__surfboard-decoration {
+    transform: rotate(15deg);
   }
 }

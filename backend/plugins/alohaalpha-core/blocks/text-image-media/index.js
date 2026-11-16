@@ -8,7 +8,7 @@
     registerBlockType('aloha/text-image-media', {
         apiVersion: 3,
         title: __('Side by Side — Image Area', 'alohaalpha-core'),
-        category: 'design',
+        category: 'aloha-layouts',
         icon: 'format-image',
         parent: ['aloha/text-image-side-by-side'],
         supports: { html: false, inserter: false, reusable: false },

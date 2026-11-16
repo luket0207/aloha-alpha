@@ -4,7 +4,7 @@
   "name": "aloha/image-frame",
   "version": "0.2.0",
   "title": "Image Frame",
-  "category": "media",
+  "category": "aloha-layouts",
   "icon": "format-image",
   "description": "Media Library image with a selectable Aloha frame style.",
   "textdomain": "alohaalpha-core",

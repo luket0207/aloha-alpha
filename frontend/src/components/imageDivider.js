@@ -85,6 +85,28 @@ export function calculateImageCoverGeometry({
   };
 }
 
+export function calculateMobileImageGeometry({
+  imageHeight,
+  imageWidth,
+  preferredSectionHeight,
+  sectionWidth,
+}) {
+  const safeSectionWidth = Math.max(1, Number(sectionWidth) || 0);
+  const safeImageHeight = Math.max(1, Number(imageHeight) || 0);
+  const safeImageWidth = Math.max(1, Number(imageWidth) || 0);
+  const renderedWidth = safeSectionWidth;
+  const renderedHeight = renderedWidth * (safeImageHeight / safeImageWidth);
+  const requestedSectionHeight = Math.max(1, Number(preferredSectionHeight) || renderedHeight);
+  const sectionHeight = Math.min(requestedSectionHeight, renderedHeight);
+
+  return {
+    maxOffset: Math.max(0, ((renderedHeight - sectionHeight) / 2) - 1),
+    renderedHeight,
+    renderedWidth,
+    sectionHeight,
+  };
+}
+
 export function imageDividerHeightFromElement(element) {
   return normalizeImageDividerHeight(element?.dataset.dividerHeight);
 }

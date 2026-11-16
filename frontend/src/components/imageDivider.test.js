@@ -3,6 +3,7 @@ import test from 'node:test';
 import {
   buildWaveBandPath,
   calculateImageCoverGeometry,
+  calculateMobileImageGeometry,
   calculateParallaxOffset,
   calculateParallaxProgress,
   IMAGE_DIVIDER_BOTTOM_WAVE,
@@ -35,6 +36,31 @@ test('normalizes divider height and preserves image aspect ratio with wave-safe 
   assert.equal(geometry.renderedWidth / geometry.renderedHeight, 1.5);
   assert.ok(geometry.minimumOverscan >= 120);
   assert.ok(geometry.maxOffset >= geometry.minimumOverscan - 1);
+});
+
+test('uses natural width-scaled image geometry and only genuine overscan on mobile', () => {
+  const landscape = calculateMobileImageGeometry({
+    imageHeight: 800,
+    imageWidth: 1200,
+    preferredSectionHeight: 330,
+    sectionWidth: 375,
+  });
+  assert.equal(landscape.renderedWidth, 375);
+  assert.equal(landscape.renderedHeight, 250);
+  assert.equal(landscape.sectionHeight, 250);
+  assert.equal(landscape.maxOffset, 0);
+
+  const portrait = calculateMobileImageGeometry({
+    imageHeight: 1200,
+    imageWidth: 800,
+    preferredSectionHeight: 330,
+    sectionWidth: 375,
+  });
+  assert.equal(portrait.renderedWidth, 375);
+  assert.equal(portrait.renderedHeight, 562.5);
+  assert.equal(portrait.sectionHeight, 330);
+  assert.equal(portrait.renderedWidth / portrait.renderedHeight, 800 / 1200);
+  assert.equal(portrait.maxOffset, 115.25);
 });
 
 test('builds one closed mask band from distinct top and bottom waves', () => {

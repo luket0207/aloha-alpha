@@ -94,7 +94,7 @@ function WaterSurface({ id, path, reducedMotion }) {
           patternUnits="userSpaceOnUse"
           width="320"
           x="-320"
-          y="14"
+          y="28"
         >
           <path
             d="M0 76C40 48 120 48 160 76S280 104 320 76V92C280 120 200 120 160 92S40 64 0 92Z"
@@ -122,7 +122,7 @@ function WaterSurface({ id, path, reducedMotion }) {
                 attributeName="y"
                 dur={`${WATER_RIPPLE_SECONDARY_DURATION_SECONDS * 0.7}s`}
                 repeatCount="indefinite"
-                values="14;6;14"
+                values="28;20;28"
               />
             </>
           )}

@@ -6,6 +6,11 @@
 @use './styles/themes';
 @use './styles/logo';
 
+:root {
+  --aloha-header-height: 5rem;
+  scroll-padding-top: calc(var(--aloha-header-height) + 1rem);
+}
+
 .container {
   width: min(100% - 2.5rem, tokens.$container-width);
   margin-inline: auto;
@@ -17,6 +22,11 @@ main {
 
 main.home-page {
   padding-block: 0;
+}
+
+.site-layout__content [id],
+.contact-us__full[id] {
+  scroll-margin-top: calc(var(--aloha-header-height) + 1rem);
 }
 
 .wp-content {
@@ -50,5 +60,11 @@ main.home-page {
     background: tokens.$color-brand;
     color: tokens.$color-white;
     text-decoration: none;
+  }
+}
+
+@media (max-width: 899px) {
+  :root {
+    --aloha-header-height: 4.5rem;
   }
 }

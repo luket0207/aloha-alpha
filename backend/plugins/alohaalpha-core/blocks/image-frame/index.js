@@ -58,7 +58,7 @@
         apiVersion: 3,
         title: __('Image Frame', 'alohaalpha-core'),
         description: __('Media Library image with a selectable Aloha frame style.', 'alohaalpha-core'),
-        category: 'media',
+        category: 'aloha-layouts',
         icon: 'format-image',
         attributes,
         supports: { html: false, reusable: true },

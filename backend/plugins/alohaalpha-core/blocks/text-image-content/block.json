@@ -4,7 +4,7 @@
   "name": "aloha/text-image-content",
   "version": "0.2.0",
   "title": "Side by Side — Text Area",
-  "category": "design",
+  "category": "aloha-layouts",
   "icon": "text-page",
   "description": "Flexible Heading and Paragraph content for the Side by Side section.",
   "textdomain": "alohaalpha-core",
