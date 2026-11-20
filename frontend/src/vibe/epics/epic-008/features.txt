@@ -1,0 +1,1103 @@
+# Epic-008 — Homepage Refinements, Logo Options and Reusable Buttons
+
+## Overview
+
+This Epic contains six features:
+
+- Feature-001 — Page Links title and spacing.
+- Feature-002 — Testimonials background image overlay.
+- Feature-003 — Access Map spacing and Japanese translation.
+- Feature-004 — Home Hero selectable logo style.
+- Feature-005 — Small Logo image replacement improvements.
+- Feature-006 — Reusable colour-aware Primary and Secondary buttons.
+
+The objective is to refine existing components while introducing a reusable button system and more flexibility in the Home Hero.
+
+Continue using the existing architecture:
+
+- WordPress for editable content and media.
+- Gutenberg for editor controls.
+- React for public-facing components and behaviour.
+- SCSS for styling and animations.
+- AlohaAlpha Core for custom Gutenberg blocks.
+
+Read and follow `AGENTS.md`.
+
+Preserve all existing functionality from Epics 001–007.
+
+---
+
+# Feature-001 — Page Links Title and Spacing
+
+**Status:** not started
+
+## Objective
+
+Improve the existing Page Links section by adding a Japanese H2 title and reducing the vertical padding.
+
+## 1. Add Japanese H2 Title
+
+Add the following title above the Page Links grid:
+
+**リンク集**
+
+This is the Japanese equivalent of "Links" in this context.
+
+Requirements:
+
+1. Display the title as a semantic H2.
+2. Position it above the circular page links.
+3. Centre the title horizontally.
+4. Use the existing Japanese heading font, Mochiy Pop P One.
+5. Use appropriate text colours for the Light Blue Group.
+6. Maintain consistent spacing between the title and links.
+7. Ensure the title remains responsive.
+8. Do not interfere with the existing link grid.
+
+The title can be fixed for this implementation. No new Gutenberg setting is necessary.
+
+## 2. Reduce Section Padding
+
+Change the Page Links section padding to:
+
+```scss
+padding:
+  clamp(1rem, 8vw, 2rem)
+  max(1.25rem, env(safe-area-inset-right))
+  clamp(1rem, 8vw, 2rem)
+  max(1.25rem, env(safe-area-inset-left));
+```
+
+Use these exact values.
+
+Requirements:
+
+- Reduce excessive vertical whitespace.
+- Preserve the existing horizontal alignment where possible.
+- Retain safe-area support.
+- Ensure the title and links fit comfortably inside the new spacing.
+- Do not introduce horizontal overflow.
+
+## 3. Preserve Existing Design
+
+Do not modify:
+
+- Four/two/one responsive link layout.
+- Round Frame-inspired circle shapes.
+- Different blob rotations.
+- Font Awesome icons.
+- Green and Cream link colours.
+- Hover scaling and shape rotation.
+- Light Blue water animation.
+- Background continuity behind neighbouring wave borders.
+- WordPress link editing and persistence.
+
+## Acceptance Criteria
+
+- リンク集 appears as a centred H2.
+- The correct Japanese heading font is used.
+- Padding matches the specified SCSS.
+- Excessive whitespace is reduced.
+- Existing Page Links behaviour remains unchanged.
+- Responsive layouts work without overflow.
+
+---
+
+# Feature-002 — Testimonials Background Overlay
+
+**Status:** not started
+
+## Objective
+
+Add a subtle black overlay to the background image in the Testimonials section.
+
+The purpose is to darken the image slightly while keeping the testimonial cards unchanged.
+
+## 1. Add Image Overlay
+
+Apply an overlay with:
+
+```scss
+background-color: rgba(0, 0, 0, 0.2);
+```
+
+The overlay must cover the entire visible background image area.
+
+Requirements:
+
+1. Overlay colour is Black.
+2. Opacity is exactly 0.2.
+3. Overlay remains positioned over the background image.
+4. The overlay must not change the original image or its WordPress data.
+5. Do not darken the entire Testimonials component.
+
+## 2. Layering
+
+The intended visual stacking order is:
+
+1. Background image.
+2. Black overlay.
+3. Testimonial cards and carousel content.
+
+Requirements:
+
+- The overlay must not cover testimonial cards.
+- The overlay must not reduce card opacity.
+- Text and carousel content must remain fully visible.
+- Carousel controls, if any remain, must not be affected.
+- The overlay must not intercept pointer events.
+- Preserve the existing card colours.
+
+Use the existing Testimonials background layer structure.
+
+Do not apply opacity to the parent container because that would also make its children transparent.
+
+## 3. Parallax and Wave Integration
+
+The overlay should remain visually attached to the background image area.
+
+Requirements:
+
+1. Preserve existing parallax movement.
+2. Preserve correct image centre alignment.
+3. Keep the overlay covering the image during movement.
+4. Maintain the top and bottom wave-shaped boundaries.
+5. Ensure the overlay is clipped consistently with the visible image.
+6. Prevent exposed rectangular edges.
+7. Preserve background transitions with neighbouring sections.
+
+The overlay should not create separate straight edges outside the section's wave masks.
+
+## 4. Preserve Testimonials Behaviour
+
+Do not modify:
+
+- Testimonial content.
+- Card shapes.
+- Card staggering.
+- Carousel movement.
+- Five-second automatic advancement.
+- One-testimonial-at-a-time transitions.
+- Responsive three/two/one display.
+- WordPress testimonial editing.
+- Background image selection.
+
+## Acceptance Criteria
+
+- Background image appears slightly darker.
+- Overlay is Black at 20% opacity.
+- Testimonial cards remain unaffected.
+- Text remains fully opaque.
+- Parallax and waves continue working.
+- No unwanted overlay edges or background gaps.
+- No visual regressions.
+
+---
+
+# Feature-003 — Access Map Spacing and Japanese Text
+
+**Status:** not started
+
+## Objective
+
+Reduce the excessive spacing above and below the Access Map section and translate its Google Maps link text into Japanese.
+
+## 1. Reduce Top Spacing
+
+The section currently has too much space above the map content.
+
+Because the preceding section has a wave-shaped bottom boundary, the top spacing can be smaller.
+
+Target:
+
+```scss
+margin-top: 1rem;
+```
+
+This is the intended visual spacing between the preceding wave transition and the Access Map content area.
+
+Requirements:
+
+1. Reduce the top spacing to approximately 1rem.
+2. Account for any existing padding, margins or wave overlap contributing to the total gap.
+3. Avoid accumulating spacing from multiple nested wrappers.
+4. Preserve sufficient clearance for the title.
+5. Avoid clipping or overlapping the preceding wave.
+6. Do not introduce white seams between sections.
+
+If existing padding rather than margin causes the whitespace, adjust the actual source of the gap rather than adding conflicting CSS.
+
+## 2. Reduce Bottom Spacing
+
+The bottom should have slightly more space than the top.
+
+Target:
+
+```scss
+margin-bottom: 2rem;
+```
+
+Requirements:
+
+- Reduce excessive bottom whitespace.
+- Preserve comfortable spacing beneath the Google Map and its external link.
+- Maintain a clear transition into the next section.
+- Avoid unnecessary additional padding from child elements.
+
+## 3. Translate Google Maps Link
+
+The current link text is:
+
+"Open the Aloha Academy location in Google Maps"
+
+Replace it with:
+
+**Google マップでアロハアカデミーの場所を見る**
+
+Requirements:
+
+1. Use the Japanese text shown above.
+2. Preserve the existing Google Maps destination.
+3. Preserve external-link behaviour.
+4. Preserve accessibility and keyboard navigation.
+5. Ensure the text wraps appropriately on mobile.
+6. Do not change the map's underlying coordinates.
+
+## 4. Preserve Existing Functionality
+
+Do not change:
+
+- Section title アクセス.
+- Map coordinates.
+- Google Maps iframe.
+- WordPress embed settings.
+- Scroll entrance animation.
+- Scroll-direction reset behaviour.
+- Map responsiveness.
+
+## Acceptance Criteria
+
+- Top spacing is approximately 1rem.
+- Bottom spacing is approximately 2rem.
+- Unnecessary inherited spacing is removed.
+- Japanese Google Maps link text displays correctly.
+- Link still opens the correct location.
+- Map animation and embedding remain functional.
+- Responsive behaviour is preserved.
+
+---
+
+# Feature-004 — Selectable Home Hero Logo
+
+**Status:** not started
+
+## Objective
+
+Add a new option to the existing Home Hero block allowing the user to choose between the current Writing Logo and a new Round Logo image.
+
+The current Writing Logo must remain available and unchanged.
+
+The new setting should be accessible from the Gutenberg block's advanced settings.
+
+## 1. Add Logo Style Setting
+
+Add a setting named:
+
+**Logo Style**
+
+Options:
+
+- Writing Logo.
+- Round Logo.
+
+Requirements:
+
+1. Add the setting to the existing Home Hero Gutenberg block.
+2. Place it within an appropriate advanced/settings panel.
+3. Default to Writing Logo.
+4. Store the selected value as a block attribute.
+5. Preserve compatibility with existing Home Hero blocks.
+6. Ensure switching options does not remove existing content.
+7. Update the editor preview when the option changes.
+8. Update the public React frontend when the block is saved.
+
+Suggested attribute:
+
+```js
+logoStyle: {
+  type: "string",
+  default: "writing"
+}
+```
+
+Only allow the recognised values `writing` and `round`.
+
+## 2. Writing Logo
+
+When Writing Logo is selected:
+
+- Render the existing Large Logo.
+- Preserve its current typography.
+- Preserve its flower image.
+- Preserve its existing positioning.
+- Preserve its responsiveness.
+- Preserve the existing slogan arrangement.
+
+Do not recreate or redesign the Writing Logo.
+
+It should appear exactly as it does before this Epic.
+
+## 3. Round Logo
+
+When Round Logo is selected, display an image in place of the Writing Logo.
+
+The image already exists in the WordPress Media Library and is named:
+
+`logo.png`
+
+### Dimensions
+
+Target dimensions:
+
+```scss
+width: 250px;
+height: 250px;
+```
+
+Requirements:
+
+1. Render the image at 250 × 250px on desktop.
+2. Scale responsively on smaller screens.
+3. Preserve its aspect ratio.
+4. Use appropriate image sizing such as `object-fit: contain`.
+5. Do not distort or crop the logo unnecessarily.
+6. Preserve the existing Home Hero layout and water animation.
+7. Do not modify the background carousel images.
+8. Do not add an additional decorative blob mask around the Round Logo unless the source image itself already contains that design.
+
+The Round Logo should use the actual `logo.png` image.
+
+## 4. Slogan Positioning
+
+When Round Logo is selected:
+
+1. Centre the Round Logo horizontally.
+2. Place the existing slogan directly beneath it.
+3. Centre the slogan text.
+4. Add 1rem of vertical spacing between the logo and slogan.
+5. Ensure the slogan remains responsive.
+6. Preserve the slogan's existing font, content and colour.
+
+The slogan must remain editable through the existing Home Hero control.
+
+**Important:** Do not create a separate slogan field for the Round Logo.
+
+Both logo options must use the same existing slogan data.
+
+Switching between the logos must not reset or modify the slogan.
+
+## 5. WordPress Image Integration
+
+I would prefer not to select `logo.png` manually every time I use the Round Logo option.
+
+Investigate whether the image can be resolved through the existing WordPress Media Library integration.
+
+Preferred approach:
+
+1. Identify the existing `logo.png` Media Library attachment.
+2. Use a stable WordPress attachment ID or existing centrally managed logo setting.
+3. Expose the image through the existing public data contract.
+4. Allow the Home Hero to reference that image automatically when Round Logo is selected.
+5. Do not hardcode the image's current upload URL inside React.
+
+Do not rely permanently on searching for an image by filename during every frontend render.
+
+### Fallback
+
+If the image cannot be identified reliably, or there are multiple attachments named `logo.png`, add a simple Media Library image selector.
+
+Prefer a central WordPress setting if an appropriate existing settings mechanism is available.
+
+Otherwise, add an image selector to the Home Hero's advanced controls.
+
+Only introduce the minimum additional editing functionality necessary.
+
+Do not build a new general-purpose media-management system.
+
+## 6. Editor Preview
+
+The Gutenberg preview should reflect the chosen option.
+
+When Writing Logo is selected:
+
+- Show the existing Writing Logo approximation.
+
+When Round Logo is selected:
+
+- Show the actual Round Logo image where available.
+- Display it approximately at the correct proportions.
+- Show the slogan centred beneath it.
+
+The preview does not need to reproduce the complete Hero animation.
+
+## 7. Preserve Existing Hero Functionality
+
+Do not modify:
+
+- Existing Home Hero block identity.
+- Carousel image selection.
+- Carousel transitions.
+- Animated water background.
+- Hero full-height behaviour.
+- Scroll-down button.
+- Decorative waves.
+- Existing colour scheme.
+- Slogan editing.
+- Existing page content.
+
+## Acceptance Criteria
+
+- Logo Style selector exists in Gutenberg.
+- Writing Logo remains the default.
+- Existing blocks remain compatible.
+- Writing Logo appearance is unchanged.
+- Round Logo displays `logo.png`.
+- Round Logo is 250 × 250px on desktop.
+- Round Logo scales responsively.
+- Slogan is centred 1rem beneath Round Logo.
+- Switching logos preserves slogan and carousel data.
+- Logo choice persists after saving and reopening the block.
+- No unnecessary manual image selection is required when a reliable central reference is available.
+- No Hero visual or functional regressions.
+
+---
+
+# Feature-005 — Improve Small Logo Image Replacement
+
+**Status:** not started
+
+## Objective
+
+Improve the existing Small Logo component so its image can be replaced with any suitable artwork, without changing the layout.
+
+The editor should use generic terminology rather than referring specifically to a flower.
+
+The image must also fill its existing space correctly without repeating or creating unwanted borders.
+
+## 1. Update Gutenberg Control Labels
+
+The current editing interface refers to the image as a flower.
+
+For example:
+
+"Replace flower image"
+
+Change this to generic wording such as:
+
+**Replace image**
+
+Similarly, use generic labels for other image actions and descriptions.
+
+Requirements:
+
+1. Remove flower-specific wording from the image replacement control.
+2. Preserve the existing Media Library functionality.
+3. Allow any appropriate image to be selected.
+4. Preserve image replacement and removal behaviour where supported.
+5. Avoid changing unrelated editor controls.
+
+Do not rename the entire Small Logo pattern unless necessary.
+
+## 2. Preserve Existing Image Dimensions
+
+The image currently occupies a specific area within the Small Logo.
+
+I want that space to remain exactly the same size.
+
+Requirements:
+
+1. Preserve the existing image container dimensions.
+2. Preserve its positioning relative to the logo text.
+3. Preserve responsive scaling.
+4. Do not enlarge the Small Logo.
+5. Do not change the logo typography.
+6. Do not change the overall layout.
+
+Only update how the image renders inside its existing space.
+
+## 3. Prevent Image Repetition
+
+The replacement image appears to have an unusual lower border or repeated edge.
+
+Investigate the actual cause.
+
+Check:
+
+- Background-image repetition.
+- Image sizing.
+- Container overflow.
+- Pseudo-elements.
+- SVG/image masking.
+- Duplicate image layers.
+- Border and box-shadow styling.
+- Incorrect image positioning.
+- Asset transparency or built-in edges.
+
+Do not assume CSS background repetition is the cause without investigating.
+
+If the image is rendered as a CSS background, ensure:
+
+```scss
+background-repeat: no-repeat;
+```
+
+If it is rendered as an `<img>` element, inspect the relevant `object-fit`, dimensions, clipping and parent styles instead.
+
+## 4. Image Fitting
+
+The replacement image should fill the existing allocated area without stretching or repeating.
+
+Requirements:
+
+1. Preserve the current image container size.
+2. Keep the image inside the container.
+3. Use appropriate image fitting, preferably `object-fit: cover` when the image should fill the complete area.
+4. Preserve the source aspect ratio.
+5. Use clipping where necessary.
+6. Avoid unexpected blank strips or repeated edges.
+7. Ensure the image remains visually centred.
+8. Keep responsive behaviour consistent.
+
+If the current design requires the full artwork to be visible, use `contain` with an appropriate transparent background instead of unnecessarily cropping it.
+
+The priority is to preserve the existing dimensions and remove the visual artefact.
+
+## 5. Preserve Pattern Functionality
+
+The Small Logo remains a WordPress-managed pattern.
+
+Do not:
+
+- Convert it into a completely different block.
+- Remove the existing text.
+- Change its typography.
+- Change its colours.
+- Change its position.
+- Break instances using its existing image.
+
+Also preserve the separate Header logo configuration introduced in Epic-007.
+
+Do not automatically replace the Header PNG simply because the Small Logo image changes.
+
+## Acceptance Criteria
+
+- Editor uses generic image replacement labels.
+- Image can be changed through WordPress.
+- Image container dimensions remain unchanged.
+- Replacement image fills its intended area.
+- No repeated image or unwanted bottom edge is visible.
+- No image distortion.
+- Existing Small Logo layout remains intact.
+- Header logo remains unaffected.
+- Saved WordPress content remains compatible.
+
+---
+
+# Feature-006 — Reusable Colour-Aware Buttons
+
+**Status:** not started
+
+## Objective
+
+Create a reusable React button component that automatically uses colours appropriate to the section in which it is placed.
+
+It should support two variants:
+
+- Primary Button.
+- Secondary Button.
+
+The existing Contact Us form Submit button must use the Primary variant.
+
+## 1. Shared Button Component
+
+Create a reusable React button component.
+
+Suggested name:
+
+`AlohaButton`
+
+Use the project's existing React component conventions.
+
+Requirements:
+
+1. Use a single shared component for Primary and Secondary buttons.
+2. Support standard button behaviour.
+3. Support accessible labels and keyboard interaction.
+4. Support relevant button types such as `button` and `submit`.
+5. Support disabled states where required.
+6. Allow children or text content without hardcoding labels.
+7. Preserve existing functionality of any button converted to use this component.
+8. Do not introduce an unnecessary third-party button library.
+
+Use semantic `<button>` markup.
+
+Do not create a Gutenberg block for this feature unless an actual editor requirement makes it necessary.
+
+## 2. Colour Awareness
+
+The button should automatically apply an appropriate colour scheme based on the background of the section containing it.
+
+The existing Aloha Academy colour groups include:
+
+- Green Group.
+- Light Blue Group.
+- Cream Group.
+- Grey Group.
+
+There is also the additional global Dark Green colour.
+
+### Requirements
+
+1. Use the existing global SCSS design tokens.
+2. Determine the appropriate button colours from the parent section's existing theme/colour-group information.
+3. Avoid requiring developers to manually specify text, background and hover colours every time.
+4. Preserve readable contrast.
+5. Avoid choosing colours based on unreliable sampling of rendered background pixels.
+6. Prefer the existing theme context, CSS class or `data-*` attribute system.
+7. Provide a sensible default when no recognised theme is supplied.
+8. Ensure nested elements retain the correct button colour treatment.
+
+Where possible, both variants should inherit their palette automatically from the same shared system.
+
+### Example
+
+A button inside the Green Contact Us section should use an appropriate contrasting appearance based on the site's established Green Group colours.
+
+A button placed in a Cream section should automatically use an appropriate contrasting Green-based appearance.
+
+Do not invent a completely separate button colour palette.
+
+Use the existing site's approved colour combinations, and verify text contrast against the button background.
+
+## 3. Primary and Secondary Variants
+
+Create a variant property.
+
+Suggested API:
+
+```jsx
+<AlohaButton variant="primary">
+  Submit
+</AlohaButton>
+
+<AlohaButton variant="secondary">
+  Clear
+</AlohaButton>
+```
+
+The primary distinction between variants is their size and hover behaviour.
+
+Both variants should use the same theme-aware colour system.
+
+### Primary Button
+
+- More vertical padding.
+- More prominent appearance.
+- Suitable for primary actions such as form submission.
+
+### Secondary Button
+
+- Less vertical padding.
+- More compact appearance.
+- Suitable for supporting actions.
+
+Use consistent horizontal spacing, typography, border treatment and corner radius unless the hover behaviour requires otherwise.
+
+## 4. Minimum Width
+
+Both variants must use:
+
+```scss
+min-width: 160px;
+```
+
+Requirements:
+
+1. Minimum button width is 160px.
+2. Add sufficient horizontal padding.
+3. Longer Japanese and Latin labels must fit naturally.
+4. Allow buttons to become wider than 160px.
+5. Avoid clipping or overflowing text.
+6. Keep buttons responsive on narrow screens.
+7. Do not force every button to exactly 160px.
+
+Use an appropriate width constraint so a button can shrink safely within a narrow mobile container where necessary.
+
+## 5. Primary Button Hover Animation
+
+The Primary button should reuse the existing navigation hover effect.
+
+The effect consists of:
+
+1. Text moves upwards slightly.
+2. A decorative wave animates into view from the bottom.
+3. The wave moves behind the text.
+4. The button's outer dimensions remain unchanged.
+
+### Requirements
+
+- Reuse the existing navigation hover-wave implementation or shared animation utilities.
+- Preserve the established motion style and timing.
+- Keep the text above the wave layer.
+- Ensure the wave never obscures the label.
+- Clip the wave to the button's boundaries.
+- Keep the button height unchanged during hover.
+- Avoid any layout shift.
+- Ensure the wave's colours are appropriate to the button's current theme.
+- Restore the original state when the pointer leaves.
+
+The hover animation should closely match the existing desktop navigation effect.
+
+Do not approximate it using an unrelated animation when the existing effect can be reused.
+
+### Text Movement
+
+Move the text upwards slightly through a transform.
+
+Do not change margins, padding or line-height to achieve the movement.
+
+The button itself must not grow taller.
+
+## 6. Secondary Button Hover Animation
+
+The Secondary button should use a simpler hover treatment.
+
+When hovered:
+
+1. The button background becomes darker.
+2. The entire button moves upwards slightly.
+3. Both effects animate smoothly.
+4. The button returns to its original position when hover ends.
+
+Requirements:
+
+- Use an appropriate darker colour from the current theme.
+- Maintain sufficient text contrast.
+- Use a small negative `translateY` value.
+- Do not change the document layout or surrounding spacing.
+- Do not use the Primary button's wave animation.
+- Preserve a clear focus state.
+
+## 7. Keyboard and Touch Behaviour
+
+Both variants must remain accessible.
+
+Requirements:
+
+1. Use semantic buttons.
+2. Preserve keyboard activation.
+3. Show a visible keyboard focus indicator.
+4. Do not rely on hover alone to communicate functionality.
+5. Maintain sufficiently large touch targets.
+6. Respect `prefers-reduced-motion`.
+7. Disabled buttons should not trigger hover animations.
+8. Preserve existing form submission behaviour.
+
+Do not introduce unnecessary loading animations or new validation logic.
+
+## 8. Update Contact Form Submit Button
+
+Refactor the existing Contact Us Submit button to use the new shared component.
+
+It must use:
+
+```jsx
+<AlohaButton variant="primary" type="submit">
+  Existing submit label
+</AlohaButton>
+```
+
+This is illustrative; preserve the actual Japanese text already used by the form.
+
+Requirements:
+
+1. Use the Primary variant.
+2. Inherit the appropriate colours from the Green Contact Us section.
+3. Preserve the existing button label.
+4. Preserve form submission.
+5. Preserve validation behaviour.
+6. Preserve disabled/submitting states.
+7. Preserve WordPress REST API integration.
+8. Preserve FluentSMTP functionality.
+9. Preserve spam protection and error handling.
+10. Do not cause duplicate submissions.
+
+The form's underlying logic must remain unchanged.
+
+Other buttons, such as the message-clear action, should not be changed unnecessarily unless sharing the new component is straightforward and preserves their existing intended appearance and behaviour.
+
+## 9. Reusability
+
+The component should be easy to use in future React components.
+
+For example:
+
+```jsx
+<AlohaButton variant="primary" type="button">
+  お申し込み
+</AlohaButton>
+```
+
+Theme-aware colour selection should work without manually passing individual colour values.
+
+Do not refactor every existing website button as part of this feature.
+
+Implement the reusable component and migrate the Contact Us Submit button only.
+
+## Acceptance Criteria
+
+- Shared React button component exists.
+- Primary and Secondary variants work.
+- Colours adapt to existing section colour groups.
+- Text contrast remains appropriate.
+- Minimum width is 160px.
+- Longer text can expand the button.
+- Primary has greater vertical padding.
+- Secondary has tighter vertical padding.
+- Primary hover reuses the navigation wave.
+- Primary label moves upwards without changing button height.
+- Secondary hover darkens the background and moves the button upwards.
+- Both animations reverse smoothly.
+- Reduced-motion support works.
+- Focus and disabled states remain functional.
+- Contact Us Submit uses the Primary variant.
+- Contact form submission and validation remain unchanged.
+
+---
+
+# Implementation Workflow
+
+This Epic should be completed using:
+
+`//completeEpic-008`
+
+## Phase 1 — Preparation and WordPress Prerequisites
+
+Before implementing the final frontend changes:
+
+1. Read `AGENTS.md`.
+2. Read the entire Epic-008 specification.
+3. Inspect existing React and SCSS components.
+4. Inspect Gutenberg registration for Home Hero and Small Logo.
+5. Inspect the existing Media Library integration.
+6. Check whether `logo.png` can be identified reliably through an existing WordPress attachment or setting.
+7. Implement the Home Hero Logo Style attribute and editor control.
+8. Implement any necessary centrally managed Round Logo image reference.
+9. Update the Small Logo's generic image-control labels.
+10. Extend existing frontend data contracts only where required.
+
+Preserve all existing block identities, content and saved attributes.
+
+Do not automatically change the active logo option on the published homepage.
+
+### WordPress handover condition
+
+If the existing `logo.png` attachment can be identified unambiguously and safely referenced without manual configuration, **no WordPress handover is necessary**.
+
+Continue implementing the Epic.
+
+If the image requires manual selection or configuration, stop after the necessary Gutenberg controls have been implemented and provide the exact WordPress steps.
+
+Do not guess which image is correct when multiple attachments have the same filename.
+
+## Phase 2 — Manual WordPress Configuration, Only If Required
+
+If the agent reports that manual configuration is necessary:
+
+1. Open WordPress.
+2. Locate `logo.png` in the Media Library.
+3. Open the configured central logo setting or Home Hero block image selector.
+4. Select the correct image.
+5. Save the setting or page.
+6. Reopen it and verify the image persists.
+7. Confirm completion to the coding agent.
+
+The agent must not require this step unnecessarily when the image can already be resolved reliably.
+
+After confirmation, resume:
+
+`//completeEpic-008`
+
+## Phase 3 — Complete React and SCSS Implementation
+
+Implement the remaining requirements in feature order.
+
+### Feature-001
+
+Add リンク集 and reduce Page Links padding.
+
+### Feature-002
+
+Add the Testimonials background-only black overlay.
+
+### Feature-003
+
+Correct Access Map spacing and Japanese link text.
+
+### Feature-004
+
+Complete the Writing/Round Logo frontend switching and responsive presentation.
+
+### Feature-005
+
+Correct Small Logo image fitting and visual artefacts.
+
+### Feature-006
+
+Create the reusable button variants and migrate the Contact Us Submit button.
+
+Run relevant integration and regression checks.
+
+---
+
+# Development Constraints
+
+- Follow `AGENTS.md`.
+- Preserve Epics 001–007 functionality.
+- Use the current design tokens and fonts.
+- Keep WordPress-managed data in WordPress.
+- Keep public-facing presentation in React and SCSS.
+- Reuse existing components and utilities.
+- Do not create unnecessary new plugins.
+- Do not install additional UI libraries without a clear need.
+- Do not rename existing Gutenberg blocks.
+- Do not recreate synced patterns.
+- Do not hardcode WordPress upload URLs.
+- Do not reset or destroy the WordPress environment.
+- Do not automatically modify published WordPress page content.
+- Preserve mobile navigation and sticky Header behaviour.
+- Do not change unrelated animations or layouts.
+- Ensure no horizontal page overflow is introduced.
+
+Local plugin source:
+
+`backend/plugins/alohaalpha-core/`
+
+Modify the mapped source directly.
+
+Do not generate plugin ZIP files for ordinary local development.
+
+---
+
+# Testing Requirements
+
+Verify relevant changes at:
+
+- 320px.
+- 375px.
+- 430px.
+- 768px.
+- 1024px.
+- 1440px.
+
+## Feature-001
+
+- Japanese H2 displays correctly.
+- Padding matches specified values.
+- Existing link grid and water animation remain intact.
+
+## Feature-002
+
+- Overlay covers only the background image.
+- Overlay opacity is correct.
+- Testimonial cards remain fully opaque.
+- Parallax and wave boundaries are preserved.
+
+## Feature-003
+
+- Top and bottom spacing are correct.
+- Japanese Google Maps text displays.
+- Existing map location and functionality remain unchanged.
+
+## Feature-004
+
+- Logo Style setting appears in Gutenberg.
+- Writing Logo remains the default.
+- Round Logo image resolves correctly.
+- Existing Home Hero blocks remain compatible.
+- Setting persists after saving/reopening.
+- Round Logo renders at 250 × 250px on desktop.
+- Responsive logo scaling works.
+- Slogan remains centred 1rem beneath Round Logo.
+- Slogan and carousel content are preserved when switching logo options.
+
+## Feature-005
+
+- Generic image replacement controls.
+- Existing Small Logo dimensions preserved.
+- Image does not repeat.
+- No unwanted bottom border or image artefact.
+- WordPress image replacement persists.
+- Header logo remains unaffected.
+
+## Feature-006
+
+- Primary and Secondary variants render.
+- Colour schemes respond to the parent section.
+- All buttons have a 160px minimum width where space permits.
+- Primary hover wave matches navigation behaviour.
+- Primary text movement does not change height.
+- Secondary hover darkens and moves upwards.
+- Focus, disabled and reduced-motion states work.
+- Contact Us form submission remains functional.
+- Existing validation and REST integration remain intact.
+
+Run focused automated tests and relevant builds.
+
+Do not claim browser or WordPress integration was verified unless it was actually tested.
+
+---
+
+# Feature Tracking
+
+Update each feature's status in:
+
+`src/vibe/epics/epic-008/features.txt`
+
+Follow the existing status and rollback conventions in `AGENTS.md`.
+
+Do not mark a feature complete if essential WordPress configuration or frontend integration remains unfinished.
+
+When resuming the Epic after a manual handover, continue from the outstanding work without recreating completed functionality.
+
+---
+
+# Completion Reports
+
+## If a WordPress Handover Is Required
+
+Report:
+
+1. Completed coding prerequisites.
+2. Files modified.
+3. Gutenberg controls added.
+4. Exact manual WordPress actions.
+5. Outstanding frontend work.
+
+Then stop.
+
+## At Epic Completion
+
+Report:
+
+1. Completion status of Features 001–006.
+2. Files modified.
+3. Gutenberg changes.
+4. React and SCSS changes.
+5. Relevant test/build results.
+6. WordPress integration verification.
+7. Remaining limitations or unresolved issues.
+
+Only mark Epic-008 complete when all six features satisfy their acceptance criteria.
+
+**Do not begin Epic-009 or unrelated work.**

@@ -66,6 +66,9 @@ add_action( 'init', function () {
         'text-image-content',
         'text-image-side-by-side',
         'home-hero',
+        'page-links',
+        'testimonials',
+        'access-map',
     );
 
     foreach ( $block_directories as $block_directory ) {

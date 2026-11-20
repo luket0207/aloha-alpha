@@ -315,7 +315,7 @@ $contact-top-wave-height: clamp(4rem, 7vw, 6rem);
 .contact-us__jump {
   position: fixed;
   right: max(1rem, env(safe-area-inset-right));
-  bottom: max(1rem, env(safe-area-inset-bottom));
+  bottom: calc(max(1rem, env(safe-area-inset-bottom)) + 10px);
   z-index: 10;
   width: max-content;
   max-width: calc(100vw - 2rem);
@@ -325,6 +325,48 @@ $contact-top-wave-height: clamp(4rem, 7vw, 6rem);
     max-width: 100%;
     pointer-events: auto;
   }
+}
+
+.contact-us__jump-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  min-height: 3.75rem;
+  padding: 0.9rem 1.2rem;
+  border-radius: 999px;
+  background: tokens.$green;
+  color: tokens.$cream;
+  font: 600 1rem/1.2 tokens.$font-body;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 180ms ease;
+
+  &:hover {
+    background: tokens.$dark-green;
+
+    .contact-us__jump-chevron {
+      transform: translateY(3px);
+    }
+  }
+
+  &:focus-visible {
+    outline: 3px solid tokens.$yellow;
+    outline-offset: 3px;
+  }
+}
+
+.contact-us__jump-shaka {
+  flex: 0 0 30px;
+  width: 30px;
+  height: auto;
+  animation: aloha-shaka-cycle 5s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.contact-us__jump-chevron {
+  flex: 0 0 auto;
+  transition: transform 180ms ease;
 }
 
 @media (min-width: 768px) {
@@ -395,6 +437,19 @@ $contact-top-wave-height: clamp(4rem, 7vw, 6rem);
 
   .contact-us__shaka-graphic {
     animation: none !important;
+  }
+
+  .contact-us__jump-shaka {
+    animation: none;
+  }
+
+  .contact-us__jump-link,
+  .contact-us__jump-chevron {
+    transition: none;
+  }
+
+  .contact-us__jump-link:hover .contact-us__jump-chevron {
+    transform: none;
   }
 
   .contact-us__surfboard-decoration {

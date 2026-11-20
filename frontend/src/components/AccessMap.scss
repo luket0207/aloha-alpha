@@ -1,0 +1,89 @@
+@use '../styles/variables' as tokens;
+
+.aloha-access-map {
+  width: min(calc(100% - 2.5rem), tokens.$container-width);
+  margin: clamp(3.5rem, 8vw, 6rem) auto;
+  overflow: visible;
+  color: tokens.$green;
+
+  &__title {
+    margin: 0 0 clamp(1.5rem, 4vw, 2.5rem);
+    color: tokens.$green;
+    text-align: center;
+  }
+
+  &__reveal {
+    opacity: 1;
+    transform: none;
+  }
+
+  &[data-motion-ready='true']:not(.is-revealed) &__reveal {
+    opacity: 0;
+    transform: translate3d(0, 2.5rem, 0);
+  }
+
+  &[data-motion-ready='true'][data-animate='true'] &__reveal {
+    transition:
+      opacity 1s ease,
+      transform 1s cubic-bezier(.22, 1, .36, 1);
+  }
+
+  &__frame {
+    position: relative;
+    width: 100%;
+    height: clamp(25rem, 48vw, 34rem);
+    overflow: hidden;
+    border: 3px solid tokens.$green;
+    border-radius: .75rem;
+    background: tokens.$light-blue;
+  }
+
+  &__iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  &__fallback {
+    display: grid;
+    height: 100%;
+    margin: 0;
+    padding: 2rem;
+    place-items: center;
+    background: tokens.$cream;
+    text-align: center;
+  }
+
+  &__external-link {
+    display: block;
+    width: fit-content;
+    margin: 1rem auto 0;
+    color: tokens.$green;
+    text-align: center;
+    text-underline-offset: .2em;
+
+    &:focus-visible {
+      outline: 3px solid tokens.$green;
+      outline-offset: 4px;
+    }
+  }
+}
+
+@media (max-width: 599px) {
+  .aloha-access-map {
+    width: min(calc(100% - 2rem), tokens.$container-width);
+
+    &__frame {
+      height: clamp(21rem, 115vw, 27rem);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aloha-access-map__reveal {
+    opacity: 1 !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}

@@ -1,21 +1,20 @@
 @use '../styles/variables' as tokens;
 
 $header-breakpoint: 900px;
-$header-border-width: 2px;
 $wordpress-admin-bar-height: 32px;
 $wordpress-admin-bar-mobile-height: 46px;
 $menu-bar-thickness: 3px;
 $menu-bar-offset: 0.5rem;
 $menu-bar-inset: 0.65rem;
 
-.aloha-header {
+.aloha-header.theme-green {
   position: sticky;
   top: 0;
   z-index: 100;
   flex: 0 0 auto;
   box-sizing: border-box;
-  border-bottom: $header-border-width solid var(--aloha-dark-green);
-  background: tokens.$green;
+  border-bottom: 2px solid tokens.$dark-green;
+  background: tokens.$dark-green;
   color: tokens.$cream;
 }
 
@@ -31,8 +30,25 @@ $menu-bar-inset: 0.65rem;
   justify-content: space-between;
   gap: 1.25rem;
   width: min(100% - 2rem, tokens.$container-width);
-  min-height: calc(5rem - #{$header-border-width});
+  min-height: 5rem;
   margin-inline: auto;
+}
+
+.aloha-header__bottom-wave {
+  position: absolute;
+  z-index: 101;
+  top: calc(100% - 1px);
+  right: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+  height: clamp(0.75rem, calc(1vw + 0.25rem), 1.25rem);
+  color: tokens.$dark-green;
+  pointer-events: none;
+
+  path {
+    fill: currentColor;
+  }
 }
 
 .aloha-header__status {
@@ -41,6 +57,7 @@ $menu-bar-inset: 0.65rem;
 
 .aloha-header__logo-link {
   display: inline-flex;
+  align-items: center;
   flex: 0 1 auto;
   min-width: 0;
   color: inherit;
@@ -51,6 +68,13 @@ $menu-bar-inset: 0.65rem;
     outline: 3px solid tokens.$yellow;
     outline-offset: 0.35rem;
   }
+}
+
+.aloha-header__wordpress-logo {
+  display: block;
+  width: min(3.75rem, 18vw);
+  height: min(3.75rem, 18vw);
+  object-fit: contain;
 }
 
 .aloha-header__navigation {
@@ -81,12 +105,12 @@ $menu-bar-inset: 0.65rem;
   justify-content: center;
   gap: 0.45rem;
   height: 100%;
-  min-height: calc(5rem - #{$header-border-width});
+  min-height: 5rem;
   padding: 0.75rem 0.8rem;
   overflow: hidden;
   border: 0;
   border-radius: 0;
-  background: tokens.$green;
+  background: tokens.$dark-green;
   color: tokens.$cream;
   font-family: tokens.$font-body;
   font-size: 1rem;
@@ -128,7 +152,7 @@ $menu-bar-inset: 0.65rem;
   }
 
   &.is-active {
-    background: tokens.$green;
+    background: tokens.$dark-green;
     color: tokens.$yellow;
     cursor: default;
     font-weight: 600;
@@ -141,6 +165,20 @@ $menu-bar-inset: 0.65rem;
     > svg {
       transform: none;
     }
+  }
+}
+
+@media (min-width: $header-breakpoint) {
+  .aloha-header__navigation {
+    li {
+      align-items: center;
+    }
+  }
+
+  .aloha-header__navigation-link {
+    height: 3.75rem;
+    min-height: 3.75rem;
+    border-radius: 0.65rem;
   }
 }
 
@@ -213,7 +251,7 @@ $menu-bar-inset: 0.65rem;
 
 @media (max-width: ($header-breakpoint - 1px)) {
   .aloha-header__bar {
-    min-height: calc(4.5rem - #{$header-border-width});
+    min-height: 4.5rem;
   }
 
   .aloha-header__menu-button {
@@ -245,7 +283,7 @@ $menu-bar-inset: 0.65rem;
     padding: 1rem max(1rem, calc((100vw - #{tokens.$container-width}) / 2));
     overflow-y: auto;
     visibility: hidden;
-    background: tokens.$green;
+    background: tokens.$dark-green;
     opacity: 0;
     pointer-events: none;
     transform: translateY(-1rem);

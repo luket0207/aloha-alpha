@@ -10,9 +10,32 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { Link, useLocation } from 'react-router-dom';
 import { getWordPressRestUrl } from '../wordpressApi.js';
+import Wave from './Wave.jsx';
 import './Header.scss';
 
 const DESKTOP_MEDIA_QUERY = '(min-width: 900px)';
+const HEADER_BOTTOM_WAVE = {
+  width: 1440,
+  height: 16,
+  startY: 5,
+  curves: [
+    {
+      control1: { x: 160, y: 0 },
+      control2: { x: 315, y: 13 },
+      end: { x: 480, y: 7 },
+    },
+    {
+      control1: { x: 650, y: 1 },
+      control2: { x: 790, y: 15 },
+      end: { x: 960, y: 6 },
+    },
+    {
+      control1: { x: 1120, y: 0 },
+      control2: { x: 1290, y: 13 },
+      end: { x: 1440, y: 5 },
+    },
+  ],
+};
 
 const navigationIcons = {
   '/': faHouse,
@@ -27,20 +50,36 @@ function normalizePath(path) {
   return path.replace(/\/+$/, '') || '/';
 }
 
-function parseHeader(html) {
+function headerLogoHtml(document) {
+  const alohaLogo = document.querySelector('.aloha-header .aloha-logo--small');
+  if (alohaLogo) return alohaLogo.outerHTML;
+
+  const image = document.querySelector(
+    '.aloha-header .wp-block-image img, .aloha-header img',
+  );
+  if (!image) return '';
+
+  const logoImage = image.cloneNode(true);
+  logoImage.classList.add('aloha-header__wordpress-logo');
+  logoImage.removeAttribute('loading');
+  logoImage.style.removeProperty('object-fit');
+  return logoImage.outerHTML;
+}
+
+export function parseHeader(html) {
   const document = new DOMParser().parseFromString(html, 'text/html');
-  const logo = document.querySelector('.aloha-logo--small');
+  const logoHtml = headerLogoHtml(document);
   const links = Array.from(document.querySelectorAll('.aloha-nav a[href]')).map((link) => ({
     href: link.getAttribute('href'),
     label: link.textContent.trim(),
   }));
 
-  if (!logo || !links.length) {
-    throw new Error('The WordPress Header pattern is missing its small logo or navigation links.');
+  if (!logoHtml || !links.length) {
+    throw new Error('The WordPress Header pattern is missing its logo image or navigation links.');
   }
 
   return {
-    logoHtml: logo.outerHTML,
+    logoHtml,
     links,
   };
 }
@@ -262,6 +301,11 @@ export default function Header() {
             </>
           )}
         </div>
+        <Wave
+          className="aloha-header__bottom-wave"
+          fillEdge="top"
+          {...HEADER_BOTTOM_WAVE}
+        />
       </header>
 
       {isMenuOpen && !isDesktop && (

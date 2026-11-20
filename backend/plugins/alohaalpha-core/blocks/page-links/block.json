@@ -1,0 +1,28 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "aloha/page-links",
+  "version": "0.2.0",
+  "title": "Page Links",
+  "category": "aloha-layouts",
+  "icon": "admin-links",
+  "description": "Editable page destinations displayed as Aloha Academy link buttons.",
+  "textdomain": "alohaalpha-core",
+  "attributes": {
+    "links": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "object"
+      }
+    }
+  },
+  "supports": {
+    "align": ["wide", "full"],
+    "anchor": true,
+    "html": false,
+    "reusable": true
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./editor.css"
+}

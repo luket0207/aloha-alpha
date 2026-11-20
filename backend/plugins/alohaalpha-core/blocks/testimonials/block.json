@@ -1,0 +1,53 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "aloha/testimonials",
+  "version": "0.2.0",
+  "title": "Testimonials",
+  "category": "aloha-layouts",
+  "icon": "format-quote",
+  "description": "Media Library background with an editable ordered collection of testimonials.",
+  "textdomain": "alohaalpha-core",
+  "attributes": {
+    "imageId": {
+      "type": "integer"
+    },
+    "imageUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "imageAlt": {
+      "type": "string",
+      "default": ""
+    },
+    "imageWidth": {
+      "type": "integer"
+    },
+    "imageHeight": {
+      "type": "integer"
+    },
+    "imageSrcSet": {
+      "type": "string",
+      "default": ""
+    },
+    "imageSizes": {
+      "type": "string",
+      "default": "100vw"
+    },
+    "testimonials": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "object"
+      }
+    }
+  },
+  "supports": {
+    "align": ["wide", "full"],
+    "anchor": true,
+    "html": false,
+    "reusable": true
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./editor.css"
+}

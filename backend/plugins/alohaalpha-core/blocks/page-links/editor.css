@@ -1,0 +1,66 @@
+.editor-styles-wrapper .wp-block-aloha-page-links {
+    padding: 1.5rem;
+    border: 1px solid #93b7be;
+    background: #edf8f5;
+}
+
+.editor-styles-wrapper .aloha-page-links-editor__header,
+.editor-styles-wrapper .aloha-page-links-editor__actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.editor-styles-wrapper .aloha-page-links-editor__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 1rem;
+    margin: 1.25rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.editor-styles-wrapper .aloha-page-links-editor__item {
+    padding: 1rem;
+    border: 1px solid #066c4c;
+    border-radius: 0.75rem;
+    background: #fff;
+}
+
+.editor-styles-wrapper .aloha-page-links-editor__preview {
+    display: grid;
+    place-items: center;
+    gap: 0.35rem;
+    width: 8rem;
+    min-height: 8rem;
+    margin: 0 auto 1rem;
+    padding: 1rem;
+    border-radius: 46% 54% 49% 51% / 53% 47% 55% 45%;
+    background: #066c4c;
+    color: #f1fffa;
+    text-align: center;
+}
+
+.editor-styles-wrapper .aloha-page-links-editor__icon {
+    width: auto;
+    height: auto;
+    font-size: 1.75rem;
+}
+
+.editor-styles-wrapper .aloha-page-links-editor__field-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.editor-styles-wrapper .aloha-page-links-editor__destination {
+    margin-bottom: 1rem;
+}
+
+.editor-styles-wrapper .aloha-page-links-editor__actions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}

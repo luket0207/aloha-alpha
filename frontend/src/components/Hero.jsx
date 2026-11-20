@@ -34,7 +34,7 @@ const HERO_BOTTOM_WAVE = {
   ],
 };
 
-function WaterSurface({ id, path, reducedMotion }) {
+export function WaterSurface({ id, path, reducedMotion }) {
   const baseGradientId = `${id}-base`;
   const primaryRipplesId = `${id}-primary-ripples`;
   const secondaryRipplesId = `${id}-secondary-ripples`;

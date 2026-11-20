@@ -1,0 +1,877 @@
+# Epic-007 — Bugs
+
+## Bug-001 — Correct Header Wave Orientation and Depth
+
+**Status:** complete
+
+### Issue
+
+The shallow wave at the bottom of the navigation Header is currently upside down.
+
+The flat edge of the wave should connect directly to the flat bottom edge of the Header, with the irregular wave extending downwards into the page content.
+
+I also want the wave to be slightly deeper than it currently is, but only by a few pixels.
+
+### 1. Correct Wave Orientation
+
+Inspect the existing Header wave implementation.
+
+Requirements:
+
+1. The flat edge of the wave must connect seamlessly to the bottom of the Header.
+2. The curved, irregular edge must face downwards.
+3. The wave should appear as a continuation of the Dark Green Header background.
+4. The wave must not appear inverted or detached from the Header.
+5. There must be no visible gap between the Header and the wave.
+6. Preserve the existing organic wave shape wherever practical.
+7. Use the existing reusable wave system rather than creating a separate implementation.
+
+If the wave is currently being flipped or rotated incorrectly, correct the orientation without changing unrelated wave components.
+
+### 2. Increase Wave Depth
+
+The current Header wave is too shallow.
+
+Increase its depth by approximately 3–5px relative to its existing size.
+
+Requirements:
+
+- Keep the wave noticeably shallower than the larger section waves.
+- Maintain smooth, organic curves.
+- Preserve its full-width appearance.
+- Keep the wave responsive.
+- Avoid excessive overlap with the content beneath the Header.
+
+### 3. Preserve Existing Header Styling
+
+Do not change:
+
+- Dark Green background (`#033626`).
+- Existing navigation text colours.
+- Navigation hover effects.
+- Active navigation states.
+- WordPress-managed logo.
+- Sticky positioning.
+- Mobile hamburger menu.
+- Existing navigation behaviour.
+
+The previous 2px Dark Green bottom border should remain visually integrated with the Header without creating an unwanted straight line across the lower edge of the wave.
+
+### Acceptance Criteria
+
+- Header wave is correctly oriented.
+- Flat edge touches the Header.
+- Curved edge extends downwards.
+- Wave is slightly deeper than before.
+- Header and wave have no visible seams.
+- Sticky Header remains functional.
+- Desktop and mobile navigation remain unchanged.
+- No horizontal overflow.
+
+**Notes:** Complete. The Header was using the reusable Wave component's default bottom-filled path, which put the transparent side of the curve against the Header and made the wave appear inverted. This instance now uses the reusable top-filled orientation, retains a same-colour 2px seam guard and adds approximately 4px to the previous responsive depth without changing its curve geometry. The production build passed; live checks at 320/375/430/768/1024/1440px confirmed the top-filled path, matching Dark Green fills, overlap without a gap, 12–18.39px depth, sticky `top: 0`, six navigation links, working mobile-menu state and zero horizontal overflow.
+
+---
+
+## Bug-002 — Extend Page Links Background Behind Adjacent Waves
+
+**Status:** complete
+
+### Issue
+
+The Page Links section has the correct Light Blue animated background, but it does not extend behind the wave-shaped boundaries of its neighbouring sections.
+
+On the homepage, the Image Divider appears above the Page Links section and Testimonials appears below it.
+
+The waves between these sections are exposing areas that do not have the Page Links background behind them.
+
+I want the Light Blue animated background to continue seamlessly into those areas.
+
+### 1. Background Continuity
+
+The Page Links section uses:
+
+**Light Blue — `#93B7BE`**
+
+It also uses the existing animated Hero water effect.
+
+Requirements:
+
+1. The Light Blue background must extend behind the bottom wave of the Image Divider above it.
+2. The Light Blue background must extend behind the top wave of the Testimonials section below it.
+3. No white or incorrect background colours should appear between these sections.
+4. The existing water animation should remain visible where appropriate.
+5. The animated background should continue naturally behind neighbouring wave shapes.
+6. Preserve the existing positioning and appearance of the Page Links content.
+
+The background should look like a continuous Light Blue surface with the adjacent wave-shaped sections overlapping it.
+
+### 2. Investigate the Existing Section Structure
+
+Inspect:
+
+- Image Divider's bottom wave.
+- Page Links section background.
+- Testimonials' top wave.
+- Shared page-section wrappers.
+- SVG masks and clipping.
+- Parent background colours.
+- Section stacking and z-index values.
+- Any transparent areas between sections.
+
+Identify which wrapper, mask or background layer is exposing the unwanted colour.
+
+Correct the underlying section-background relationship.
+
+### 3. Wave Integration
+
+The Page Links section must not have its own top or bottom wave borders.
+
+Those wave shapes belong to the adjacent Image Divider and Testimonials sections.
+
+Requirements:
+
+1. Preserve both neighbouring wave shapes.
+2. Allow their transparent regions to reveal the Light Blue background underneath.
+3. Ensure all three sections meet cleanly.
+4. Avoid hardcoded white or cream overlays where transparency is required.
+5. Use existing reusable background and wave utilities where appropriate.
+6. Ensure the layout works even when wave depths change responsively.
+
+Do not solve this using arbitrary negative margins or positioning offsets that only work at a particular screen width.
+
+### 4. Preserve Background Animation
+
+Keep the existing water animation unchanged.
+
+Do not modify:
+
+- Wave shapes.
+- Animation speeds.
+- Movement directions.
+- Colours.
+- Opacity.
+- General background appearance.
+
+Only adjust the background's sizing, layering or positioning where necessary to fill the exposed regions.
+
+Ensure the animation does not create horizontal overflow.
+
+### 5. Responsive Behaviour
+
+Verify transitions on desktop, tablet and mobile.
+
+The Light Blue background must cover the full available width, including behind the neighbouring waves.
+
+There should be no visible seams when resizing the viewport or scrolling.
+
+### Acceptance Criteria
+
+- Image Divider bottom wave blends into the Light Blue Page Links background.
+- Testimonials top wave blends into the same Light Blue background.
+- No white areas appear between sections.
+- Page Links' animated water background remains intact.
+- Page Links does not acquire its own wave borders.
+- Adjacent waves remain unchanged.
+- Responsive layouts work.
+- No horizontal overflow.
+
+**Notes:** Complete. Image Divider and Testimonials clipped only their image layers, so transparent wave regions exposed the Cream page background while Page Links' water SVG was confined to its own sibling box. The renderer now recognises only the exact adjacent Image Divider → Page Links → Testimonials sequence and groups it under one shared, unchanged `WaterSurface`; a ResizeObserver derives the backdrop bounds from the existing shared wave overscan ratio, beginning inside the divider's bottom wave and ending inside Testimonials' top wave. Standalone Page Links retains its local background, and the outer divider/testimonial edges still reveal their other neighbours. The production build passed; live checks at 320/375/430/768/1024/1440px and visual crops confirmed continuous animated Light Blue behind both required waves, unchanged clip paths, one four-animation water system, 4/2/1 rows, no Page Links wave, and zero horizontal overflow.
+
+---
+
+## Bug-003 — Correct Testimonials Carousel and Parallax Background
+
+**Status:** complete
+
+### Issue
+
+The Testimonials section is not working as intended.
+
+There are two main problems.
+
+First, the testimonial carousel has navigation arrows that I do not want. It also occasionally produces a strange faded flash when moving between testimonials.
+
+Second, the background image does not behave like the existing Image Divider. It does not correctly centre when the section reaches the middle of the viewport, and the parallax movement is not functioning as expected.
+
+I want both issues corrected.
+
+### 1. Remove Carousel Navigation Arrows
+
+Remove the visible previous and next navigation arrows from the Testimonials carousel.
+
+Requirements:
+
+1. Remove the arrow buttons.
+2. Remove any spacing reserved exclusively for those buttons.
+3. Keep the testimonials visually centred.
+4. Preserve the carousel's automatic movement.
+5. Do not replace the arrows with another prominent navigation interface.
+
+The Testimonials carousel should primarily operate automatically.
+
+### 2. Automatic Carousel Movement
+
+The carousel must advance automatically every:
+
+**5 seconds**
+
+Requirements:
+
+1. Advance by exactly one testimonial at a time.
+2. Keep the existing responsive visible-card counts.
+3. Maintain the original WordPress testimonial order.
+4. Move smoothly from one position to the next.
+5. Continue looping through the available testimonials.
+6. Do not jump entire pages of three testimonials at once.
+7. Avoid duplicate timers.
+8. Clean up timers when the component unmounts.
+9. Do not move unnecessarily when there are insufficient testimonials.
+
+Example with three visible:
+
+Initial:
+
+`[A] [B] [C]`
+
+After five seconds:
+
+`[B] [C] [D]`
+
+After another five seconds:
+
+`[C] [D] [E]`
+
+Continue this pattern through the list.
+
+The carousel should remain responsive:
+
+- Desktop: 3 visible.
+- Tablet: 2 visible.
+- Mobile: 1 visible.
+
+### 3. Remove Unwanted Fading
+
+There is currently an occasional faded flash during carousel transitions.
+
+This needs to be eliminated.
+
+I want testimonials to remain visible while they move horizontally.
+
+Requirements:
+
+1. Do not fade the entire carousel.
+2. Do not fade the currently visible testimonials when shifting position.
+3. Existing visible cards should remain fully opaque throughout movement.
+4. Do not apply opacity transitions to the entire track or viewport.
+5. Do not briefly hide all cards when resetting the carousel position.
+6. Do not remount the entire carousel unnecessarily between transitions.
+
+**The only permitted fade is on a newly entering testimonial.**
+
+When a new testimonial slides into view, it may transition from slightly transparent to fully opaque while moving into position.
+
+Existing visible testimonials should simply slide to their new positions.
+
+The departing testimonial can slide naturally outside the visible carousel area without fading.
+
+### 4. Correct Carousel Looping
+
+Investigate whether the faded flash occurs at the point where the carousel reaches the end of its list and returns to the beginning.
+
+Requirements:
+
+1. The carousel must loop without visibly resetting.
+2. Do not temporarily clear the carousel content.
+3. Do not switch the entire track's opacity to zero.
+4. Avoid abrupt jumps in testimonial positioning.
+5. Preserve smooth one-card-at-a-time movement.
+6. Use stable React keys for testimonial items.
+7. If cloned slides are needed for seamless looping, ensure they do not cause visible duplication or accessibility problems.
+8. Ensure entering cards render before they are needed.
+
+The transition from the final testimonial back to the first should look like another ordinary carousel movement.
+
+### 5. Preserve Testimonial Card Appearance
+
+Do not redesign the individual testimonial cards.
+
+Preserve:
+
+- Square Frame-inspired organic outlines.
+- Different wave shapes for different cards.
+- Slight vertical staggering.
+- Cream card backgrounds.
+- Green text.
+- Quote typography.
+- Name typography.
+- Existing card padding and spacing.
+
+Do not introduce new visual animations beyond the requested horizontal movement and limited entering-card fade.
+
+### 6. Correct Background Image Centring
+
+The Testimonials background must behave like the Image Divider.
+
+When the Testimonials section is vertically centred within the viewport, the background image should also be vertically centred within its visible area.
+
+**Required behaviour:**
+
+When the centre of the Testimonials section aligns with the vertical centre of the viewport, the background image must be at its neutral, vertically centred position.
+
+Requirements:
+
+1. Measure the section's position relative to the viewport.
+2. Calculate the section's vertical centre.
+3. Calculate the viewport's vertical centre.
+4. Apply a neutral parallax offset when those centres align.
+5. Ensure the image is vertically centred within the section at that point.
+6. Recalculate when the viewport or section dimensions change.
+7. Do not approximate the alignment using an arbitrary fixed offset.
+
+Reuse the calculation already established for the Image Divider wherever possible.
+
+### 7. Replicate Image Divider Parallax
+
+I want the background image to move with scrolling in the same manner as the Image Divider.
+
+As the user scrolls down:
+
+**Beginning of visibility**
+
+The visible background should favour the lower portion of the image.
+
+**Middle of visibility**
+
+The image should be vertically centred.
+
+**End of visibility**
+
+The visible background should favour the upper portion of the image.
+
+Requirements:
+
+1. Reuse the Image Divider's existing parallax calculation or shared hook.
+2. Use as much safe vertical movement as the image dimensions allow.
+3. Move the image smoothly upwards as the user scrolls down.
+4. Keep movement centred around the neutral midpoint.
+5. Clamp movement to avoid exposing image edges.
+6. Account for the depth of the top and bottom waves.
+7. Ensure the image remains behind the entire visible section.
+8. Do not distort its aspect ratio.
+9. Prevent sudden jumps or snapping.
+10. Preserve reduced-motion support.
+
+**Important:** Inspect how the Image Divider actually implements centring and parallax, and reuse that working implementation rather than independently recreating a similar effect.
+
+The Testimonials section can be taller than an ordinary Image Divider because it contains content. The parallax calculations must use the Testimonials section's actual dimensions.
+
+### 8. Preserve Wave Borders
+
+The existing top and bottom Testimonials waves must remain.
+
+Requirements:
+
+- Keep the two shapes distinct.
+- Preserve the existing irregular geometry.
+- Ensure the background image extends behind both masks.
+- No straight image edges may become visible.
+- No unwanted background gaps.
+- Preserve transitions into adjacent sections.
+
+In particular, the top wave must continue to reveal the correct Light Blue background from the Page Links section as described in Bug-002.
+
+### 9. Accessibility and Performance
+
+The carousel should remain usable and accessible without navigation arrows.
+
+Requirements:
+
+1. Respect `prefers-reduced-motion`.
+2. Pause automatic movement for reduced-motion users.
+3. Avoid unnecessarily changing keyboard focus during transitions.
+4. Pause automatic movement while keyboard focus is within the carousel.
+5. Provide an unobtrusive accessible pause/resume mechanism if needed for accessibility, without adding navigation arrows.
+6. Avoid unnecessary interval recreation.
+7. Avoid unnecessary React re-renders during parallax scrolling.
+8. Keep the parallax animation performant on mobile.
+
+### Acceptance Criteria
+
+- Navigation arrows are removed.
+- Carousel moves automatically every five seconds.
+- Carousel advances exactly one testimonial at a time.
+- Existing visible cards do not fade.
+- Only newly entering cards may fade in.
+- No flashing occurs during transitions.
+- Looping is visually seamless.
+- Desktop shows three testimonials.
+- Tablet shows two.
+- Mobile shows one.
+- Card designs remain unchanged.
+- Background image centres correctly at the viewport midpoint.
+- Background uses Image Divider-style parallax movement.
+- Image edges remain hidden throughout scrolling.
+- Existing waves remain intact.
+- No horizontal overflow.
+- Reduced-motion behaviour works correctly.
+
+**Notes:** Complete. The flash came from assigning every non-current clone `opacity: .35`: the departing card faded while still visible, and the instantaneous clone-index reset could expose that opacity change. All testimonial slides now remain fully opaque and use stable triple-copy keys; only the track translates, then resets between visually identical copies without remounting. Arrow controls and their spacing were removed, keyboard focus on the carousel pauses the single five-second interval, and reduced motion disables autoplay. The duplicated background orchestration was extracted into `useImageParallax` and is now shared with Image Divider; a higher-specificity image rule ensures the calculated cover dimensions actually render. Six focused tests and the production build passed. Live checks at 320/375/430/768/1024/1440px confirmed 1/2/3 cards, no arrows, opacity 1, one 426px move at 5.05s, stable fully opaque clone reset, zero midpoint offset, safe entry/exit coverage, static reduced-motion state and no overflow.
+
+---
+
+## Bug-004 — Reset Page Scroll Position on Refresh and Navigation
+
+**Status:** complete
+
+### Issue
+
+When refreshing a page or navigating to another page, the website sometimes retains the previous scroll position.
+
+I want each page to start at the top whenever it is freshly loaded or entered through normal page navigation.
+
+### 1. Reset Scroll on Page Refresh
+
+When the browser refreshes the current page:
+
+- The page should return to the top.
+- Do not restore the position from before the refresh.
+- Do not leave the user halfway down the page.
+- Ensure the behaviour is consistent on desktop and mobile.
+
+The expected initial scroll position is:
+
+`window.scrollY === 0`
+
+### 2. Reset Scroll on Route Navigation
+
+When navigating to a different page within the React application:
+
+1. Detect the route change.
+2. Reset the scroll position to the top.
+3. Ensure the new page starts at its Header/Hero or first content section.
+4. Do not retain the previous route's scroll position.
+5. Do not briefly reveal the new page at the old scroll position before jumping upwards.
+6. Ensure this works across all existing website routes.
+
+Use the existing React routing system rather than attaching arbitrary scroll-reset logic to individual navigation buttons.
+
+### 3. Preserve Intentional In-Page Scrolling
+
+The website already includes buttons designed to scroll to specific sections.
+
+These must continue working.
+
+In particular:
+
+- Home Hero's scroll-down button.
+- Contact Us — Jump button.
+- Any existing section anchors.
+
+Requirements:
+
+1. Normal navigation to a different page starts at the top.
+2. Intentional in-page scrolling must still reach its intended destination.
+3. A deliberate URL fragment or anchor destination should be honoured where applicable.
+4. Sticky Header offsets must continue to be respected.
+5. Do not implement continuous scroll resets that fight against the user's scrolling.
+
+If a navigation action explicitly targets a section on another page, allow the destination route to load before performing the intended section scroll.
+
+### 4. Handle Browser Scroll Restoration
+
+Investigate whether the retained scroll position is caused by:
+
+- Browser scroll restoration.
+- React Router navigation behaviour.
+- Existing scroll-management hooks.
+- Asynchronous WordPress content loading.
+- Delayed rendering of components.
+- Image loading and layout changes.
+
+Requirements:
+
+1. Identify the existing cause.
+2. Implement scroll resetting in the appropriate shared application layer.
+3. Use `history.scrollRestoration = 'manual'` if needed, accounting for cleanup and the application's routing behaviour.
+4. Avoid conflicting with existing smooth-scroll utilities.
+5. Prevent race conditions caused by asynchronous page loading.
+6. Avoid repeated or continuous `scrollTo` calls after the user starts interacting with the new page.
+7. Preserve browser Back and Forward navigation functionality, while applying the requested top-of-page policy for normal route entries.
+
+### 5. Avoid Unwanted Animation
+
+Returning to the top on refresh or normal route navigation should happen immediately.
+
+Do not smoothly scroll the user from the old position back to the top.
+
+Use instant scrolling for page resets.
+
+Preserve smooth scrolling only for intentional actions such as the Hero scroll-down button and Contact Us Jump.
+
+### 6. Preserve Existing Functionality
+
+Do not interfere with:
+
+- Sticky Header.
+- Homepage Hero.
+- React routing.
+- WordPress page loading.
+- Contact Us Jump.
+- Scroll-triggered animations.
+- Parallax components.
+- Testimonials carousel.
+- Browser accessibility and focus management.
+
+Ensure scroll-triggered components initialise correctly when a page starts at the top.
+
+### Acceptance Criteria
+
+- Refreshing a page returns to the top.
+- Normal navigation to a new page returns to the top.
+- Scroll position does not carry over from another route.
+- No visible smooth-scroll journey from the old position occurs.
+- Intentional in-page navigation still works.
+- Contact Us Jump still works.
+- Hero scroll-down button still works.
+- Sticky Header offsets remain correct.
+- React Router and browser navigation remain functional.
+- No scroll-position flickering or layout jumps.
+
+**Notes:** Complete. The retained position was native browser history restoration combined with the absence of any React Router-level scroll policy; asynchronous WordPress rendering also meant a simple one-time hash lookup could miss editorial anchors. A shared `ScrollManager` now sets `history.scrollRestoration` to `manual` with cleanup, performs one instant pre-paint reset for every route entry (including Back/Forward), and honours encoded ID or legacy named anchors. Missing hash targets are observed only until they appear or a ten-second limit expires, avoiding repeated resets after user interaction. Two focused tests and the production build passed. Live Chrome checks confirmed home and inner-page refreshes reset from 1400px/615px to zero, all five inner routes plus Back/Forward entered at zero, Hero and Contact intentional smooth scrolling still reached their sticky-header offsets, and `#contact-us` navigation remained honoured.
+
+---
+
+# Epic-007 Bug Implementation Instructions
+
+## 1. Preparation
+
+Before making changes:
+
+1. Read `AGENTS.md`.
+2. Read the original Epic-007 requirements.
+3. Review the current implementation of the Header, Page Links, Testimonials, Image Divider and routing system.
+4. Inspect the existing wave and parallax utilities.
+5. Reuse shared functionality wherever possible.
+6. Preserve existing WordPress content and Gutenberg block attributes.
+
+## 2. Implementation Order
+
+Complete these bugs in their numbered order.
+
+### Bug-001
+
+Correct the Header wave orientation and slightly increase its depth.
+
+### Bug-002
+
+Correct Page Links background continuity behind the neighbouring Image Divider and Testimonials waves.
+
+### Bug-003
+
+Remove Testimonials navigation arrows, correct automatic sliding and unwanted fading, and reuse the Image Divider's parallax implementation.
+
+### Bug-004
+
+Implement consistent top-of-page scroll positioning on page refresh and normal route navigation.
+
+## 3. WordPress Integration
+
+No new Gutenberg blocks or WordPress editing controls are required.
+
+Preserve the existing blocks:
+
+- Page Links.
+- Testimonials.
+- Image Divider.
+- Home Hero.
+
+Preserve the existing synced patterns:
+
+- Header.
+- Footer.
+- Contact Us — Full.
+- Contact Us — Jump.
+
+Do not require users to recreate any blocks or patterns.
+
+Do not alter saved WordPress content or replace selected images.
+
+## 4. Testing
+
+Run focused automated tests and relevant builds.
+
+Verify at:
+
+- 320px.
+- 375px.
+- 430px.
+- 768px.
+- 1024px.
+- 1440px.
+
+### Header
+
+- Correct wave orientation.
+- Increased wave depth.
+- Sticky positioning.
+- Desktop and mobile navigation.
+- No wave seams.
+
+### Page Links
+
+- Light Blue background behind the Image Divider wave.
+- Light Blue background behind the Testimonials wave.
+- Animated water background remains intact.
+- No white gaps.
+- Responsive layouts remain correct.
+
+### Testimonials
+
+- No navigation arrows.
+- Exactly one-card advancement.
+- Five-second automatic timing.
+- No faded flashes.
+- No unnecessary opacity changes on existing cards.
+- Correct looping.
+- Three/two/one responsive display.
+- Correct parallax midpoint alignment.
+- Correct parallax movement.
+- Safe image coverage behind waves.
+- No horizontal overflow.
+
+### Page Navigation
+
+- Refresh while scrolled halfway down the homepage.
+- Refresh while scrolled halfway down another page.
+- Navigate from Home to Classes.
+- Navigate from Classes to Gallery.
+- Navigate between other routes.
+- Test browser Back and Forward.
+- Test Contact Us Jump.
+- Test Hero scroll-down.
+- Test intentional anchor navigation.
+- Test initial page load with asynchronous content.
+
+Confirm the correct scroll position after each action.
+
+## 5. Bug Tracking
+
+Update:
+
+`src/vibe/epics/epic-007/bugs.txt`
+
+Follow all existing feature, bug-status and rollback rules in `AGENTS.md`.
+
+Only mark bugs complete when their acceptance criteria have been met.
+
+## 6. Completion Report
+
+For each bug, report:
+
+1. Root cause identified.
+2. Changes implemented.
+3. Files modified.
+4. Tests performed.
+5. Responsive verification.
+6. Remaining limitations or manual checks.
+
+For Bug-003, explain the cause of the unwanted carousel flash and how it was eliminated.
+
+For Bug-004, identify why the previous scroll position was being retained and how the new solution prevents it.
+
+Do not claim browser behaviour has been verified unless browser testing has actually been performed.
+
+**Scope:** Implement only Epic-007 Bugs 001–004. Do not modify unrelated functionality or begin Epic-008.
+
+
+
+## Bug-005 — Refine Navigation Active States and Hover Styling
+
+**Status:** complete
+
+### Issue
+
+Following the changes to the Header in Epic-007, I want to refine the navigation links so that their styling works better with the new Dark Green background.
+
+Currently, the navigation hover effects occupy the entire height of the Header, appearing as large rectangular blocks.
+
+I want these to become smaller, rounded areas with some spacing above and below them.
+
+I also want the active navigation link to use the same Dark Green background as the Header.
+
+## 1. Update Active Navigation Background
+
+Change the active navigation link's background to:
+
+**Dark Green — `#033626`**
+
+Requirements:
+
+1. The active link's background must match the Header's Dark Green background.
+2. Preserve the existing active text colour.
+3. Preserve the existing active icon colour.
+4. Preserve the existing active navigation logic.
+5. Do not introduce a separate contrasting background colour for active links.
+6. Keep the active link visually distinguishable through its existing text and icon styling.
+7. Preserve the current behaviour where the active navigation item does not display the normal hover-wave effect.
+
+Use the existing global Dark Green SCSS variable.
+
+Do not change the Header's overall background colour.
+
+## 2. Reduce Navigation Hover Area Height
+
+The current hover areas extend from the top to the bottom of the Header.
+
+I want them to be smaller and more contained.
+
+Requirements:
+
+1. Add vertical spacing between the top of each hover area and the top of the Header.
+2. Add equivalent spacing between the bottom of each hover area and the bottom of the Header.
+3. Keep the hover areas vertically centred.
+4. Preserve comfortable horizontal padding around the labels and icons.
+5. Ensure every navigation link has a consistent hover-area height.
+6. Keep the links aligned with one another.
+7. Do not change the overall Header height.
+8. Preserve the existing navigation spacing wherever practical.
+
+The result should look like individual navigation items within the Header rather than full-height rectangular sections.
+
+Use responsive padding or sizing that works with the existing Header dimensions.
+
+## 3. Add Rounded Corners
+
+Apply rounded corners to the navigation hover areas.
+
+Requirements:
+
+1. All four corners should be rounded.
+2. Use a consistent border radius across navigation items.
+3. The radius should be noticeable without making the hover areas excessively pill-shaped.
+4. Preserve the existing hover background colours.
+5. Keep the existing animated wave contained within the rounded boundary.
+6. Ensure the wave is clipped correctly at the corners.
+7. Avoid visible square edges appearing during the hover animation.
+
+Use the existing site's SCSS conventions for border-radius values where appropriate.
+
+## 4. Preserve Existing Hover Animation
+
+I like the current navigation hover animation and do not want it redesigned.
+
+Preserve:
+
+- Existing hover colours.
+- Existing wave shape.
+- Existing wave movement.
+- Existing animation duration.
+- Existing easing.
+- Existing text and icon colour changes.
+
+The only intended change is that the animation now takes place inside a smaller, rounded hover area instead of a full-height rectangular block.
+
+### Wave Positioning
+
+Ensure the wave still has enough space to animate naturally beneath the navigation text.
+
+Requirements:
+
+1. Keep the wave visually separated from the text.
+2. Do not allow the wave to obscure or cover the navigation labels.
+3. Keep icons fully visible throughout the animation.
+4. Ensure the wave has enough vertical space to move.
+5. Preserve the existing stacking order between the wave, text and icons.
+6. Clip the wave to the rounded hover area.
+7. Prevent the wave from extending outside the navigation item.
+
+If necessary, move the navigation text and icons upwards slightly to create sufficient space for the wave.
+
+**Important:** Any vertical text adjustment should be minimal.
+
+Do not noticeably change the overall navigation alignment or typography.
+
+## 5. Active and Hover State Interaction
+
+Ensure the different navigation states behave consistently.
+
+**Default state**
+
+- Header remains Dark Green.
+- Existing default text and icon colours remain unchanged.
+- No hover background or wave is visible.
+
+**Hover state**
+
+- A contained, rounded hover area appears.
+- Existing hover colours are preserved.
+- Existing wave animation plays within the rounded area.
+- Text and icons remain legible.
+
+**Active state**
+
+- Background remains Dark Green.
+- Existing active text and icon colours remain unchanged.
+- No unwanted contrasting rectangular background.
+- No hover wave appears over the active item.
+
+**Keyboard focus**
+
+- Preserve a clearly visible focus indicator.
+- Keep focus styling within the updated navigation geometry without clipping it.
+
+## 6. Preserve Responsive Navigation
+
+These changes should primarily affect the desktop navigation bar.
+
+Requirements:
+
+1. Preserve the mobile hamburger menu.
+2. Preserve the hamburger-to-X animation.
+3. Preserve mobile navigation opening and closing.
+4. Do not introduce unwanted rounded backgrounds into the mobile menu if its layout differs from desktop.
+5. Preserve the existing sticky Header.
+6. Preserve the Header's Dark Green background and shallow bottom wave.
+7. Keep navigation labels, icons and active states functioning.
+8. Avoid horizontal overflow.
+
+Do not change the WordPress-managed Header logo or navigation destinations.
+
+## Acceptance Criteria
+
+- Active navigation background is Dark Green (`#033626`).
+- Active text and icon colours remain unchanged.
+- Hover areas no longer span the full Header height.
+- Hover areas have balanced top and bottom spacing.
+- Hover areas have rounded corners.
+- Existing hover colours are preserved.
+- Existing wave animation remains intact.
+- The wave is contained within the rounded boundary.
+- Text and icons are not obscured by the wave.
+- Navigation items remain consistently aligned.
+- Header height remains unchanged.
+- Active links do not display the normal hover-wave animation.
+- Sticky Header works correctly.
+- Mobile navigation remains functional.
+- No horizontal overflow or visual regressions.
+
+---
+
+# Implementation Instructions
+
+1. Read and follow `AGENTS.md`.
+2. Review the existing Epic-007 Header implementation.
+3. Inspect the navigation SCSS, active-state classes and hover-wave animation.
+4. Update the active link background to Dark Green.
+5. Adjust the hover area geometry to introduce vertical spacing and rounded corners.
+6. Preserve the existing hover effect within the new boundaries.
+7. Make minimal text or icon positioning adjustments only if needed.
+8. Verify desktop navigation at 1024px and 1440px.
+9. Check responsive behaviour at 320px, 375px and 768px.
+10. Verify keyboard focus, active states and sticky Header behaviour.
+11. Run relevant focused build and regression checks.
+12. Update Bug-005 in `src/vibe/epics/epic-007/bugs.txt`.
+
+**Scope:** Implement Bug-005 only. Do not modify unrelated components or begin another Epic.
+
+**Notes:** Complete. Desktop navigation items now use a consistent 3.75rem interaction height centred within the unchanged 5rem Header, leaving 10px/12px top and bottom space, and a 0.65rem radius clips the existing white-and-water hover animation. The active background now uses the global Dark Green token while retaining the yellow active text/icon and suppressing the hover wave. The geometry is desktop-scoped, so mobile links retain their 52px full-width, square layout. The production build passed. Live Chrome checks at 1024px and 1440px confirmed the unchanged 82px rendered Header, 60px rounded items, contained wave, original hover colours/movement, visible keyboard focus, active Dark Green/yellow state, sticky top position and no overflow; checks at 320px, 375px and 768px confirmed the hamburger opens into its X state, square mobile links and no overflow.

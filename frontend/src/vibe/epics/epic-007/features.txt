@@ -1,0 +1,1321 @@
+# Epic-007 — Homepage Components and Navigation Improvements
+
+## Overview
+
+This Epic introduces five features:
+
+- Feature-001 — Redesign the floating Contact Us Jump button.
+- Feature-002 — Update the Header background, wave and logo.
+- Feature-003 — Create a reusable Page Links block.
+- Feature-004 — Create a reusable Testimonials carousel block.
+- Feature-005 — Create a reusable Access Map block.
+
+The objective is to expand the homepage with reusable, WordPress-editable sections while maintaining the existing Aloha Academy design system.
+
+Continue using:
+
+- React for the public frontend.
+- SCSS for styling and animation.
+- WordPress for editable content.
+- Gutenberg custom blocks for reusable layouts.
+- WordPress synced patterns for existing shared templates.
+- AlohaAlpha Core for custom block registration.
+
+Read and follow `AGENTS.md` before making changes.
+
+Preserve the existing functionality from Epics 001–006.
+
+---
+
+# Feature-001 — Redesign Contact Us Jump Button
+
+**Status:** complete
+
+## Objective
+
+Improve the appearance and animations of the existing floating Contact Us Jump button.
+
+This button is displayed persistently while browsing the website, except when the Contact Us form is in view.
+
+Do not create a new Gutenberg block for it.
+
+Retain the existing synced pattern and Contact Us navigation functionality.
+
+## 1. Increase Button Size
+
+Make the button noticeably larger than its current appearance.
+
+Requirements:
+
+1. Increase the button's overall size through padding and spacing.
+2. Preserve comfortable text readability.
+3. Keep the button responsive.
+4. Maintain a sufficiently large touch target on mobile.
+5. Preserve its existing floating position relative to the viewport.
+6. Ensure the enlarged button does not create horizontal overflow.
+
+## 2. Move Button Upwards
+
+Move the button **10px higher** than its current position.
+
+Increase the existing bottom offset by 10px rather than introducing unnecessary transforms.
+
+Preserve the existing responsive positioning logic and safe-area considerations.
+
+## 3. Update Button Colours
+
+Apply the Green Group colour scheme:
+
+- Background: Green `#066C4C`.
+- Text: Cream `#F1FFFA`.
+- Icons: Cream `#F1FFFA`.
+
+Use existing global SCSS colour variables.
+
+Do not change the colours of unrelated website elements.
+
+## 4. Use Shaka SVG as Left Icon
+
+Replace the existing left-side icon with the reusable Shaka SVG from Epic-006.
+
+Requirements:
+
+1. Use the existing React Shaka component.
+2. Use the exact original SVG artwork.
+3. Do not add an additional stroke or unwanted outline.
+4. Keep the SVG's original transparent cutouts.
+5. Set its width to **30px**.
+6. Preserve its aspect ratio.
+7. Position it to the left of the button text.
+8. Align it vertically with the button text.
+
+The icon must use `currentColor` to inherit the Cream colour.
+
+Do not duplicate the SVG path in this component.
+
+## 5. Apply Shaka Shake Animation
+
+Reuse the existing Shaka shake animation established in Epic-006.
+
+The animation should:
+
+1. Shake for 1.5 seconds.
+2. Pause for 3.5 seconds.
+3. Repeat while the button is displayed.
+
+Preserve the four back-and-forth oscillations and established rotation angles.
+
+The Shaka should draw attention to the button without moving the surrounding text or chevron.
+
+Do not add a separate animation implementation when the existing shared animation can be reused.
+
+Respect `prefers-reduced-motion`.
+
+## 6. Add Right Chevron
+
+Add a downward-facing Font Awesome chevron to the right of the text.
+
+Use the same icon as the homepage Hero:
+
+```jsx
+<FontAwesomeIcon icon={faChevronDown} />
+```
+
+Requirements:
+
+- Chevron must be Cream.
+- Chevron must not have a continuous animation.
+- Place it to the right of the text.
+- Use the same horizontal spacing as between the Shaka and text.
+- Align all three items vertically.
+- Keep the text visually centred within the button.
+
+Final content order:
+
+**Shaka SVG — Existing Button Text — Down Chevron**
+
+## 7. Hover Behaviour
+
+When the button is hovered:
+
+**Background**
+
+Change from Green to Dark Green:
+
+`#033626`
+
+**Chevron**
+
+Move the chevron slightly downwards.
+
+Use a subtle transform, such as a few pixels of vertical translation.
+
+Requirements:
+
+1. Animate the background change smoothly.
+2. Animate the chevron movement smoothly.
+3. Restore the original appearance when hovering ends.
+4. Do not move the button itself.
+5. Do not interrupt or restart the Shaka's independent shake animation.
+6. Preserve visible keyboard focus styling.
+
+## 8. Preserve Existing Functionality
+
+The button must continue to:
+
+- Navigate or scroll to Contact Us.
+- Remain visible while browsing other content.
+- Hide when the Contact Us form is in view.
+- Respect the sticky Header's scroll offset.
+- Work on desktop and mobile.
+- Preserve existing Japanese text.
+
+Do not change its destination or form-visibility logic unnecessarily.
+
+## Acceptance Criteria
+
+- Button is larger.
+- Button is positioned 10px higher.
+- Green background and Cream contents are applied.
+- Shaka is 30px wide and positioned left.
+- Shaka uses the existing shake animation.
+- Down chevron appears right.
+- Icon/text spacing is balanced.
+- Hover changes the background to Dark Green.
+- Chevron moves slightly down on hover.
+- Button retains its navigation and visibility behaviour.
+- No horizontal overflow or accessibility regressions.
+
+**Notes:** Complete. The synced pattern remains the source of the Japanese label and destination, while React now renders the reusable original-fill Shaka, label and Hero chevron in that order. The control has a 60px minimum touch height, Green/Cream treatment, Dark Green hover, chevron movement, visible focus, a bottom offset exactly 10px above the previous safe-area position and a shared five-second Shaka cycle with four oscillations followed by rest. Live checks confirmed the label, anchor scrolling, Contact Us visibility hiding, Cream `currentColor` fill, zero horizontal overflow and reduced-motion overrides.
+
+---
+
+# Feature-002 — Dark Green Header, Shallow Wave and New Logo
+
+**Status:** complete
+
+## Objective
+
+Change the Header's overall background colour, add a shallow wave-shaped lower border and replace the existing Small Logo with a WordPress-managed PNG.
+
+All other Header functionality and styling must remain unchanged.
+
+## 1. Change Header Background
+
+Change the Header's primary background to:
+
+**Dark Green — `#033626`**
+
+Use the existing global Dark Green SCSS variable.
+
+Requirements:
+
+1. Apply Dark Green across the entire Header bar.
+2. Ensure the colour extends across the full viewport width.
+3. Preserve existing text colours.
+4. Preserve navigation icon colours.
+5. Preserve hover colours.
+6. Preserve active navigation states.
+7. Preserve the existing navigation hover-wave animation.
+8. Preserve the sticky positioning.
+9. Preserve desktop and mobile navigation behaviour.
+
+This is not a redesign of individual navigation items.
+
+Only the main Header background colour should change.
+
+## 2. Add Shallow Wave to Header
+
+Add a decorative wave along the bottom of the Header.
+
+Requirements:
+
+1. Use the existing reusable wave system.
+2. Wave colour must be Dark Green.
+3. The wave should be much shallower than those used elsewhere on the website.
+4. Use smooth, organic curves.
+5. Keep the wave spanning the full viewport width.
+6. Ensure the wave visually continues from the Header background.
+7. Prevent gaps between the Header and the wave.
+8. Avoid horizontal overflow.
+9. Do not cover page content unnecessarily.
+10. Preserve the Header's sticky behaviour.
+
+Use a subtle wave depth, approximately 8–16px on desktop, adjusting responsively.
+
+The wave should appear as a decorative lower edge rather than a large overlapping section.
+
+Preserve the existing Header bottom-border styling where practical, without creating an unattractive line across the wave.
+
+The wave must not interfere with navigation hover effects or mobile menu interactions.
+
+## 3. Replace the Small Logo
+
+The Header currently uses the Small Logo synced pattern.
+
+I want to replace that with a PNG image of the website's actual logo.
+
+The PNG will be uploaded to WordPress manually.
+
+**New logo dimensions:**
+
+- Width: 60px.
+- Height: 60px.
+
+Requirements:
+
+1. Replace the Header's current Small Logo display with a WordPress Image block.
+2. The Image block should use the uploaded PNG.
+3. The image should be 60 × 60px.
+4. Use `object-fit: contain` to avoid distortion.
+5. Preserve the existing logo position in the navigation.
+6. Preserve vertical alignment with the navigation items.
+7. Keep the image responsive at smaller widths.
+8. Preserve the existing logo click-through to the homepage.
+9. Do not add additional text beside the image.
+10. Do not hardcode the image URL in React.
+
+### Important
+
+Do not modify or delete the original Small Logo synced pattern globally.
+
+Only replace its usage inside the Header.
+
+The original pattern may still be needed elsewhere.
+
+## 4. WordPress Integration
+
+The Header must remain a synced WordPress pattern.
+
+The coding agent should update the Header renderer so that it can recognise and display the new image from WordPress.
+
+Use the existing WordPress media data and responsive image handling where appropriate.
+
+Do not introduce a separate image upload system.
+
+Do not automatically change the existing Header pattern in WordPress.
+
+Provide manual instructions for replacing the logo in Gutenberg.
+
+## 5. Preserve Header Behaviour
+
+Do not break:
+
+- Sticky positioning.
+- Full Header height.
+- Mobile hamburger and X animation.
+- Navigation links.
+- Active states.
+- Hover states.
+- Font Awesome navigation icons.
+- Mobile menu opening and closing.
+- Existing page navigation.
+- Anchor scroll offsets.
+
+## Acceptance Criteria
+
+- Header background is Dark Green.
+- Existing text, active and hover colours remain unchanged.
+- Shallow wave appears along the Header's bottom.
+- Wave remains visually consistent while sticky.
+- New WordPress-managed PNG replaces the Small Logo in the Header.
+- Logo displays at 60 × 60px.
+- Logo continues linking to Home.
+- Original Small Logo pattern remains available.
+- Desktop and mobile navigation continue working.
+- No horizontal overflow.
+
+**Notes:** Complete. The Header consumes Media Library image 109 from the synced pattern, removes nested-link duplication, preserves the React-owned Home link and renders the image at 60 × 60px with `object-fit: contain`. The sticky bar, base navigation surfaces, mobile menu and reusable 8–16px bottom wave are Dark Green; Green active states and established hover/navigation behavior remain intact. Desktop and mobile browser checks confirmed six links, the configured logo source and dimensions, sticky positioning, hamburger opening/body locking, shallow-wave sizing and no horizontal overflow.
+
+---
+
+# Feature-003 — Reusable Page Links Block
+
+**Status:** complete
+
+## Objective
+
+Create a reusable Gutenberg block that displays a collection of page links as large, organic circular buttons.
+
+The block will be used on the homepage but should be reusable on other pages.
+
+Name the block:
+
+**Page Links**
+
+Suggested block identity:
+
+`aloha/page-links`
+
+Register it under **Aloha Academy Layouts**.
+
+## 1. WordPress Editing
+
+The block must allow users to manage a collection of links.
+
+Each link should contain:
+
+- Destination URL or WordPress page.
+- Link text.
+- Font Awesome icon.
+- Stable item identity.
+
+Users must be able to:
+
+1. Add links.
+2. Remove links.
+3. Edit link text.
+4. Select a destination.
+5. Change the Font Awesome icon.
+6. Reorder links.
+7. Save and reopen the page without losing changes.
+
+Use an appropriate Gutenberg editor interface.
+
+Prefer WordPress's existing LinkControl or equivalent for selecting internal pages, with support for valid external links where appropriate.
+
+Provide an understandable Font Awesome icon selector based on the icons supported by the existing frontend bundle.
+
+Do not require users to enter raw icon JSX or arbitrary React source code.
+
+Use a supported allowlist or registry of icon identifiers and resolve those identifiers in React.
+
+Do not allow arbitrary JavaScript or unsafe URLs in link attributes.
+
+## 2. General Layout
+
+Display the links horizontally.
+
+Target layout:
+
+**Desktop:** 4 links per row.
+
+**Tablet:** 2 links per row.
+
+**Mobile:** 1 link per row.
+
+Requirements:
+
+1. Keep links horizontally centred.
+2. Automatically wrap onto additional rows.
+3. Maintain consistent gaps.
+4. Preserve the insertion order defined in WordPress.
+5. Avoid awkward partial rows caused by inappropriate wrapping.
+6. Centre incomplete final rows.
+
+For example:
+
+With four links, desktop must show:
+
+4 links on one row.
+
+Not:
+
+3 links on the first row and 1 on the next.
+
+With five links, desktop should show:
+
+4 links on the first row and 1 centred beneath.
+
+With six links:
+
+4 links on the first row and 2 centred beneath.
+
+Use an explicit responsive column strategy rather than unconstrained wrapping.
+
+The layout must not cause horizontal scrolling.
+
+## 3. Link Shape
+
+Each link should use the existing Round Frame blob silhouette from Epic-004.
+
+Requirements:
+
+1. Mostly circular outline.
+2. One subtly shortened or flattened section.
+3. Smooth organic geometry.
+4. Reuse the existing Round Frame shape implementation.
+5. Each circle must have a different initial orientation.
+6. The orientations should appear naturally staggered.
+7. Keep the orientation stable during re-renders.
+8. Do not distort the contents.
+
+Avoid identical neighbouring blob rotations.
+
+Use a deterministic per-item variation or another stable approach.
+
+## 4. Link Colours
+
+Each link uses the Green Group:
+
+- Background: Green `#066C4C`.
+- Text: Cream `#F1FFFA`.
+- Icon: Cream `#F1FFFA`.
+
+Do not provide separate colour controls for individual links unless required by the existing architecture.
+
+## 5. Link Content
+
+Each circle must contain:
+
+1. A Font Awesome icon.
+2. Link text beneath the icon.
+
+Both should be centrally aligned.
+
+Requirements:
+
+- Icon above text.
+- Text centred.
+- Appropriate spacing.
+- Japanese and Latin text support.
+- Text wraps safely when necessary.
+- Icon remains visible and appropriately sized.
+- Entire circle acts as the clickable link.
+
+Maintain accessible names and visible keyboard focus styling.
+
+## 6. Hover Animation
+
+When hovering over a link:
+
+1. Increase the overall button size slightly.
+2. Rotate the blob silhouette by 90 degrees relative to its resting orientation.
+3. Animate smoothly.
+4. Keep the icon and text upright.
+5. Do not rotate the content.
+6. Restore the original appearance when hovering ends.
+
+The shape should rotate independently from the content.
+
+Use separate visual and content layers as necessary.
+
+For example:
+
+- Outer interactive item controls scale.
+- Decorative mask or blob layer controls rotation.
+- Inner icon/text remains at zero rotation.
+
+Do not simply rotate the entire link and counter-rotate the text if doing so creates unnecessary complexity or jitter.
+
+Respect reduced-motion preferences.
+
+## 7. Section Background
+
+The entire Page Links section should use the existing Hero water background style.
+
+Requirements:
+
+1. Light Blue base colour: `#93B7BE`.
+2. Reuse the existing moving wave animation from the homepage Hero.
+3. Preserve the same visual style, movement and colour treatment.
+4. Fill the entire background of the Page Links section.
+5. Keep the background animation behind the links.
+6. Avoid excessive performance overhead from duplicate animation systems.
+
+This section must not introduce its own decorative top or bottom wave borders.
+
+## 8. Adjacent Section Wave Integration
+
+The Page Links section may appear between other sections with wave-shaped edges.
+
+Its Light Blue animated background must extend behind those neighbouring waves so that no white background is exposed.
+
+Requirements:
+
+1. Ensure the Light Blue background spans the full viewport width.
+2. Maintain background continuity behind neighbouring decorative wave edges.
+3. Prevent visible seams or gaps.
+4. Do not add duplicate wave shapes to the Page Links section.
+5. Use the existing section stacking and background integration system where possible.
+6. Preserve the neighbouring sections' own wave geometry.
+7. Prevent horizontal overflow.
+
+Do not solve the problem by adding arbitrary fixed margins that only work at one viewport size.
+
+## 9. Responsive Behaviour
+
+Maintain the 4 / 2 / 1 layout.
+
+If necessary, adjust circle size and spacing across breakpoints.
+
+Ensure:
+
+- Content never clips.
+- Each link remains comfortably clickable.
+- Long Japanese labels wrap appropriately.
+- Rows remain centred.
+- Shapes remain predominantly circular.
+- No horizontal overflow.
+
+## Acceptance Criteria
+
+- Page Links appears in Gutenberg under Aloha Academy Layouts.
+- Links can be added, removed and reordered.
+- Text, destination and icon are editable.
+- Settings persist after saving.
+- Desktop displays four links per row.
+- Tablet displays two links per row.
+- Mobile displays one link per row.
+- Incomplete final rows are centred.
+- Each link uses the organic Round Frame shape.
+- Circle orientations vary.
+- Hover enlarges and rotates the shape 90 degrees.
+- Icons and text remain upright.
+- Light Blue animated water background works.
+- No waves are added to this section itself.
+- Background blends correctly beneath neighbouring waves.
+- All links work.
+- Accessibility and responsive behaviour are preserved.
+
+**Notes:** Complete. The Phase-1 editor contract now maps to a React Page Links section using the shared Round Frame path, installed Font Awesome icons, deterministic ID-based orientations and the shared Hero `WaterSurface` animation over Light Blue. Shape and content layers are independent so hover scales the control and rotates only the blob by 90 degrees; focus and reduced-motion states are explicit. Live checks with the four saved links confirmed 4/2/1 rows at 1424/768/375px, centred 240/240/224px buttons, four distinct stable orientations, preserved labels/order, active water animation and zero horizontal overflow.
+
+---
+
+# Feature-004 — Reusable Testimonials Carousel
+
+**Status:** complete
+
+## Objective
+
+Create a reusable Testimonials section with an editable background image and an editable collection of testimonials.
+
+The block should use the existing Image Divider's parallax and wave system, with a carousel of testimonial cards over the image.
+
+Name the block:
+
+**Testimonials**
+
+Suggested identity:
+
+`aloha/testimonials`
+
+Register it under **Aloha Academy Layouts**.
+
+## 1. Gutenberg Editing
+
+Only two categories of content should be editable:
+
+1. Background image.
+2. Testimonial entries.
+
+The structural design should remain fixed.
+
+### Background image
+
+Allow the user to:
+
+- Select an image from the Media Library.
+- Replace it.
+- View an editor preview.
+
+Preserve image metadata, dimensions and responsive sources where available.
+
+### Testimonials
+
+Each entry consists of:
+
+- Quote.
+- Name.
+
+Users must be able to:
+
+1. Add a testimonial.
+2. Remove a testimonial.
+3. Edit its quote.
+4. Edit its name.
+5. Reorder testimonials.
+6. Save and reload without losing content.
+
+Do not require a separate manually assembled Group for every testimonial if a clearer custom editing interface is available.
+
+The editor preview should make it obvious what content is being edited.
+
+## 2. Background Design
+
+The Testimonials block should use the existing Image Divider visual system.
+
+Requirements:
+
+1. Background image spans the full viewport width.
+2. Use the existing parallax scrolling effect.
+3. Reuse the image positioning and safe overscan logic.
+4. Apply the existing organic wave system.
+5. Use a wave-shaped top border.
+6. Use a different wave-shaped bottom border.
+7. Ensure both waves are visually distinct.
+8. Avoid straight image edges becoming visible.
+9. Prevent horizontal overflow.
+10. Respect reduced-motion preferences.
+
+The wave-shaped boundaries should allow the neighbouring page backgrounds to show through naturally.
+
+Do not rely on hardcoded overlays that fail when adjacent sections change colour.
+
+### Height considerations
+
+Unlike a plain Image Divider, this section contains text cards.
+
+Its height must accommodate all visible testimonials and carousel controls.
+
+Do not force the carousel into a height that clips the quote or name.
+
+Reuse the Image Divider's background and parallax behaviour, but allow the Testimonials section to grow when necessary for its content.
+
+On mobile, prioritise readable testimonial content and complete image coverage over preserving a fixed Image Divider height.
+
+## 3. Testimonial Card Design
+
+Each testimonial should appear inside an organic rectangular pod.
+
+Use the existing **Square Frame** wave shape from Epic-004.
+
+Requirements:
+
+1. Cards are approximately rectangular.
+2. Each edge has a smooth organic wave.
+3. Each card has slightly different wave geometry.
+4. The cards should not look like identical copies.
+5. Avoid severe distortion or highly irregular shapes.
+6. Ensure all text remains safely inside the visible card area.
+7. Preserve sufficient internal padding.
+
+Use a fixed colour treatment consistent with the existing design system.
+
+Recommended default:
+
+- Card background: Cream `#F1FFFA`.
+- Card text: Green `#066C4C`.
+
+Do not introduce new Gutenberg colour settings for individual cards.
+
+## 4. Staggered Positioning
+
+The cards should look slightly staggered rather than perfectly uniform.
+
+Requirements:
+
+1. Give visible cards different organic edge variations.
+2. Apply small variations in their vertical positions.
+3. Keep these offsets subtle.
+4. Do not allow cards to overlap.
+5. Do not allow vertical offsets to clip their content.
+6. Maintain a visually balanced row.
+7. Keep card variations stable during carousel movement.
+
+Do not randomly regenerate card geometry during every React render.
+
+## 5. Card Content
+
+Each card contains two parts.
+
+### Quote
+
+The quote is the primary content.
+
+Requirements:
+
+- May contain several lines of text.
+- Must wrap naturally.
+- Must never be truncated merely to keep card heights identical.
+- Use the existing body typography.
+- Keep the text readable against the card background.
+
+### Name
+
+The name appears beneath the quote.
+
+Requirements:
+
+1. Add noticeable top spacing between quote and name.
+2. Use a title font to give the name more visual emphasis.
+3. Use the appropriate current Japanese or Latin heading font.
+4. Centre or align it consistently across cards.
+5. Preserve the original name text entered in WordPress.
+
+Current fonts:
+
+- Japanese titles: Mochiy Pop P One.
+- Latin titles: Leckerli One.
+- Body: Zen Maru Gothic.
+
+Do not rely on heavy font weights that the selected typefaces do not support.
+
+## 6. Carousel Layout
+
+The carousel must show different numbers of cards depending on available width.
+
+**Desktop:** 3 testimonials visible.
+
+**Tablet / intermediate:** 2 testimonials visible.
+
+**Mobile:** 1 testimonial visible.
+
+Requirements:
+
+1. Never display more than three cards at once.
+2. Maintain appropriate spacing between cards.
+3. Avoid cutting off visible testimonial content.
+4. Adjust card widths responsively.
+5. Handle fewer testimonials than available slots.
+6. Avoid duplicating a single testimonial unnecessarily merely to fill the row.
+
+The carousel should remain visually centred.
+
+## 7. Carousel Movement
+
+Advance the carousel **one testimonial at a time**, regardless of the number visible.
+
+Example with three visible testimonials:
+
+Initial:
+
+`[A] [B] [C]`
+
+After one movement:
+
+`[B] [C] [D]`
+
+After another:
+
+`[C] [D] [E]`
+
+The carousel must not jump three items at once.
+
+Requirements:
+
+1. Move the carousel horizontally by one card position.
+2. Animate the transition smoothly.
+3. Use sliding motion.
+4. Add subtle fading to entering and exiting cards.
+5. Keep remaining visible cards moving naturally to their new positions.
+6. Maintain the original WordPress testimonial order.
+7. Continue smoothly through the list.
+8. Loop back to the beginning without an obvious visual jump.
+
+Use a carousel track or another appropriate mechanism.
+
+Avoid remounting every card unnecessarily during each transition.
+
+## 8. Automatic Movement
+
+Automatically advance once every:
+
+**5 seconds**
+
+Requirements:
+
+1. Start the interval when the carousel is ready.
+2. Advance exactly one testimonial per interval.
+3. Reset timing appropriately after manual navigation, if provided.
+4. Pause automatic movement while the carousel is off-screen.
+5. Pause while hovered or keyboard-focused so the user can read the content.
+6. Avoid creating duplicate timers.
+7. Clean up timers when unmounted.
+8. Do not auto-advance when there is no additional testimonial to show.
+
+Respect reduced-motion preferences.
+
+For reduced-motion users, do not automatically move testimonials; keep manual navigation available.
+
+## 9. Navigation and Accessibility
+
+Provide accessible manual controls for moving to the previous and next testimonial.
+
+Keep the controls visually consistent with the Aloha Academy design system.
+
+Requirements:
+
+- Keyboard accessible.
+- Descriptive accessible labels.
+- Clear focus indication.
+- No inaccessible focusable elements hidden in off-screen cards.
+- No repeated announcements of every automatic transition.
+- Appropriate carousel semantics where practical.
+
+## 10. No Section Title
+
+The Testimonials block must not display a section title.
+
+Do not add a fixed heading such as お客様の声 unless explicitly requested later.
+
+The section should consist of the image background, its wave edges, testimonial cards and their carousel controls.
+
+## Acceptance Criteria
+
+- Testimonials block appears in Gutenberg.
+- Background image is editable.
+- Testimonials can be added, edited, removed and reordered.
+- Each testimonial contains a quote and a name.
+- Background uses Image Divider-style parallax.
+- Top and bottom waves are distinct.
+- Cards use organic Square Frame shapes.
+- Different cards have visibly different silhouettes.
+- Cards have subtle vertical staggering.
+- Long quotes remain readable.
+- Names use a title font.
+- Desktop shows three cards.
+- Tablet shows two cards.
+- Mobile shows one card.
+- Carousel advances one card at a time.
+- Automatic interval is five seconds.
+- Sliding and fading are smooth.
+- Looping has no obvious jump.
+- Reduced-motion and accessibility requirements are satisfied.
+- No content clipping or horizontal overflow.
+
+**Notes:** Complete. The Phase-1 editor contract now maps the saved image and ordered quote/name entries to a full-width React carousel. It reuses Image Divider wave/parallax geometry and overscan, applies deterministic Square Frame rotations and subtle vertical offsets, preserves Japanese/Latin title typography, and provides seamless one-card movement with accessible controls, five-second on-screen autoplay pauses, and reduced-motion behavior. Focused tests passed; live checks confirmed 3/2/1 visible cards at 1425/753/375px, full image coverage, unclipped content, manual and automatic single-card advancement, and zero horizontal overflow.
+
+---
+
+# Feature-005 — Access Map Section
+
+**Status:** complete
+
+## Objective
+
+Create a reusable Google Maps section for the homepage.
+
+The section should show the Aloha Academy location and animate into view when the user scrolls down to it.
+
+Name the block:
+
+**Access Map**
+
+Suggested block identity:
+
+`aloha/access-map`
+
+Register it under **Aloha Academy Layouts**.
+
+## 1. Location
+
+Use the exact location supplied for this Epic.
+
+**Coordinates:**
+
+- Latitude: `35.7757325`
+- Longitude: `139.3004726`
+
+**Address:**
+
+〒205-0001 東京都羽村市小作台3丁目21-2
+
+Use the supplied Google Maps location as the authoritative destination:
+
+https://www.google.com/maps/place/%E3%80%92205-0001+Tokyo,+Hamura,+Ozakudai,+3-ch%C5%8Dme%E2%88%92%EF%BC%92%EF%BC%91%E2%88%922/@35.7757325,139.3004726,17z/
+
+Do not use a generic map of Tokyo or an approximate location.
+
+## 2. Section Title
+
+Display the title:
+
+**アクセス**
+
+Requirements:
+
+1. Use an H2 heading.
+2. Use the existing Japanese heading typography.
+3. Centre the title above the map.
+4. Maintain consistent page-section spacing.
+5. Align the section content with the site's existing content width.
+
+The title should be fixed for this implementation.
+
+It does not need its own Gutenberg editing control.
+
+## 3. Google Maps Integration
+
+Use a real interactive Google Maps embed.
+
+Prefer Google's standard share/embed iframe when practical.
+
+The Map Embed API can also be used if it provides a clear advantage, but do not require an API key or billing configuration unnecessarily.
+
+### Gutenberg configuration
+
+Provide a field for the Google Maps embed source.
+
+Allow the user to paste either:
+
+- The URL extracted from Google's official embed iframe.
+- The official iframe HTML copied from Google Maps, from which the editor should extract and validate the `src` URL before saving.
+
+Store only the validated embed URL.
+
+Do not save or render arbitrary raw HTML.
+
+Only permit supported HTTPS Google Maps embed URLs.
+
+### WordPress instructions
+
+To obtain the embed:
+
+1. Open the supplied location in Google Maps.
+2. Choose **Share**.
+3. Select **Embed a map**.
+4. Choose **Copy HTML**.
+5. Paste it into the Gutenberg block's embed control.
+6. Confirm the map preview displays the intended location.
+7. Save the page.
+
+The coding agent must implement these controls before the manual WordPress phase.
+
+### Frontend requirements
+
+1. Display a real interactive Google Map.
+2. Use a responsive iframe.
+3. Prevent horizontal overflow.
+4. Preserve a suitable map aspect ratio.
+5. Allow normal map interaction.
+6. Provide a descriptive iframe title.
+7. Use appropriate lazy loading where practical.
+8. Include a link to open the same location directly in Google Maps.
+9. If the embedded map fails, show a useful fallback link rather than a broken layout.
+
+Do not invent or substitute a different address.
+
+## 4. Scroll Entrance Animation
+
+The map should animate into view as the user scrolls down.
+
+**Animation:**
+
+- Start slightly below its resting position.
+- Start transparent.
+- Move upwards into position.
+- Fade into full opacity.
+
+Use smooth easing and a restrained travel distance.
+
+Suggested duration: approximately 1 second.
+
+Match the visual style of the existing Side by Side entrance animations where appropriate.
+
+## 5. Direction-Sensitive Behaviour
+
+The animation should respond to scroll direction.
+
+Requirements:
+
+1. Animate the map into view when the user scrolls down to the section.
+2. Do not replay the entrance animation while scrolling upwards.
+3. Once the user scrolls down completely past the section, reset its animation state.
+4. When the user scrolls upward through the section, display the map normally without a new entrance animation.
+5. When the user subsequently scrolls down into it again, allow the entrance animation to replay.
+6. Avoid flickering around viewport boundaries.
+7. Ensure the map is not left invisible on initial page load, browser restoration or anchor navigation.
+
+Use IntersectionObserver and direction detection, or an equivalent efficient approach.
+
+Avoid repeatedly recreating the Google Maps iframe when resetting the visual animation.
+
+The animation should affect the map container, not destroy and remount the embedded map unnecessarily.
+
+## 6. Responsive Behaviour
+
+Requirements:
+
+- Map fills its available content width.
+- Use an appropriate desktop height.
+- Reduce or adapt height on mobile.
+- Preserve the H2 title above the map.
+- Avoid horizontal scrolling.
+- Prevent clipping.
+- Keep the map usable on touch devices.
+- Ensure the Google Maps external link remains available.
+
+## 7. Reduced Motion
+
+When `prefers-reduced-motion` is enabled:
+
+- Disable the entrance movement and fade animation.
+- Display the map immediately in its resting position.
+- Preserve map functionality.
+
+## Acceptance Criteria
+
+- Access Map block appears in Gutenberg.
+- Map uses the exact supplied location.
+- Title displays アクセス.
+- Gutenberg supports a validated Google Maps embed URL.
+- Map is interactive.
+- Embed persists after saving and reopening the page.
+- Responsive layout works.
+- Map fades in and moves upward when scrolling down.
+- Upward scrolling does not replay the animation.
+- Scroll-down re-entry can replay after reset.
+- Reduced-motion users see a static map.
+- No horizontal overflow.
+- A direct Google Maps link remains accessible.
+
+**Notes:** Complete. The validated saved embed now maps to a responsive React Access Map with the fixed アクセス H2, descriptive lazy iframe, exact-coordinate direct link and a useful fallback path. A dedicated direction-aware reveal state keeps the iframe mounted, animates only downward entry, resets after passing the section, shows upward re-entry immediately, rearms later downward entry and handles restored positions. Focused tests passed; live checks at 1425/753/375px confirmed the exact coordinates in both URLs, responsive 1080×544 / 713×400 / 343×431 frames, stable iframe identity through all scroll states, correct replay behavior, reduced-motion opacity 1/transform none, and zero horizontal overflow.
+
+---
+
+# Implementation Workflow
+
+This Epic requires three phases.
+
+## Phase 1 — Coding Prerequisites
+
+The coding agent should:
+
+1. Read `AGENTS.md` and the complete Epic-007 specification.
+2. Inspect existing WordPress/React integration.
+3. Inspect the existing Header, Contact Us Jump, Round Frame, Square Frame, Hero background and Image Divider.
+4. Register the new Gutenberg blocks:
+   - Page Links.
+   - Testimonials.
+   - Access Map.
+5. Add them to the existing Aloha Academy Layouts category.
+6. Implement their editable Gutenberg attributes and controls.
+7. Add representative editor previews.
+8. Extend the existing block-to-React data contract.
+9. Prepare Header support for the WordPress-managed 60 × 60px logo.
+10. Preserve existing synced patterns and saved content.
+11. Run focused plugin build and registration checks.
+
+Do not automatically modify existing pages or synced patterns.
+
+The public-facing features may remain incomplete until the WordPress content has been configured.
+
+**Mandatory stop:** After the editor functionality is ready, stop and provide exact WordPress setup instructions.
+
+Do not proceed to Phase 3 without user confirmation.
+
+## Phase 2 — Manual WordPress Configuration
+
+I will perform the following.
+
+### Header
+
+1. Open the existing Header synced pattern.
+2. Locate the current Small Logo element.
+3. Replace it with an Image block.
+4. Choose the uploaded logo PNG from the Media Library.
+5. Set its display dimensions to 60 × 60px.
+6. Preserve the existing Home link.
+7. Save the pattern.
+
+Do not change the original Small Logo synced pattern globally.
+
+### Page Links
+
+1. Open the Home page.
+2. Insert Page Links.
+3. Add the desired links.
+4. Enter labels.
+5. Select Font Awesome icons.
+6. Choose internal page destinations.
+7. Arrange them in the preferred order.
+
+### Testimonials
+
+1. Insert Testimonials.
+2. Choose its background image.
+3. Add testimonials.
+4. Enter each quote and name.
+5. Arrange the entries in the desired order.
+
+### Access Map
+
+1. Insert Access Map.
+2. Open the specified Aloha Academy location in Google Maps.
+3. Obtain the official embed code using Share → Embed a map.
+4. Paste it into the block's embed control.
+5. Confirm the correct map appears.
+
+### Verification
+
+After completing the above:
+
+1. Save the Home page and Header pattern.
+2. Reopen them.
+3. Verify saved images, links, icons, quotes and map details.
+4. Confirm the new blocks are available in Aloha Academy Layouts.
+
+I will then confirm that the WordPress work is finished.
+
+## Phase 3 — React and SCSS Implementation
+
+After confirmation, complete the five features.
+
+### Feature-001
+
+Implement the floating Contact Us Jump redesign.
+
+### Feature-002
+
+Implement the Dark Green Header, shallow wave and new WordPress-managed logo integration.
+
+### Feature-003
+
+Implement Page Links, blob shapes, responsive rows, hover animations and animated Light Blue background.
+
+### Feature-004
+
+Implement the Testimonials parallax background, distinct waves, irregular cards and responsive carousel.
+
+### Feature-005
+
+Implement the Google Maps section and direction-sensitive scroll animation.
+
+Complete integration testing and update feature statuses.
+
+---
+
+# Development Constraints
+
+1. Follow `AGENTS.md`.
+2. Do not implement unrelated functionality.
+3. Preserve Epics 001–006 functionality.
+4. Keep editable content in WordPress.
+5. Keep public-facing visual logic in React and SCSS.
+6. Reuse the existing Aloha Academy design tokens.
+7. Reuse the existing font system.
+8. Reuse the existing Shaka SVG and shake animation.
+9. Reuse the existing Round Frame and Square Frame shape systems.
+10. Reuse the existing Hero water animation.
+11. Reuse the existing Image Divider parallax and wave utilities.
+12. Do not duplicate shared animation code unnecessarily.
+13. Do not convert existing synced patterns into standalone blocks.
+14. Develop the WordPress plugin directly inside `backend/plugins/alohaalpha-core/`.
+15. Do not create plugin ZIP files for the local development environment.
+16. Do not reset or destroy the WordPress database or Docker environment.
+17. Do not automatically alter published WordPress page content.
+18. Ensure all custom blocks maintain backward-compatible data contracts.
+19. Follow the existing rollback and feature-status conventions.
+
+---
+
+# Testing Requirements
+
+Verify the following at:
+
+- 320px.
+- 375px.
+- 430px.
+- 768px.
+- 1024px.
+- 1440px.
+
+## Contact Us Jump
+
+- Correct larger dimensions.
+- Correct 10px position adjustment.
+- Shaka animation and 30px width.
+- Chevron position and hover animation.
+- Proper hiding near Contact Us.
+- Correct scrolling.
+
+## Header
+
+- Dark Green background.
+- Shallow wave.
+- WordPress-managed logo at 60 × 60px.
+- Sticky positioning.
+- Responsive hamburger menu.
+- Preserved active and hover states.
+
+## Page Links
+
+- Add/remove/reorder persistence.
+- Four links per row on desktop.
+- Two per row on tablet.
+- One per row on mobile.
+- Centred incomplete rows.
+- Distinct blob orientations.
+- Shape-only rotation.
+- Functional navigation.
+- Continuous Light Blue background beneath neighbouring waves.
+
+## Testimonials
+
+- Background image persistence.
+- Quote/name persistence.
+- Three/two/one visible cards.
+- One-card advancement.
+- Five-second automatic timing.
+- Smooth loop.
+- Wave-shaped cards.
+- Distinct card geometry.
+- Parallax and full image coverage.
+- Readable long quotes.
+- Accessible manual controls.
+- Reduced-motion behaviour.
+
+## Access Map
+
+- Correct location.
+- Embed persistence.
+- Responsive iframe.
+- Direction-sensitive entrance.
+- Correct re-entry/reset behaviour.
+- Direct Google Maps link.
+- Accessible interaction.
+
+## General
+
+- No unwanted horizontal scrolling.
+- No clipped text or buttons.
+- No image distortion.
+- No wave seams exposing white backgrounds.
+- No duplicate WordPress content.
+- No broken shared patterns.
+- No React rendering errors.
+- No unnecessary scroll performance regressions.
+
+Run focused automated tests and relevant build checks.
+
+Where real WordPress or browser integration cannot be verified, report that limitation explicitly.
+
+---
+
+# Feature Tracking
+
+Update:
+
+`src/vibe/epics/epic-007/features.txt`
+
+Follow the established feature status and rollback rules.
+
+Do not mark a feature complete while its required WordPress configuration or public frontend work remains unfinished.
+
+On resuming `//completeEpic-007` after Phase 2, continue from the outstanding implementation.
+
+Do not recreate completed WordPress blocks or modify saved user content unnecessarily.
+
+---
+
+# Completion Reports
+
+## At the End of Phase 1
+
+Report:
+
+1. Editor features implemented.
+2. Files modified.
+3. Plugin build results.
+4. Gutenberg registration results.
+5. Exact manual WordPress instructions.
+6. Outstanding Phase 3 implementation.
+
+Then stop.
+
+## At the End of Phase 3
+
+Report:
+
+1. Completion status of Features 001–005.
+2. React and SCSS changes.
+3. WordPress integration results.
+4. Tests performed.
+5. Responsive verification.
+6. Accessibility verification.
+7. Remaining limitations or issues.
+
+Only mark Epic-007 complete when all five features meet their acceptance criteria.
+
+**Do not begin Epic-008 or unrelated work.**

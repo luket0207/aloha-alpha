@@ -1,8 +1,14 @@
 import { createElement, useMemo } from 'react';
+import AccessMap from './AccessMap.jsx';
+import { accessMapDataFromElement } from './accessMap.js';
 import ImageDivider from './ImageDivider.jsx';
 import { imageDividerDataFromElement, imageDividerHeightFromElement } from './imageDivider.js';
 import ImageFrame from './ImageFrame.jsx';
 import { imageFrameDataFromElement } from './imageFrame.js';
+import PageLinks, { PageLinksContinuity } from './PageLinks.jsx';
+import { pageLinksDataFromElement } from './pageLinks.js';
+import Testimonials from './Testimonials.jsx';
+import { testimonialsDataFromElement } from './testimonials.js';
 import TextImageSection from './TextImageSection.jsx';
 import {
   normalizeTextImageColorScheme,
@@ -51,7 +57,7 @@ function elementProps(element, key) {
   return props;
 }
 
-function renderWordPressNode(node, key) {
+function renderWordPressNode(node, key, options = {}) {
   if (node.nodeType === Node.TEXT_NODE) return node.textContent;
   if (node.nodeType !== Node.ELEMENT_NODE) return null;
 
@@ -67,6 +73,25 @@ function renderWordPressNode(node, key) {
       : null;
   }
 
+  if (node.matches('.wp-block-aloha-page-links')) {
+    return (
+      <PageLinks
+        key={key}
+        links={pageLinksDataFromElement(node)}
+        sharedBackground={options.pageLinksContinuity}
+      />
+    );
+  }
+
+  if (node.matches('.wp-block-aloha-access-map')) {
+    return <AccessMap {...accessMapDataFromElement(node)} key={key} />;
+  }
+
+  if (node.matches('.wp-block-aloha-testimonials')) {
+    const testimonials = testimonialsDataFromElement(node);
+    return testimonials ? <Testimonials {...testimonials} key={key} /> : null;
+  }
+
   if (node.matches('.wp-block-aloha-text-image-side-by-side')) {
     const layout = normalizeTextImageLayout(node.dataset.layout);
     const imageWidth = normalizeTextImageWidth(node.dataset.imageWidth);
@@ -76,7 +101,7 @@ function renderWordPressNode(node, key) {
     const contentElement = node.querySelector('.aloha-text-image__content');
     const content = contentElement
       ? Array.from(contentElement.childNodes).map((child, index) => (
-        renderWordPressNode(child, `${key}-content-${index}`)
+        renderWordPressNode(child, `${key}-content-${index}`, options)
       ))
       : null;
 
@@ -96,17 +121,61 @@ function renderWordPressNode(node, key) {
   }
 
   const children = Array.from(node.childNodes).map((child, index) => (
-    renderWordPressNode(child, `${key}-${index}`)
+    renderWordPressNode(child, `${key}-${index}`, options)
   ));
 
   return createElement(node.tagName.toLowerCase(), elementProps(node, key), ...children);
 }
 
+function nextElementIndex(nodes, startIndex) {
+  for (let index = startIndex; index < nodes.length; index += 1) {
+    const node = nodes[index];
+    if (node.nodeType === Node.ELEMENT_NODE) return index;
+    if (node.nodeType === Node.TEXT_NODE && node.textContent.trim()) return -1;
+  }
+  return -1;
+}
+
 function parseWordPressContent(html) {
   const parsed = new DOMParser().parseFromString(html, 'text/html');
-  return Array.from(parsed.body.childNodes).map((node, index) => (
-    renderWordPressNode(node, `wordpress-node-${index}`)
-  ));
+  const nodes = Array.from(parsed.body.childNodes);
+  const content = [];
+
+  for (let index = 0; index < nodes.length; index += 1) {
+    const node = nodes[index];
+    const pageLinksIndex = node.nodeType === Node.ELEMENT_NODE
+      && node.matches('.wp-block-aloha-image-divider')
+      ? nextElementIndex(nodes, index + 1)
+      : -1;
+    const testimonialsIndex = pageLinksIndex >= 0
+      && nodes[pageLinksIndex].matches('.wp-block-aloha-page-links')
+      ? nextElementIndex(nodes, pageLinksIndex + 1)
+      : -1;
+
+    if (
+      testimonialsIndex >= 0
+      && nodes[testimonialsIndex].matches('.wp-block-aloha-testimonials')
+    ) {
+      const group = nodes.slice(index, testimonialsIndex + 1).map((groupNode, groupIndex) => (
+        renderWordPressNode(
+          groupNode,
+          `wordpress-node-${index + groupIndex}`,
+          { pageLinksContinuity: true },
+        )
+      ));
+      content.push(
+        <PageLinksContinuity key={`wordpress-continuity-${index}`}>
+          {group}
+        </PageLinksContinuity>,
+      );
+      index = testimonialsIndex;
+      continue;
+    }
+
+    content.push(renderWordPressNode(node, `wordpress-node-${index}`));
+  }
+
+  return content;
 }
 
 export default function WordPressContent({ className, html }) {

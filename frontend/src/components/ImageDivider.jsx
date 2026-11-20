@@ -1,15 +1,13 @@
-import { useEffect, useId, useRef } from 'react';
+import { useId, useRef } from 'react';
 import { WaveClipPath } from './Wave.jsx';
 import {
   buildWaveBandPath,
-  calculateImageCoverGeometry,
-  calculateMobileImageGeometry,
-  calculateParallaxOffset,
   IMAGE_DIVIDER_BOTTOM_WAVE,
   IMAGE_DIVIDER_TOP_WAVE,
   normalizeImageDividerHeight,
 } from './imageDivider.js';
 import useReducedMotion from './useReducedMotion.js';
+import useImageParallax from './useImageParallax.js';
 import './ImageDivider.scss';
 
 const DIVIDER_MASK_PATH = buildWaveBandPath(IMAGE_DIVIDER_TOP_WAVE, IMAGE_DIVIDER_BOTTOM_WAVE);
@@ -22,131 +20,21 @@ export default function ImageDivider({ dividerHeight: requestedDividerHeight, im
   const dividerHeight = normalizeImageDividerHeight(requestedDividerHeight);
   const clipId = `aloha-image-divider-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`;
 
-  useEffect(() => {
-    const section = sectionRef.current;
-    const imageElement = imageRef.current;
-    if (!section || !imageElement) return undefined;
-
-    imageElement.style.setProperty('--aloha-image-divider-offset', '0px');
-    const mobileMedia = window.matchMedia(MOBILE_MEDIA_QUERY);
-
-    let active = false;
-    let maxOffset = 0;
-    let positionFrame = null;
-    let geometryFrame = null;
-
-    function updateGeometry() {
-      geometryFrame = null;
-      const currentBounds = section.getBoundingClientRect();
-      const currentMarginLeft = Number.parseFloat(window.getComputedStyle(section).marginLeft) || 0;
-      const normalLeft = currentBounds.left - currentMarginLeft;
-      const viewportWidth = document.documentElement.clientWidth;
-
-      section.style.setProperty('--aloha-image-divider-viewport-width', `${viewportWidth}px`);
-      section.style.setProperty('--aloha-image-divider-bleed-offset', `${-normalLeft}px`);
-
-      const imageWidth = imageElement.naturalWidth || Number(imageElement.getAttribute('width'));
-      const imageHeight = imageElement.naturalHeight || Number(imageElement.getAttribute('height'));
-      let geometry;
-
-      if (mobileMedia.matches) {
-        geometry = calculateMobileImageGeometry({
-          imageHeight,
-          imageWidth,
-          preferredSectionHeight: window.innerHeight * (dividerHeight / 100),
-          sectionWidth: section.clientWidth,
-        });
-        section.style.setProperty(
-          '--aloha-image-divider-mobile-height',
-          `${geometry.sectionHeight.toFixed(2)}px`,
-        );
-      } else {
-        section.style.removeProperty('--aloha-image-divider-mobile-height');
-        geometry = calculateImageCoverGeometry({
-          imageHeight,
-          imageWidth,
-          sectionHeight: section.clientHeight,
-          sectionWidth: section.clientWidth,
-        });
-      }
-
-      maxOffset = geometry.maxOffset;
-      imageElement.style.setProperty('--aloha-image-divider-rendered-height', `${geometry.renderedHeight.toFixed(2)}px`);
-      imageElement.style.setProperty('--aloha-image-divider-rendered-width', `${geometry.renderedWidth.toFixed(2)}px`);
-      queuePositionUpdate();
-    }
-
-    function updatePosition() {
-      positionFrame = null;
-      if (!active || reducedMotion) {
-        imageElement.style.setProperty('--aloha-image-divider-offset', '0px');
-        return;
-      }
-
-      const bounds = section.getBoundingClientRect();
-      const sectionCenter = bounds.top + (bounds.height / 2);
-      const offset = calculateParallaxOffset(
-        sectionCenter,
-        bounds.height,
-        window.innerHeight,
-        maxOffset,
-      );
-      imageElement.style.setProperty('--aloha-image-divider-offset', `${offset.toFixed(2)}px`);
-    }
-
-    function queuePositionUpdate() {
-      if (positionFrame === null) positionFrame = window.requestAnimationFrame(updatePosition);
-    }
-
-    function queueGeometryUpdate() {
-      if (geometryFrame === null) geometryFrame = window.requestAnimationFrame(updateGeometry);
-    }
-
-    function setActive(nextActive) {
-      if (active === nextActive) return;
-      active = nextActive;
-
-      if (active) {
-        if (!reducedMotion) window.addEventListener('scroll', queuePositionUpdate, { passive: true });
-        queuePositionUpdate();
-      } else {
-        window.removeEventListener('scroll', queuePositionUpdate);
-      }
-    }
-
-    window.addEventListener('resize', queueGeometryUpdate);
-    mobileMedia.addEventListener('change', queueGeometryUpdate);
-    imageElement.addEventListener('load', queueGeometryUpdate);
-    updateGeometry();
-
-    let resizeObserver;
-    if ('ResizeObserver' in window) {
-      resizeObserver = new ResizeObserver(queueGeometryUpdate);
-      resizeObserver.observe(section);
-      resizeObserver.observe(document.documentElement);
-    }
-
-    let observer;
-    if ('IntersectionObserver' in window) {
-      observer = new IntersectionObserver(([entry]) => setActive(entry.isIntersecting), {
-        rootMargin: '25% 0px',
-      });
-      observer.observe(section);
-    } else {
-      setActive(true);
-    }
-
-    return () => {
-      setActive(false);
-      observer?.disconnect();
-      resizeObserver?.disconnect();
-      window.removeEventListener('resize', queueGeometryUpdate);
-      mobileMedia.removeEventListener('change', queueGeometryUpdate);
-      imageElement.removeEventListener('load', queueGeometryUpdate);
-      if (positionFrame !== null) window.cancelAnimationFrame(positionFrame);
-      if (geometryFrame !== null) window.cancelAnimationFrame(geometryFrame);
-    };
-  }, [dividerHeight, reducedMotion]);
+  useImageParallax({
+    bleedOffsetProperty: '--aloha-image-divider-bleed-offset',
+    imageHeight: image.height,
+    imageRef,
+    imageWidth: image.width,
+    mobileMediaQuery: MOBILE_MEDIA_QUERY,
+    mobileSectionHeightProperty: '--aloha-image-divider-mobile-height',
+    offsetProperty: '--aloha-image-divider-offset',
+    preferredViewportHeight: dividerHeight,
+    reducedMotion,
+    renderedHeightProperty: '--aloha-image-divider-rendered-height',
+    renderedWidthProperty: '--aloha-image-divider-rendered-width',
+    sectionRef,
+    viewportWidthProperty: '--aloha-image-divider-viewport-width',
+  });
 
   const intrinsicWidth = Number(image.width);
   const intrinsicHeight = Number(image.height);

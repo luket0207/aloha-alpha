@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Layout from './components/Layout.jsx';
+import ScrollManager from './components/ScrollManager.jsx';
 import WordPressPage from './components/WordPressPage.jsx';
 import './App.scss';
 
@@ -19,6 +20,7 @@ function NotFoundPage() {
 export default function App() {
   return (
     <BrowserRouter>
+      <ScrollManager />
       <Routes>
         <Route element={<Layout />}>
           {pages.map(({ path, slug }) => (

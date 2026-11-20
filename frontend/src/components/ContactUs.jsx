@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { getWordPressRestUrl } from '../wordpressApi.js';
 import ContactDecorations from './ContactDecorations.jsx';
 import ContactForm from './ContactForm.jsx';
 import { contactSurfboardFromElement } from './contactDecorations.js';
+import Shaka from './Shaka.jsx';
 import Wave from './Wave.jsx';
 import './ContactUs.scss';
 
@@ -92,6 +95,16 @@ function parseContactSection(html) {
   };
 }
 
+function parseContactJump(html) {
+  const document = new DOMParser().parseFromString(html, 'text/html');
+  const link = document.querySelector('a');
+
+  return {
+    href: link?.getAttribute('href') || '#contact-us',
+    label: link?.textContent.trim() || 'お問い合わせ',
+  };
+}
+
 export default function ContactUs() {
   const full = useWordPressSection('contact-us-full');
   const jump = useWordPressSection('contact-us-jump');
@@ -104,6 +117,7 @@ export default function ContactUs() {
       ? parseContactSection(full.html)
       : { contentHtml: '', presets: [], presetsStatus: full.status, surfboard: null }
   ), [full.html, full.status]);
+  const contactJump = useMemo(() => parseContactJump(jump.html), [jump.html]);
 
   useEffect(() => {
     const fullElement = fullRef.current;
@@ -200,8 +214,17 @@ export default function ContactUs() {
         <div
           className="contact-us__jump"
           ref={jumpRef}
-          dangerouslySetInnerHTML={{ __html: jump.html }}
-        />
+        >
+          <a className="contact-us__jump-link" href={contactJump.href}>
+            <Shaka className="contact-us__jump-shaka" />
+            <span>{contactJump.label}</span>
+            <FontAwesomeIcon
+              aria-hidden="true"
+              className="contact-us__jump-chevron"
+              icon={faChevronDown}
+            />
+          </a>
+        </div>
       )}
     </>
   );

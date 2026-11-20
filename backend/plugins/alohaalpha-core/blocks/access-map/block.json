@@ -1,0 +1,25 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "aloha/access-map",
+  "version": "0.2.0",
+  "title": "Access Map",
+  "category": "aloha-layouts",
+  "icon": "location-alt",
+  "description": "Validated Google Maps embed for the Aloha Academy location.",
+  "textdomain": "alohaalpha-core",
+  "attributes": {
+    "embedUrl": {
+      "type": "string",
+      "default": ""
+    }
+  },
+  "supports": {
+    "align": ["wide", "full"],
+    "anchor": true,
+    "html": false,
+    "reusable": true
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./editor.css"
+}
