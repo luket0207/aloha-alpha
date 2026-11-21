@@ -1,4 +1,6 @@
 const DEFAULT_MAP_DESTINATION = 'https://www.google.com/maps/place/%E3%80%92205-0001+Tokyo,+Hamura,+Ozakudai,+3-ch%C5%8Dme%E2%88%92%EF%BC%92%EF%BC%91%E2%88%922/@35.7757325,139.3004726,17z/';
+const DEFAULT_MAP_LINK_LABEL = 'Google マップでアロハアカデミーの場所を見る';
+const LEGACY_MAP_LINK_LABEL = 'Open the Aloha Academy location in Google Maps';
 
 export function accessMapTriggerDistance(sectionHeight) {
   return Math.min(Math.max(sectionHeight * 0.35, 100), 240);
@@ -33,11 +35,14 @@ export function nextAccessMapReveal({
 export function accessMapDataFromElement(element) {
   const iframe = element.querySelector('.aloha-access-map__iframe');
   const externalLink = element.querySelector('.aloha-access-map__external-link');
+  const savedLinkLabel = externalLink?.textContent?.trim();
 
   return {
     directUrl: externalLink?.getAttribute('href') || DEFAULT_MAP_DESTINATION,
     embedUrl: element.dataset.embedUrl || iframe?.getAttribute('src') || '',
     iframeTitle: iframe?.getAttribute('title') || 'Google Map showing Aloha Academy in Hamura, Tokyo',
-    linkLabel: externalLink?.textContent?.trim() || 'Open the Aloha Academy location in Google Maps',
+    linkLabel: !savedLinkLabel || savedLinkLabel === LEGACY_MAP_LINK_LABEL
+      ? DEFAULT_MAP_LINK_LABEL
+      : savedLinkLabel,
   };
 }

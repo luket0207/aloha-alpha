@@ -1,4 +1,11 @@
 <?php
+/**
+ * Home Hero editor script dependencies and cache version.
+ *
+ * This block uses a directly authored editor script rather than a bundled
+ * @wordpress/scripts build, so version it from the source file timestamp.
+ */
+
 return array(
     'dependencies' => array(
         'wp-block-editor',
@@ -7,5 +14,5 @@ return array(
         'wp-element',
         'wp-i18n',
     ),
-    'version'      => '0.2.0',
+    'version'      => (string) filemtime( __DIR__ . '/index.js' ),
 );

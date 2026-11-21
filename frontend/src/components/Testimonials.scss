@@ -13,6 +13,14 @@
     z-index: 0;
     inset: 0;
     overflow: hidden;
+
+    &::after {
+      position: absolute;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.6);
+      content: '';
+      pointer-events: none;
+    }
   }
 
   &__background-image {

@@ -2,7 +2,7 @@
 
 .aloha-access-map {
   width: min(calc(100% - 2.5rem), tokens.$container-width);
-  margin: clamp(3.5rem, 8vw, 6rem) auto;
+  margin: 1rem auto 2rem;
   overflow: visible;
   color: tokens.$green;
 

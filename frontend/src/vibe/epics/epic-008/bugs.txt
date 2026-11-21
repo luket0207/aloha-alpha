@@ -1,0 +1,581 @@
+# Epic-008 — Bugs
+
+## Bug-001 — Home Hero Logo Style Setting Missing
+
+**Status:** complete
+
+### Issue
+
+In Epic-008 Feature-004, we added a requirement to switch the homepage Hero between two logo styles:
+
+- Writing Logo — the existing text-based Aloha Academy logo.
+- Round Logo — the `logo.png` image from the WordPress Media Library.
+
+However, I cannot find this setting anywhere in the Home Hero block's Gutenberg editor.
+
+I want this corrected so that I can easily switch between the two logos from the Home Hero block settings.
+
+### 1. Investigate the Missing Setting
+
+Before implementing a fix, inspect the existing Home Hero block registration and Gutenberg editor implementation.
+
+Determine whether:
+
+1. The Logo Style attribute was registered.
+2. The Logo Style control was added to the editor.
+3. The control is actually rendered in the correct Inspector Controls panel.
+4. The updated Gutenberg JavaScript was built and enqueued correctly.
+5. The editor might still be loading an older build.
+6. The React frontend supports both logo styles.
+7. The WordPress-to-React data contract exposes the selected style.
+
+Identify the cause of the missing setting rather than creating duplicate functionality.
+
+### 2. Add or Correct the Logo Style Selector
+
+When selecting the **Home Hero** block in Gutenberg, I want a setting called:
+
+**Logo Style**
+
+Options:
+
+- Writing Logo
+- Round Logo
+
+Requirements:
+
+1. Display the selector in the Gutenberg Block settings sidebar.
+2. Place it in an appropriate settings panel, preferably an Advanced or Logo Settings panel.
+3. Make the setting available whenever the parent Home Hero block is selected.
+4. Do not require selecting a nested image, logo or text block.
+5. Default to Writing Logo.
+6. Update the Gutenberg preview when changed.
+7. Persist the selected value when saving the page.
+8. Restore the correct value when reopening the editor.
+
+The setting must be easy for a non-technical WordPress user to locate.
+
+Do not place it exclusively in a hidden toolbar or an unrelated editor control.
+
+### 3. WordPress Block Attribute
+
+Ensure the block has a persistent attribute such as:
+
+```js
+logoStyle: {
+  type: "string",
+  default: "writing"
+}
+```
+
+Only allow:
+
+- `writing`
+- `round`
+
+Requirements:
+
+- Existing Home Hero blocks without this attribute must default to Writing Logo.
+- Updating the attribute must not cause Gutenberg block validation errors.
+- The setting must not reset the slogan or carousel images.
+- Changing logo styles must not recreate the Home Hero block.
+- The setting must survive saving and reopening the page.
+
+Use the existing block registration and persistence system.
+
+### 4. Frontend Logo Switching
+
+Ensure that the selected setting actually changes the public-facing Hero.
+
+**Writing Logo**
+
+- Display the existing Large Logo.
+- Preserve its appearance, layout and positioning.
+- Preserve the existing slogan arrangement.
+
+**Round Logo**
+
+- Display the WordPress-managed `logo.png`.
+- Desktop target size: 250px × 250px.
+- Scale responsively on smaller screens.
+- Preserve image proportions.
+- Centre the logo horizontally.
+- Centre the existing slogan beneath it.
+- Maintain 1rem of spacing between the Round Logo and slogan.
+
+Do not hardcode the WordPress upload URL in React.
+
+Use the existing stable image reference where available.
+
+If the image cannot be resolved, report the problem and provide the minimum required WordPress image-selection step.
+
+**The Logo Style selector must still be visible even if the Round Logo image is not yet configured.**
+
+### 5. Preserve Existing Home Hero Functionality
+
+Do not modify:
+
+- Background carousel images.
+- Carousel fade transitions.
+- Slogan text or editing functionality.
+- Water background animations.
+- Hero waves.
+- Full-viewport layout.
+- Scroll-down button.
+- Existing colours and typography.
+- Other Gutenberg blocks or patterns.
+
+The only visual difference should be the selected logo and its associated layout.
+
+### 6. Verify the Actual Gutenberg Editor
+
+Do not consider this bug resolved solely because the attribute or control exists in the source code.
+
+Where the local WordPress environment is available:
+
+1. Rebuild the relevant Gutenberg editor assets.
+2. Open the WordPress Home page.
+3. Select the parent Home Hero block.
+4. Open the Block settings sidebar.
+5. Confirm the Logo Style selector is visible.
+6. Select Round Logo.
+7. Confirm the preview updates.
+8. Save and reopen the page.
+9. Confirm Round Logo remains selected.
+10. Verify the public React frontend displays the Round Logo.
+11. Switch back to Writing Logo and verify the same process.
+
+If actual editor verification is unavailable, report that limitation and provide precise manual verification instructions.
+
+### Acceptance Criteria
+
+- Logo Style appears in the Home Hero block settings.
+- The selector is accessible from the parent block.
+- Writing Logo and Round Logo options are available.
+- Writing Logo is the default.
+- Existing Home Hero blocks remain compatible.
+- Changing the setting updates the editor preview.
+- Changing the setting updates the public frontend.
+- The selected value persists after saving.
+- Round Logo uses the intended `logo.png` image.
+- Round Logo uses the correct dimensions and slogan alignment.
+- Switching does not modify the slogan or carousel images.
+- All existing Hero functionality remains intact.
+
+**Notes:** Complete. The selector, attribute, editor preview and frontend contract already existed; the missing-control cause was stale editor JavaScript because WordPress continued serving the changed source as `index.js?ver=0.2.0`. Updated the existing editor asset manifest from the static plugin version to a source-file cache version while retaining its explicit WordPress package dependencies, so the URL now changes when the directly authored editor script changes. Also protected the required 1rem Round Logo slogan gap from the short-mobile Hero override discovered during live verification. The actual Home page was tested in Gutenberg: the parent block exposed Logo Style, Round saved/reopened with the real `logo.png`, the public Hero rendered it at 250×250px with a 16px gap, then Writing saved/reopened and was restored publicly. The slogan, six carousel image IDs, six public slides and eight water animations remained unchanged. PHP/JS syntax, four focused Hero tests and the production build passed.
+
+---
+
+## Bug-002 — Page Links H2 Spacing and Bottom Padding
+
+**Status:** complete
+
+### Issue
+
+The Japanese H2 title in the Page Links section is currently too close to the circular links beneath it.
+
+I want approximately 2rem of spacing below the heading.
+
+To keep the section visually balanced, I also want more padding beneath the links themselves.
+
+Only the bottom section padding should increase. The existing top and horizontal padding should remain unchanged.
+
+### 1. Increase H2 Bottom Spacing
+
+Set the margin below the Page Links H2 to:
+
+```scss
+margin-bottom: 2rem;
+```
+
+Requirements:
+
+1. Apply the margin to the existing リンク集 H2.
+2. Preserve its centred alignment.
+3. Preserve the Japanese heading font.
+4. Do not change the heading's font size or colour.
+5. Avoid additional margins from parent elements creating excessive spacing.
+6. Ensure the spacing remains appropriate on mobile and desktop.
+
+The intended visible distance between the heading and the links is approximately 2rem.
+
+### 2. Increase Section Bottom Padding
+
+Update the Page Links section padding so that only the bottom value changes.
+
+Use:
+
+```scss
+padding:
+  clamp(1rem, 8vw, 2rem)
+  max(1.25rem, env(safe-area-inset-right))
+  clamp(4rem, 8vw, 5rem)
+  max(1.25rem, env(safe-area-inset-left));
+```
+
+This means:
+
+**Top**
+
+```scss
+clamp(1rem, 8vw, 2rem)
+```
+
+**Right**
+
+```scss
+max(1.25rem, env(safe-area-inset-right))
+```
+
+**Bottom**
+
+```scss
+clamp(4rem, 8vw, 5rem)
+```
+
+**Left**
+
+```scss
+max(1.25rem, env(safe-area-inset-left))
+```
+
+Requirements:
+
+1. Increase only the bottom padding.
+2. Preserve the existing top padding.
+3. Preserve horizontal safe-area spacing.
+4. Ensure the increased bottom spacing applies beneath the final row of links.
+5. Maintain the existing section background.
+6. Preserve the transitions into adjacent wave-shaped sections.
+7. Avoid unwanted white gaps or horizontal overflow.
+
+### 3. Preserve Existing Page Links Functionality
+
+Do not modify:
+
+- リンク集 heading text.
+- Green circular links.
+- Cream icons and text.
+- Round Frame blob shapes.
+- Hover animations.
+- WordPress link editing.
+- Responsive four/two/one layout.
+- Existing animated Light Blue background.
+- Background continuity beneath adjacent waves.
+
+### Acceptance Criteria
+
+- H2 has approximately 2rem spacing beneath it.
+- Section bottom padding uses `clamp(4rem, 8vw, 5rem)`.
+- Top padding remains unchanged.
+- Horizontal padding remains unchanged.
+- Link layout remains centred.
+- Light Blue background continues behind neighbouring waves.
+- Responsive behaviour is preserved.
+- No horizontal overflow or visual regressions.
+
+**Notes:** Complete. The existing Page Links H2 now uses an exact `2rem` bottom margin, and only the section’s bottom padding changed to `clamp(4rem, 8vw, 5rem)`; the requested top and safe-area-aware horizontal values are unchanged. The focused Page Links tests and production build passed. Live checks at 320/375/768/1024/1440px confirmed the responsive 4/4/2/1/1-row layouts, adaptive 2rem visible heading gap, 64–80px computed bottom padding, unchanged Mochiy heading treatment, four water animations, continuity wrapper and zero horizontal overflow.
+
+---
+
+# Implementation Instructions
+
+These bugs belong to Epic-008.
+
+## Preparation
+
+1. Read and follow `AGENTS.md`.
+2. Read the original Epic-008 specifications.
+3. Inspect the existing Home Hero Gutenberg block and frontend implementation.
+4. Inspect the Page Links SCSS.
+5. Preserve existing WordPress content and block identities.
+
+## Implementation Order
+
+**Bug-001**
+
+Investigate and fix the missing Home Hero Logo Style selector, including editor persistence and frontend integration.
+
+**Bug-002**
+
+Adjust the Page Links H2 bottom margin and section bottom padding.
+
+## Testing
+
+Run focused tests and relevant builds.
+
+For Bug-001, verify the editor control and saved attribute behaviour wherever the WordPress environment is available.
+
+For Bug-002, check responsive layouts at:
+
+- 320px
+- 375px
+- 768px
+- 1024px
+- 1440px
+
+Preserve existing functionality and avoid unrelated changes.
+
+## Tracking
+
+Update:
+
+`src/vibe/epics/epic-008/bugs.txt`
+
+Follow the existing status and rollback conventions.
+
+Only mark each bug complete when its acceptance criteria have been satisfied.
+
+## Completion Report
+
+For each bug, report:
+
+1. Root cause, where applicable.
+2. Changes implemented.
+3. Files modified.
+4. Tests performed.
+5. Remaining limitations.
+
+For Bug-001, explicitly state whether the Logo Style setting was verified in the live Gutenberg editor.
+
+Do not begin Epic-009 or unrelated work.
+
+
+# Epic-008 — Bug-003
+
+## Bug-003 — Round Logo Size and Horizontal Alignment
+
+**Status:** complete
+
+### Issue
+
+The new Round Logo option in the Home Hero is working correctly, but I want to make two aesthetic adjustments:
+
+1. Increase the Round Logo size from 250 × 250px to **350 × 350px**.
+2. Align the left edge of the Round Logo with the established content margin used throughout the website, particularly the left edge of the Header's navigation logo.
+
+These changes should apply only when the Home Hero is using Round Logo mode.
+
+## 1. Increase Round Logo Size
+
+Update the Round Logo's desktop dimensions to:
+
+```scss
+width: 350px;
+height: 350px;
+```
+
+Requirements:
+
+- Display the Round Logo at 350 × 350px on desktop.
+- Preserve the original image aspect ratio.
+- Use `object-fit: contain` to avoid cropping or distortion.
+- Scale the image responsively on smaller screens.
+- Prevent the image from exceeding the available viewport width.
+- Preserve the existing Home Hero height and overall structure.
+
+The 350px dimensions should be the maximum intended display size, rather than forcing an oversized image on mobile.
+
+## 2. Align Round Logo with Page Content Margin
+
+Currently, the Round Logo is horizontally centred within the Hero.
+
+I want it to be aligned to the left-hand content margin instead.
+
+Requirements:
+
+1. The Round Logo's left edge must align with the established content margin used throughout the website.
+2. Use the same horizontal content container or spacing system as the Header and other page sections.
+3. Specifically, the left edge of the Round Logo should align with the left edge of the PNG logo used in the navigation.
+4. Do not introduce a separate hardcoded margin that could become inconsistent with the rest of the website.
+5. Preserve responsive alignment at desktop, tablet and mobile widths.
+6. Ensure the larger logo does not extend beyond the viewport.
+
+Inspect the existing Header and Hero layout containers and reuse their shared alignment rules.
+
+Do not estimate the margin using arbitrary pixel offsets.
+
+## 3. Preserve Slogan Positioning
+
+When Round Logo mode is selected, the slogan should remain directly beneath the Round Logo.
+
+Requirements:
+
+- Preserve the existing slogan text.
+- Preserve its existing typography and colour.
+- Keep the 1rem gap between the Round Logo and slogan.
+- Centre the slogan horizontally **relative to the Round Logo**, rather than the entire Hero.
+- Ensure the slogan remains responsive.
+- Do not change the slogan's WordPress editing functionality.
+
+The Round Logo and slogan should behave as a single left-aligned content group, with the slogan centred beneath the image.
+
+## 4. Preserve Writing Logo Mode
+
+These changes must not affect the Writing Logo option.
+
+When Writing Logo is selected:
+
+- Preserve the existing Large Logo.
+- Preserve its current positioning.
+- Preserve its existing dimensions.
+- Preserve its slogan alignment.
+- Preserve its responsive behaviour.
+
+Avoid changing shared Hero styles in ways that unintentionally affect Writing Logo mode.
+
+Use a logo-style-specific class or equivalent conditional styling where appropriate.
+
+## 5. Preserve Home Hero Functionality
+
+Do not change:
+
+- Gutenberg Logo Style selector.
+- WordPress-managed Round Logo image.
+- Carousel images.
+- Carousel transitions.
+- Animated water background.
+- Hero waves.
+- Full-height Hero behaviour.
+- Scroll-down button.
+- Existing colours and typography.
+
+No new Gutenberg settings or manual WordPress changes are required.
+
+## Acceptance Criteria
+
+- Round Logo displays at 350 × 350px on desktop.
+- Logo scales down appropriately on smaller screens.
+- Logo's left edge aligns with the Header navigation logo.
+- Shared site content margins are reused.
+- Slogan remains 1rem below the Round Logo.
+- Slogan is centred relative to the Round Logo.
+- Writing Logo mode remains visually unchanged.
+- No image distortion or cropping.
+- No horizontal overflow.
+- Existing Home Hero functionality is preserved.
+
+**Notes:** Complete. Added a shared 1rem content-inline gutter token and applied it to the existing Header container and the Round Hero content container, preserving the Header’s rendered position while giving both an identical alignment source. Round mode now uses a 350px maximum square image, a matching 350px slogan column and a 1rem gap; its mobile container scales within the available width. Live checks against the currently selected Round Logo at 320/375/768/1024/1440px measured 273/328/350/350/350px images in the scrollbar-adjusted viewport, a 0px left-edge delta from both the Header navigation PNG and Header container, a 0px slogan-centre delta, a 16px gap and no overflow. DOM-only Writing-mode regression checks reused the WordPress-managed Large Logo without changing saved content. Six slides, eight water animations, the focused four-test Hero suite and the production build all remained successful.
+
+---
+
+## Implementation Instructions
+
+1. Read and follow `AGENTS.md`.
+2. Review the existing Epic-008 Home Hero implementation.
+3. Inspect the Header's content alignment and the Home Hero's Round Logo layout.
+4. Reuse the established content-width and horizontal-spacing system.
+5. Update the Round Logo dimensions to 350 × 350px.
+6. Align the Round Logo's left edge with the navigation logo.
+7. Keep the slogan centred beneath the Round Logo.
+8. Ensure Writing Logo mode is unaffected.
+9. Verify at 320px, 375px, 768px, 1024px and 1440px.
+10. Run relevant focused build and regression checks.
+11. Update Bug-003 in `src/vibe/epics/epic-008/bugs.txt`.
+
+**Scope:** Implement Bug-003 only. Do not modify unrelated components or begin another Epic.
+
+# Epic-008 — Bug-004
+
+## Bug-004 — Prevent Testimonials Carousel from Pausing on Hover
+
+**Status:** complete
+
+### Issue
+
+The Testimonials carousel currently stops automatically scrolling when the user hovers over it with their mouse.
+
+I do not want this behaviour.
+
+The carousel should continue advancing automatically every five seconds, regardless of whether the user is hovering over the section or individual testimonial cards.
+
+## 1. Remove Hover-to-Pause Behaviour
+
+Inspect the existing Testimonials carousel implementation and identify the logic responsible for pausing automatic movement on hover.
+
+Requirements:
+
+1. Remove the automatic pause triggered by mouse hover.
+2. Remove any `onMouseEnter` or `onMouseLeave` handlers used exclusively to pause and resume the carousel.
+3. Check for any CSS hover rules that stop or pause carousel animations.
+4. Ensure hovering over individual testimonial cards does not affect the carousel.
+5. Ensure hovering over the overall Testimonials section does not affect the carousel.
+6. Do not restart the carousel timer when the mouse enters or leaves the section.
+
+The carousel should behave identically whether the mouse pointer is over it or elsewhere on the page.
+
+## 2. Preserve Five-Second Automatic Movement
+
+The carousel must continue advancing every:
+
+**5 seconds (5000ms)**
+
+Requirements:
+
+- Advance exactly one testimonial at a time.
+- Preserve the current five-second interval.
+- Do not reset the interval on hover.
+- Do not introduce delays when the pointer moves between cards.
+- Preserve smooth horizontal transitions.
+- Preserve seamless looping.
+- Avoid duplicate intervals or unnecessary timer recreation.
+
+The automatic scrolling should remain consistent during normal interaction.
+
+## 3. Preserve Existing Carousel Design
+
+Do not modify:
+
+- Testimonial card shapes.
+- Card colours.
+- Card staggered positioning.
+- Quote and name typography.
+- Responsive three/two/one card layout.
+- Horizontal sliding animation.
+- Existing entering-card fade animation.
+- Seamless looping.
+- Five-second interval.
+- Background image overlay.
+- Parallax scrolling.
+- Top and bottom wave borders.
+
+Do not reintroduce navigation arrows.
+
+## 4. Accessibility
+
+Do not pause automatically merely because the mouse is hovering over the carousel.
+
+Preserve any existing explicit user-controlled pause mechanism where required for accessibility, along with the site's reduced-motion behaviour.
+
+These should remain separate from mouse hover and must not interfere with normal five-second advancement.
+
+## Acceptance Criteria
+
+- Carousel continues moving while hovered.
+- Hovering over individual cards does not pause movement.
+- Moving the pointer into or out of the carousel does not reset its timer.
+- Carousel advances once every five seconds.
+- Each transition moves exactly one testimonial.
+- Carousel loops smoothly without flashes.
+- No navigation arrows appear.
+- Existing parallax and visual effects remain unchanged.
+- Reduced-motion accessibility behaviour is preserved.
+- No unnecessary re-renders or duplicate timers.
+
+**Notes:** Complete. Removed the hover state and the section’s mouse-enter/mouse-leave handlers from the autoplay lifecycle, so pointer movement no longer pauses or recreates the timer. The existing focus, off-screen, non-looping and reduced-motion pauses remain intact. The five-second interval is now a named shared constant, and a focused autoplay predicate regression test explicitly confirms hover is irrelevant. Three focused tests and the production build passed. In the live carousel, continuous hover advanced one item at approximately 5.2, 10.4 and 15.6 seconds; alternating pointer entry/exit every second still produced the scheduled advance, while reduced motion remained stationary. Seamless index logic, three-card desktop layout, zero navigation buttons, parallax, clipping, overlay, visual styling and zero overflow were preserved.
+
+---
+
+## Implementation Instructions
+
+1. Read and follow `AGENTS.md`.
+2. Inspect the Testimonials carousel's automatic scrolling logic.
+3. Identify and remove hover-triggered pausing.
+4. Preserve the existing interval and transition logic.
+5. Verify that hovering continuously for at least 15 seconds does not prevent automatic movement.
+6. Verify that moving the pointer repeatedly in and out does not reset the interval.
+7. Confirm seamless looping and responsive behaviour.
+8. Run relevant focused regression tests.
+9. Update Bug-004 in `src/vibe/epics/epic-008/bugs.txt`.
+
+**Scope:** Fix the hover-pausing behaviour only. Do not redesign the carousel or modify unrelated functionality.

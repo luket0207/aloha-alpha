@@ -17,18 +17,50 @@
 
 .theme-green {
   @include mixins.theme(tokens.$green, tokens.$cream, tokens.$yellow);
+  --aloha-button-background: #{tokens.$yellow};
+  --aloha-button-text: #{tokens.$dark-green};
+  --aloha-button-hover-background: #{tokens.$cream};
+  --aloha-button-hover-text: #{tokens.$green};
+  --aloha-button-wave: #{tokens.$light-blue};
+  --aloha-button-secondary-hover: #{tokens.$dark-green};
+  --aloha-button-secondary-hover-text: #{tokens.$cream};
+  --aloha-button-focus: #{tokens.$cream};
 }
 
 .theme-light-blue {
   @include mixins.theme(tokens.$light-blue, tokens.$mocha, tokens.$red);
+  --aloha-button-background: #{tokens.$green};
+  --aloha-button-text: #{tokens.$cream};
+  --aloha-button-hover-background: #{tokens.$cream};
+  --aloha-button-hover-text: #{tokens.$green};
+  --aloha-button-wave: #{tokens.$yellow};
+  --aloha-button-secondary-hover: #{tokens.$dark-green};
+  --aloha-button-secondary-hover-text: #{tokens.$cream};
+  --aloha-button-focus: #{tokens.$dark-green};
 }
 
 .theme-cream {
   @include mixins.theme(tokens.$cream, tokens.$green, tokens.$red);
+  --aloha-button-background: #{tokens.$green};
+  --aloha-button-text: #{tokens.$cream};
+  --aloha-button-hover-background: #{tokens.$light-blue};
+  --aloha-button-hover-text: #{tokens.$dark-green};
+  --aloha-button-wave: #{tokens.$yellow};
+  --aloha-button-secondary-hover: #{tokens.$dark-green};
+  --aloha-button-secondary-hover-text: #{tokens.$cream};
+  --aloha-button-focus: #{tokens.$green};
 }
 
 // Mocha on Grey is part of the supplied palette but fails WCAG contrast.
 // Do not use this theme for essential text without an approved adjustment.
 .theme-grey {
   @include mixins.theme(tokens.$grey, tokens.$mocha, tokens.$yellow);
+  --aloha-button-background: #{tokens.$dark-green};
+  --aloha-button-text: #{tokens.$cream};
+  --aloha-button-hover-background: #{tokens.$cream};
+  --aloha-button-hover-text: #{tokens.$dark-green};
+  --aloha-button-wave: #{tokens.$yellow};
+  --aloha-button-secondary-hover: #{tokens.$green};
+  --aloha-button-secondary-hover-text: #{tokens.$cream};
+  --aloha-button-focus: #{tokens.$yellow};
 }

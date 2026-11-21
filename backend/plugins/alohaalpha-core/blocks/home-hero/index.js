@@ -1,13 +1,14 @@
 (function (blocks, blockEditor, components, element, i18n) {
     const { registerBlockType } = blocks;
-    const { MediaUpload, MediaUploadCheck, RichText, useBlockProps } = blockEditor;
-    const { Button } = components;
+    const { InspectorControls, MediaUpload, MediaUploadCheck, RichText, useBlockProps } = blockEditor;
+    const { Button, PanelBody, RadioControl } = components;
     const { createElement: el, Fragment } = element;
     const { __, sprintf } = i18n;
     const editorSettings = window.alohaalphaHomeHeroEditor || {};
 
     const attributes = {
         slogan: { type: 'string', default: 'Aloha starts here' },
+        logoStyle: { type: 'string', default: 'writing' },
         images: { type: 'array', default: [] },
     };
 
@@ -38,6 +39,10 @@
         return Array.isArray(images) ? images.filter((image) => image && image.url) : [];
     }
 
+    function normalizedLogoStyle(logoStyle) {
+        return logoStyle === 'round' ? 'round' : 'writing';
+    }
+
     registerBlockType('aloha/home-hero', {
         apiVersion: 3,
         title: __('Home Hero', 'alohaalpha-core'),
@@ -48,7 +53,11 @@
         supports: { html: false, reusable: true },
         edit: function Edit({ attributes: attributesValue, setAttributes }) {
             const images = normalizedImages(attributesValue.images);
-            const blockProps = useBlockProps({ className: 'aloha-home-hero-editor' });
+            const logoStyle = normalizedLogoStyle(attributesValue.logoStyle);
+            const roundLogo = editorSettings.roundLogo || null;
+            const blockProps = useBlockProps({
+                className: `aloha-home-hero-editor aloha-home-hero-editor--${logoStyle}`,
+            });
 
             function setImages(nextImages) {
                 setAttributes({ images: nextImages.map(normalizeImage).filter((image) => image.url) });
@@ -72,6 +81,36 @@
                 setAttributes({ images: nextImages });
             }
 
+            const logoPreview = logoStyle === 'round'
+                ? (roundLogo && roundLogo.url
+                    ? el('img', {
+                        alt: roundLogo.alt || 'Aloha Academy',
+                        className: 'aloha-home-hero-editor__round-logo',
+                        height: roundLogo.height || undefined,
+                        src: roundLogo.url,
+                        width: roundLogo.width || undefined,
+                    })
+                    : el(
+                        'p',
+                        { className: 'aloha-home-hero-editor__logo-missing' },
+                        __('The centrally managed Round Logo is unavailable.', 'alohaalpha-core')
+                    ))
+                : el(
+                    Fragment,
+                    null,
+                    el('div', {
+                        className: 'aloha-home-hero-editor__logo',
+                        dangerouslySetInnerHTML: { __html: editorSettings.logoHtml || '' },
+                    }),
+                    !editorSettings.logoHtml
+                        ? el(
+                            'p',
+                            { className: 'aloha-home-hero-editor__logo-missing' },
+                            __('The synced Large Logo preview is unavailable.', 'alohaalpha-core')
+                        )
+                        : null
+                );
+
             const galleryControl = el(
                 MediaUploadCheck,
                 null,
@@ -93,100 +132,111 @@
             );
 
             return el(
-                'section',
-                blockProps,
+                Fragment,
+                null,
                 el(
-                    'div',
-                    { className: 'aloha-home-hero-editor__preview' },
-                    el('div', {
-                        className: 'aloha-home-hero-editor__logo',
-                        dangerouslySetInnerHTML: { __html: editorSettings.logoHtml || '' },
-                    }),
-                    !editorSettings.logoHtml
-                        ? el(
-                            'p',
-                            { className: 'aloha-home-hero-editor__logo-missing' },
-                            __('The synced Large Logo preview is unavailable.', 'alohaalpha-core')
-                        )
-                        : null,
-                    el(RichText, {
-                        className: 'aloha-home-hero-editor__slogan aloha-heading--latin',
-                        onChange: (slogan) => setAttributes({ slogan }),
-                        placeholder: __('Hero sloganâ€¦', 'alohaalpha-core'),
-                        tagName: 'h3',
-                        value: attributesValue.slogan,
-                    }),
-                    images.length
-                        ? el(
-                            'ol',
-                            { className: 'aloha-home-hero-editor__images' },
-                            images.map((image, index) => el(
-                                'li',
-                                { className: 'aloha-home-hero-editor__image-item', key: `${image.id || image.url}-${index}` },
-                                el(
-                                    'figure',
-                                    { className: 'aloha-home-hero-editor__image' },
-                                    el('img', {
-                                        alt: image.alt,
-                                        height: image.height || undefined,
-                                        src: image.url,
-                                        width: image.width || undefined,
-                                    }),
-                                    el('figcaption', null, sprintf(__('Slide %d', 'alohaalpha-core'), index + 1))
-                                ),
-                                el(
-                                    'div',
-                                    { className: 'aloha-home-hero-editor__image-controls' },
-                                    el(Button, {
-                                        disabled: index === 0,
-                                        label: sprintf(__('Move slide %d earlier', 'alohaalpha-core'), index + 1),
-                                        onClick: () => moveImage(index, -1),
-                                        size: 'small',
-                                        variant: 'secondary',
-                                    }, __('Move earlier', 'alohaalpha-core')),
-                                    el(Button, {
-                                        disabled: index === images.length - 1,
-                                        label: sprintf(__('Move slide %d later', 'alohaalpha-core'), index + 1),
-                                        onClick: () => moveImage(index, 1),
-                                        size: 'small',
-                                        variant: 'secondary',
-                                    }, __('Move later', 'alohaalpha-core')),
-                                    el(
-                                        MediaUploadCheck,
-                                        null,
-                                        el(MediaUpload, {
-                                            allowedTypes: ['image'],
-                                            onSelect: (selectedImage) => replaceImage(index, selectedImage),
-                                            render: ({ open }) => el(
-                                                Button,
-                                                {
-                                                    label: sprintf(__('Replace slide %d', 'alohaalpha-core'), index + 1),
-                                                    onClick: open,
-                                                    size: 'small',
-                                                    variant: 'secondary',
-                                                },
-                                                __('Replace', 'alohaalpha-core')
-                                            ),
-                                            value: image.id,
-                                        })
-                                    ),
-                                    el(Button, {
-                                        isDestructive: true,
-                                        label: sprintf(__('Remove slide %d', 'alohaalpha-core'), index + 1),
-                                        onClick: () => removeImage(index),
-                                        size: 'small',
-                                        variant: 'tertiary',
-                                    }, __('Remove', 'alohaalpha-core'))
-                                )
-                            ))
-                        )
-                        : el(
-                            'p',
-                            { className: 'aloha-home-hero-editor__empty' },
-                            __('No carousel images selected.', 'alohaalpha-core')
-                        )
+                    InspectorControls,
+                    { group: 'settings' },
+                    el(
+                        PanelBody,
+                        { title: __('Logo Style', 'alohaalpha-core') },
+                        el(RadioControl, {
+                            label: __('Logo Style', 'alohaalpha-core'),
+                            onChange: (value) => setAttributes({ logoStyle: normalizedLogoStyle(value) }),
+                            options: [
+                                { label: __('Writing Logo', 'alohaalpha-core'), value: 'writing' },
+                                { label: __('Round Logo', 'alohaalpha-core'), value: 'round' },
+                            ],
+                            selected: logoStyle,
+                        })
+                    )
                 ),
-                el('div', { className: 'aloha-home-hero-editor__gallery-control' }, galleryControl)
+                el(
+                    'section',
+                    blockProps,
+                    el(
+                        'div',
+                        { className: 'aloha-home-hero-editor__preview' },
+                        logoPreview,
+                        el(RichText, {
+                            className: 'aloha-home-hero-editor__slogan aloha-heading--latin',
+                            onChange: (slogan) => setAttributes({ slogan }),
+                            placeholder: __('Hero slogan…', 'alohaalpha-core'),
+                            tagName: 'h3',
+                            value: attributesValue.slogan,
+                        }),
+                        images.length
+                            ? el(
+                                'ol',
+                                { className: 'aloha-home-hero-editor__images' },
+                                images.map((image, index) => el(
+                                    'li',
+                                    { className: 'aloha-home-hero-editor__image-item', key: `${image.id || image.url}-${index}` },
+                                    el(
+                                        'figure',
+                                        { className: 'aloha-home-hero-editor__image' },
+                                        el('img', {
+                                            alt: image.alt,
+                                            height: image.height || undefined,
+                                            src: image.url,
+                                            width: image.width || undefined,
+                                        }),
+                                        el('figcaption', null, sprintf(__('Slide %d', 'alohaalpha-core'), index + 1))
+                                    ),
+                                    el(
+                                        'div',
+                                        { className: 'aloha-home-hero-editor__image-controls' },
+                                        el(Button, {
+                                            disabled: index === 0,
+                                            label: sprintf(__('Move slide %d earlier', 'alohaalpha-core'), index + 1),
+                                            onClick: () => moveImage(index, -1),
+                                            size: 'small',
+                                            variant: 'secondary',
+                                        }, __('Move earlier', 'alohaalpha-core')),
+                                        el(Button, {
+                                            disabled: index === images.length - 1,
+                                            label: sprintf(__('Move slide %d later', 'alohaalpha-core'), index + 1),
+                                            onClick: () => moveImage(index, 1),
+                                            size: 'small',
+                                            variant: 'secondary',
+                                        }, __('Move later', 'alohaalpha-core')),
+                                        el(
+                                            MediaUploadCheck,
+                                            null,
+                                            el(MediaUpload, {
+                                                allowedTypes: ['image'],
+                                                onSelect: (selectedImage) => replaceImage(index, selectedImage),
+                                                render: ({ open }) => el(
+                                                    Button,
+                                                    {
+                                                        label: sprintf(__('Replace slide %d', 'alohaalpha-core'), index + 1),
+                                                        onClick: open,
+                                                        size: 'small',
+                                                        variant: 'secondary',
+                                                    },
+                                                    __('Replace', 'alohaalpha-core')
+                                                ),
+                                                value: image.id,
+                                            })
+                                        ),
+                                        el(Button, {
+                                            isDestructive: true,
+                                            label: sprintf(__('Remove slide %d', 'alohaalpha-core'), index + 1),
+                                            onClick: () => removeImage(index),
+                                            size: 'small',
+                                            variant: 'tertiary',
+                                        }, __('Remove', 'alohaalpha-core'))
+                                    )
+                                ))
+                            )
+                            : el(
+                                'p',
+                                { className: 'aloha-home-hero-editor__empty' },
+                                __('No carousel images selected.', 'alohaalpha-core')
+                            )
+                    ),
+                    el('div', { className: 'aloha-home-hero-editor__gallery-control' }, galleryControl)
+                )
             );
         },
         save: function Save() {

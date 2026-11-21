@@ -6,7 +6,7 @@
   "title": "Aloha Logo",
   "category": "aloha-layouts",
   "icon": "format-image",
-  "description": "Reusable Aloha Academy wordmark with a Media Library flower image.",
+  "description": "Reusable Aloha Academy wordmark with a replaceable Media Library image.",
   "textdomain": "alohaalpha-core",
   "attributes": {
     "variant": {

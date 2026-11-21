@@ -13,6 +13,10 @@ export function findNextPageSection(hero) {
   return null;
 }
 
+export function normalizeHeroLogoStyle(logoStyle) {
+  return logoStyle === 'round' ? 'round' : 'writing';
+}
+
 export function getStickyHeaderOffset(header, getStyle = window.getComputedStyle) {
   if (!header) return 0;
 

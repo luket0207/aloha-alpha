@@ -1,6 +1,8 @@
 @use 'sass:color';
 @use '../styles/variables' as tokens;
 
+$page-links-blue: #1b4672;
+
 .aloha-page-links,
 .aloha-page-links-continuity {
   --aloha-hero-water-dark: #{tokens.$light-blue};
@@ -47,7 +49,11 @@
   position: relative;
   width: 100%;
   max-width: none !important;
-  padding: clamp(4rem, 8vw, 7rem) max(1.25rem, env(safe-area-inset-right)) clamp(4rem, 8vw, 7rem) max(1.25rem, env(safe-area-inset-left));
+  padding:
+    clamp(1rem, 8vw, 2rem)
+    max(1.25rem, env(safe-area-inset-right))
+    clamp(4rem, 8vw, 5rem)
+    max(1.25rem, env(safe-area-inset-left));
   overflow: clip;
   background: tokens.$light-blue;
   isolation: isolate;
@@ -67,6 +73,16 @@
   pointer-events: none;
 }
 
+.aloha-page-links__title {
+  position: relative;
+  z-index: 1;
+  width: min(100%, tokens.$container-width);
+  margin: 0 auto 2rem;
+  color: $page-links-blue;
+  text-align: center;
+  padding-bottom: 1rem;
+}
+
 .aloha-page-links__list {
   position: relative;
   display: flex;
@@ -83,6 +99,23 @@
   flex: 0 0 calc((100% - (3 * clamp(1.5rem, 3vw, 2.5rem))) / 4);
   min-width: 0;
   max-width: 15rem;
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  visibility: visible;
+}
+
+.aloha-page-links[data-motion-ready='true']:not(.is-revealed) .aloha-page-links__item {
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(0, -30px, 0);
+  visibility: hidden;
+}
+
+.aloha-page-links[data-motion-ready='true'][data-animate='true'].is-revealed .aloha-page-links__item {
+  transition-delay: var(--aloha-page-link-delay, 0ms);
+  transition-duration: var(--aloha-page-link-duration, 500ms);
+  transition-property: opacity, transform;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .aloha-page-links__link {
@@ -118,7 +151,7 @@
   width: 100%;
   height: 100%;
   overflow: visible;
-  color: tokens.$green;
+  color: $page-links-blue;
   transform: rotate(var(--aloha-page-link-angle));
   transform-origin: center;
   transition: transform 420ms cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -158,6 +191,14 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .aloha-page-links__item {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transform: none !important;
+    visibility: visible !important;
+    transition: none !important;
+  }
+
   .aloha-page-links__link,
   .aloha-page-links__shape {
     transition: none;

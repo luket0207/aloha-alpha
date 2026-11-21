@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
+  accessMapDataFromElement,
   initialAccessMapReveal,
   nextAccessMapReveal,
 } from './accessMap.js';
@@ -47,4 +48,22 @@ test('upward re-entry is immediately visible and rearms the next downward entran
     sectionTop: 800,
     viewportHeight,
   }), hidden);
+});
+
+test('normalizes the legacy saved Google Maps label to Japanese without changing its URL', () => {
+  const directUrl = 'https://www.google.com/maps/place/example';
+  const externalLink = {
+    getAttribute: (name) => (name === 'href' ? directUrl : null),
+    textContent: 'Open the Aloha Academy location in Google Maps',
+  };
+  const element = {
+    dataset: { embedUrl: '' },
+    querySelector: (selector) => (
+      selector === '.aloha-access-map__external-link' ? externalLink : null
+    ),
+  };
+
+  const data = accessMapDataFromElement(element);
+  assert.equal(data.directUrl, directUrl);
+  assert.equal(data.linkLabel, 'Google マップでアロハアカデミーの場所を見る');
 });

@@ -12,9 +12,35 @@ if ( ! defined( 'ABSPATH' ) ) {
 $slogan = array_key_exists( 'slogan', $attributes )
     ? wp_kses_post( $attributes['slogan'] )
     : 'Aloha starts here';
+$logo_style = 'round' === ( $attributes['logoStyle'] ?? 'writing' ) ? 'round' : 'writing';
 $images = isset( $attributes['images'] ) && is_array( $attributes['images'] )
     ? $attributes['images']
     : array();
+
+$logo_html = alohaalpha_get_large_logo_html();
+if ( 'round' === $logo_style ) {
+    $round_logo_id = alohaalpha_get_round_logo_attachment_id();
+    $round_logo    = $round_logo_id
+        ? wp_get_attachment_image(
+            $round_logo_id,
+            'full',
+            false,
+            array(
+                'alt'      => get_post_meta( $round_logo_id, '_wp_attachment_image_alt', true ) ?: 'Aloha Academy',
+                'class'    => 'aloha-home-hero__round-logo',
+                'decoding' => 'async',
+                'loading'  => 'eager',
+                'sizes'    => '(max-width: 767px) 58vw, 250px',
+            )
+        )
+        : '';
+
+    if ( $round_logo ) {
+        $logo_html = $round_logo;
+    } else {
+        $logo_style = 'writing';
+    }
+}
 
 $slides_html = '';
 foreach ( $images as $index => $image ) {
@@ -80,12 +106,15 @@ foreach ( $images as $index => $image ) {
 }
 
 $wrapper_attributes = get_block_wrapper_attributes(
-    array( 'class' => 'aloha-home-hero' )
+    array(
+        'class'           => 'aloha-home-hero',
+        'data-logo-style' => $logo_style,
+    )
 );
 ?>
 <section <?php echo $wrapper_attributes; ?>>
-    <div class="aloha-home-hero__content">
-        <?php echo wp_kses_post( alohaalpha_get_large_logo_html() ); ?>
+    <div class="aloha-home-hero__content aloha-home-hero__content--<?php echo esc_attr( $logo_style ); ?>">
+        <?php echo wp_kses_post( $logo_html ); ?>
         <h3 class="aloha-home-hero__slogan aloha-heading--latin"><?php echo $slogan; ?></h3>
     </div>
     <div class="aloha-home-hero__slides"><?php echo wp_kses_post( $slides_html ); ?></div>

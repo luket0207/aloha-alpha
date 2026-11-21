@@ -266,25 +266,6 @@ $contact-top-wave-height: clamp(4rem, 7vw, 6rem);
 
 .contact-us__submit {
   justify-self: center;
-  min-width: 10rem;
-  min-height: 3rem;
-  padding: 0.65rem 1.25rem;
-  border: 0;
-  border-radius: 0.35rem;
-  background: tokens.$yellow;
-  color: tokens.$green;
-  font: 600 1rem/1.2 tokens.$font-body;
-  cursor: pointer;
-
-  &:disabled {
-    cursor: wait;
-    opacity: 0.7;
-  }
-
-  &:focus-visible {
-    outline: 3px solid tokens.$cream;
-    outline-offset: 3px;
-  }
 }
 
 .contact-us__submission-status {

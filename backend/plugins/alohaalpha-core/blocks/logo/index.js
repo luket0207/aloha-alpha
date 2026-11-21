@@ -16,7 +16,7 @@
         return variant === 'large' ? 'large' : 'small';
     }
 
-    function flower(attributesValue) {
+    function logoImage(attributesValue) {
         if (!attributesValue.imageUrl) return null;
 
         return el('img', {
@@ -42,13 +42,13 @@
 
     function logoPreview(attributesValue, blockProps, includePlaceholder) {
         const variant = normalizedVariant(attributesValue.variant);
-        const image = flower(attributesValue);
+        const image = logoImage(attributesValue);
 
         return el(
             'div',
             blockProps,
             image || (includePlaceholder
-                ? el('span', { className: 'aloha-logo__flower-placeholder', 'aria-hidden': 'true' }, __('Flower', 'alohaalpha-core'))
+                ? el('span', { className: 'aloha-logo__flower-placeholder', 'aria-hidden': 'true' }, __('Image', 'alohaalpha-core'))
                 : null),
             wordmark(variant)
         );
@@ -57,7 +57,7 @@
     registerBlockType('aloha/logo', {
         apiVersion: 3,
         title: __('Aloha Logo', 'alohaalpha-core'),
-        description: __('Reusable Aloha Academy wordmark with a Media Library flower image.', 'alohaalpha-core'),
+        description: __('Reusable Aloha Academy wordmark with a replaceable Media Library image.', 'alohaalpha-core'),
         category: 'aloha-layouts',
         icon: 'format-image',
         attributes,
@@ -114,8 +114,8 @@
                                 Button,
                                 { variant: 'secondary', onClick: open },
                                 attributesValue.imageUrl
-                                    ? __('Replace flower image', 'alohaalpha-core')
-                                    : __('Select flower image', 'alohaalpha-core')
+                                    ? __('Replace image', 'alohaalpha-core')
+                                    : __('Select image', 'alohaalpha-core')
                             ),
                         })
                     ),

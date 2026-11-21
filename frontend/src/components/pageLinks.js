@@ -7,6 +7,14 @@ export const PAGE_LINK_ICON_NAMES = [
   'person-circle-plus',
 ];
 
+export const PAGE_LINK_ENTRANCE_DURATION_MS = 500;
+export const PAGE_LINK_STAGGER_MS = 250;
+
+export function pageLinkAnimationDelay(index) {
+  const normalizedIndex = Number.isFinite(index) ? Math.max(0, Math.floor(index)) : 0;
+  return normalizedIndex * PAGE_LINK_STAGGER_MS;
+}
+
 export function normalizePageLinkIcon(icon) {
   return PAGE_LINK_ICON_NAMES.includes(icon) ? icon : 'house';
 }

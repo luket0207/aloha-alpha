@@ -1,5 +1,7 @@
 const JAPANESE_TEXT_PATTERN = /[\u3040-\u30ff\u3400-\u9fff]/;
 
+export const TESTIMONIALS_AUTOPLAY_INTERVAL_MS = 5000;
+
 function textContent(element) {
   return element?.textContent?.trim() || '';
 }
@@ -28,6 +30,15 @@ export function normalizedCarouselIndex(index, itemCount) {
   if (index >= itemCount * 2) return itemCount;
   if (index < itemCount) return (itemCount * 2) - 1;
   return index;
+}
+
+export function shouldRunTestimonialsAutoplay({
+  isFocused,
+  isIntersecting,
+  looping,
+  reducedMotion,
+}) {
+  return looping && !reducedMotion && isIntersecting && !isFocused;
 }
 
 export function isJapaneseText(value) {

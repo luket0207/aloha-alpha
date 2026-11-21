@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { getWordPressRestUrl } from '../wordpressApi.js';
 import Hero from './Hero.jsx';
+import { normalizeHeroLogoStyle } from './hero.js';
 import WordPressContent from './WordPressContent.jsx';
 
 function extractHomeHero(html) {
@@ -19,9 +20,12 @@ function extractHomeHero(html) {
   if (!contentGroup || !slidesGroup) return null;
 
   const content = contentGroup.querySelector(':scope > .wp-block-group__inner-container') || contentGroup;
-  const slogan = content.querySelector('.aloha-hero__slogan')
-    || Array.from(content.children).find((element) => !element.matches('.aloha-logo'));
+  const slogan = content.querySelector('.aloha-home-hero__slogan, .aloha-hero__slogan')
+    || Array.from(content.children).find((element) => (
+      !element.matches('.aloha-logo, .aloha-home-hero__round-logo')
+    ));
   slogan?.classList.add('aloha-hero__slogan');
+  const logoStyle = normalizeHeroLogoStyle(customHero?.dataset.logoStyle);
 
   const slideSelector = customHero ? 'figure.aloha-home-hero__slide img' : 'figure.wp-block-image img';
   const slides = Array.from(slidesGroup.querySelectorAll(slideSelector)).map((image) => ({
@@ -41,6 +45,7 @@ function extractHomeHero(html) {
 
   return {
     contentHtml,
+    logoStyle,
     remainingHtml: document.body.innerHTML,
     slides,
   };
@@ -101,7 +106,11 @@ export default function WordPressPage({ slug }) {
   if (homeContent) {
     return (
       <main className="home-page" key={page.id}>
-        <Hero contentHtml={homeContent.contentHtml} slides={homeContent.slides} />
+        <Hero
+          contentHtml={homeContent.contentHtml}
+          logoStyle={homeContent.logoStyle}
+          slides={homeContent.slides}
+        />
         <WordPressContent className="wp-content" html={homeContent.remainingHtml} />
       </main>
     );

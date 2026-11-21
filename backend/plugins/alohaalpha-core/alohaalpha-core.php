@@ -76,7 +76,10 @@ add_action( 'init', function () {
 
         if ( 'home-hero' === $block_directory && $block_type instanceof WP_Block_Type && is_admin() ) {
             $editor_settings = wp_json_encode(
-                array( 'logoHtml' => alohaalpha_get_large_logo_html() ),
+                array(
+                    'logoHtml'  => alohaalpha_get_large_logo_html(),
+                    'roundLogo' => alohaalpha_get_round_logo_data(),
+                ),
                 JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
             );
 

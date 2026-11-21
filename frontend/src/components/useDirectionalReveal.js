@@ -15,24 +15,56 @@ export function nextRevealState({ crossedTrigger, current, direction, exitedBelo
   return current;
 }
 
+export function nextDirectionalRevealState({
+  crossedTrigger,
+  current,
+  direction,
+  exitedBelow,
+  revealOnUpwardEntry = false,
+  visible,
+}) {
+  if (revealOnUpwardEntry && direction === 'up') {
+    if (exitedBelow) return { animate: false, revealed: false };
+    if (visible) return { animate: false, revealed: true };
+  }
+
+  const revealed = nextRevealState({
+    crossedTrigger,
+    current: current.revealed,
+    direction,
+    exitedBelow,
+  });
+
+  if (revealed === current.revealed) return current;
+  return {
+    animate: direction === 'down' && revealed,
+    revealed,
+  };
+}
+
 export function initialRevealState({ sectionBottom, sectionHeight, sectionTop, viewportHeight }) {
   if (sectionBottom <= 0) return true;
   if (sectionBottom <= sectionTop) return false;
   return hasCrossedRevealTrigger({ sectionHeight, sectionTop, viewportHeight });
 }
 
-export default function useDirectionalReveal(elementRef, reducedMotion) {
-  const [state, setState] = useState({ motionReady: false, revealed: true });
+export default function useDirectionalReveal(
+  elementRef,
+  reducedMotion,
+  { revealOnUpwardEntry = false } = {},
+) {
+  const [state, setState] = useState({ animate: false, motionReady: false, revealed: true });
 
   useLayoutEffect(() => {
     const element = elementRef.current;
     if (!element || reducedMotion) {
-      setState({ motionReady: false, revealed: true });
+      setState({ animate: false, motionReady: false, revealed: true });
       return undefined;
     }
 
     const initialBounds = element.getBoundingClientRect();
     setState({
+      animate: false,
       motionReady: true,
       revealed: initialRevealState({
         sectionBottom: initialBounds.bottom,
@@ -51,25 +83,32 @@ export default function useDirectionalReveal(elementRef, reducedMotion) {
       const bounds = element.getBoundingClientRect();
 
       setState((current) => {
-        const revealed = useRestoredPosition
-          ? initialRevealState({
-            sectionBottom: bounds.bottom,
-            sectionHeight: bounds.height,
-            sectionTop: bounds.top,
-            viewportHeight: window.innerHeight,
-          })
-          : nextRevealState({
+        const next = useRestoredPosition
+          ? {
+            animate: false,
+            revealed: initialRevealState({
+              sectionBottom: bounds.bottom,
+              sectionHeight: bounds.height,
+              sectionTop: bounds.top,
+              viewportHeight: window.innerHeight,
+            }),
+          }
+          : nextDirectionalRevealState({
             crossedTrigger: hasCrossedRevealTrigger({
               sectionHeight: bounds.height,
               sectionTop: bounds.top,
               viewportHeight: window.innerHeight,
             }),
-            current: current.revealed,
+            current,
             direction,
             exitedBelow: bounds.top >= window.innerHeight,
+            revealOnUpwardEntry,
+            visible: bounds.bottom > 0 && bounds.top < window.innerHeight,
           });
 
-        return revealed === current.revealed ? current : { ...current, revealed };
+        return next.revealed === current.revealed && next.animate === current.animate
+          ? current
+          : { ...current, ...next, motionReady: true };
       });
     }
 
@@ -110,7 +149,7 @@ export default function useDirectionalReveal(elementRef, reducedMotion) {
       window.removeEventListener('pageshow', handleRestoredPosition);
       if (scrollFrame !== null) window.cancelAnimationFrame(scrollFrame);
     };
-  }, [elementRef, reducedMotion]);
+  }, [elementRef, reducedMotion, revealOnUpwardEntry]);
 
   return state;
 }

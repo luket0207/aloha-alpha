@@ -1,0 +1,95 @@
+@use '../styles/mixins';
+@use '../styles/variables' as tokens;
+
+.aloha-button {
+  position: relative;
+  z-index: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: min(10rem, 100%);
+  max-width: 100%;
+  min-height: 2.75rem;
+  border: 0;
+  border-radius: 0.65rem;
+  overflow: hidden;
+  background: var(--aloha-button-background, #{tokens.$green});
+  color: var(--aloha-button-text, #{tokens.$cream});
+  font: 600 1rem/1.2 tokens.$font-body;
+  text-align: center;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+  isolation: isolate;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+
+  &::before {
+    @include mixins.navigation-hover-wave(var(--aloha-button-wave, #{tokens.$light-blue}));
+  }
+
+  &__label {
+    position: relative;
+    z-index: 1;
+    color: inherit;
+    transition: transform 180ms ease;
+  }
+
+  &--primary {
+    min-height: 3rem;
+    padding: 0.9rem 1.5rem;
+  }
+
+  &--secondary {
+    padding: 0.65rem 1.25rem;
+
+    &::before {
+      display: none;
+    }
+  }
+
+  &:focus-visible {
+    outline: 3px solid var(--aloha-button-focus, #{tokens.$yellow});
+    outline-offset: 3px;
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .aloha-button--primary:not(:disabled):hover {
+    background: var(--aloha-button-hover-background, #{tokens.$cream});
+    color: var(--aloha-button-hover-text, #{tokens.$green});
+
+    &::before {
+      transform: translateY(0);
+    }
+
+    .aloha-button__label {
+      transform: translateY(-2px);
+    }
+  }
+
+  .aloha-button--secondary:not(:disabled):hover {
+    background: var(--aloha-button-secondary-hover, #{tokens.$dark-green});
+    color: var(--aloha-button-secondary-hover-text, #{tokens.$cream});
+    transform: translateY(-2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aloha-button,
+  .aloha-button::before,
+  .aloha-button__label {
+    transition-duration: 0.01ms;
+  }
+
+  .aloha-button--primary:not(:disabled):hover .aloha-button__label,
+  .aloha-button--secondary:not(:disabled):hover {
+    transform: none;
+  }
+}

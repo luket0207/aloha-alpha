@@ -1,6 +1,17 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { findNextPageSection, getStickyHeaderOffset } from './hero.js';
+import {
+  findNextPageSection,
+  getStickyHeaderOffset,
+  normalizeHeroLogoStyle,
+} from './hero.js';
+
+test('keeps Writing Logo as the compatible default and accepts only Round Logo', () => {
+  assert.equal(normalizeHeroLogoStyle(undefined), 'writing');
+  assert.equal(normalizeHeroLogoStyle('writing'), 'writing');
+  assert.equal(normalizeHeroLogoStyle('round'), 'round');
+  assert.equal(normalizeHeroLogoStyle('unknown'), 'writing');
+});
 
 test('finds the first semantic section inside the content following the Hero', () => {
   const expected = { id: 'first-wordpress-section' };

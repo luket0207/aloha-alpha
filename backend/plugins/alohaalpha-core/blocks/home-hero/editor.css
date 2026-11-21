@@ -20,6 +20,23 @@
     font-size: clamp(2.35rem, 8vw, 5rem);
 }
 
+.editor-styles-wrapper .aloha-home-hero-editor__round-logo {
+    display: block;
+    width: min(250px, 58vw);
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: contain;
+}
+
+.editor-styles-wrapper .aloha-home-hero-editor--round .aloha-home-hero-editor__preview {
+    justify-items: center;
+}
+
+.editor-styles-wrapper .aloha-home-hero-editor--round .aloha-home-hero-editor__slogan {
+    margin-top: 0;
+    text-align: center;
+}
+
 .editor-styles-wrapper .aloha-home-hero-editor__logo-missing,
 .editor-styles-wrapper .aloha-home-hero-editor__empty {
     margin: 0;

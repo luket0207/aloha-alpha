@@ -12,6 +12,11 @@ import { Link } from 'react-router-dom';
 import { WaterSurface } from './Hero.jsx';
 import { IMAGE_DIVIDER_WAVE_OVERSCAN_RATIO } from './imageDivider.js';
 import { ROUND_FRAME_PATH } from './imageFrame.js';
+import {
+  PAGE_LINK_ENTRANCE_DURATION_MS,
+  pageLinkAnimationDelay,
+} from './pageLinks.js';
+import useDirectionalReveal from './useDirectionalReveal.js';
 import useReducedMotion from './useReducedMotion.js';
 import './PageLinks.scss';
 
@@ -124,14 +129,33 @@ export function PageLinksContinuity({ children }) {
 }
 
 export default function PageLinks({ links, sharedBackground = false }) {
-  const className = `aloha-page-links${sharedBackground ? ' aloha-page-links--continuous' : ''}`;
+  const sectionRef = useRef(null);
+  const reducedMotion = useReducedMotion();
+  const { animate, motionReady, revealed } = useDirectionalReveal(
+    sectionRef,
+    reducedMotion,
+    { revealOnUpwardEntry: true },
+  );
+  const className = `aloha-page-links${sharedBackground ? ' aloha-page-links--continuous' : ''}${revealed ? ' is-revealed' : ''}`;
 
   return (
-    <section className={className} data-link-count={links.length}>
+    <section
+      className={className}
+      data-animate={animate ? 'true' : 'false'}
+      data-link-count={links.length}
+      data-motion-ready={motionReady ? 'true' : 'false'}
+      ref={sectionRef}
+      style={{ '--aloha-page-link-duration': `${PAGE_LINK_ENTRANCE_DURATION_MS}ms` }}
+    >
       {!sharedBackground && <PageLinksWater className="aloha-page-links__water" />}
+      <h2 className="aloha-page-links__title aloha-heading--japanese">リンク集</h2>
       <ul className="aloha-page-links__list">
-        {links.map((link) => (
-          <li className="aloha-page-links__item" key={link.id}>
+        {links.map((link, index) => (
+          <li
+            className="aloha-page-links__item"
+            key={link.id}
+            style={{ '--aloha-page-link-delay': `${pageLinkAnimationDelay(index)}ms` }}
+          >
             <PageLink link={link} />
           </li>
         ))}

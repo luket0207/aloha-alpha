@@ -15,6 +15,8 @@ import {
 import {
   isJapaneseText,
   normalizedCarouselIndex,
+  shouldRunTestimonialsAutoplay,
+  TESTIMONIALS_AUTOPLAY_INTERVAL_MS,
   testimonialVariant,
   testimonialVisibleCount,
 } from './testimonials.js';
@@ -87,7 +89,6 @@ export default function Testimonials({ image, testimonials }) {
   const [virtualIndex, setVirtualIndex] = useState(looping ? itemCount : 0);
   const [transitioning, setTransitioning] = useState(false);
   const [isIntersecting, setIsIntersecting] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const clipId = `aloha-testimonials-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`;
 
@@ -148,12 +149,17 @@ export default function Testimonials({ image, testimonials }) {
   }, []);
 
   useEffect(() => {
-    if (!looping || reducedMotion || !isIntersecting || isHovered || isFocused) {
+    if (!shouldRunTestimonialsAutoplay({
+      isFocused,
+      isIntersecting,
+      looping,
+      reducedMotion,
+    })) {
       return undefined;
     }
-    const timer = window.setInterval(advance, 5000);
+    const timer = window.setInterval(advance, TESTIMONIALS_AUTOPLAY_INTERVAL_MS);
     return () => window.clearInterval(timer);
-  }, [advance, isFocused, isHovered, isIntersecting, looping, reducedMotion]);
+  }, [advance, isFocused, isIntersecting, looping, reducedMotion]);
 
   useImageParallax({
     imageHeight: image.height,
@@ -185,8 +191,6 @@ export default function Testimonials({ image, testimonials }) {
         if (!event.currentTarget.contains(event.relatedTarget)) setIsFocused(false);
       }}
       onFocus={() => setIsFocused(true)}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
       ref={sectionRef}
       tabIndex="0"
     >

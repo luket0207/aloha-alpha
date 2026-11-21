@@ -1,6 +1,8 @@
 @use 'sass:color';
 @use '../styles/variables' as tokens;
 
+$round-logo-size: 350px;
+
 .aloha-hero {
   --aloha-hero-water-dark: #{tokens.$light-blue};
   --aloha-hero-water-light: #{color.mix(#fff, tokens.$light-blue, 24%)};
@@ -87,6 +89,27 @@
 
   .aloha-logo--large {
     max-width: 100%;
+  }
+}
+
+.aloha-hero__content--round {
+  left: 50%;
+  align-items: flex-start;
+  gap: 1rem;
+  width: min(calc(100% - #{tokens.$content-inline-gutter * 2}), tokens.$container-width);
+  transform: translate(-50%, -50%);
+
+  .aloha-home-hero__round-logo {
+    display: block;
+    width: min(#{$round-logo-size}, 100%);
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: contain;
+  }
+
+  .aloha-hero__slogan {
+    width: min(#{$round-logo-size}, 100%);
+    text-align: center;
   }
 }
 
@@ -203,6 +226,13 @@
       font-size: clamp(2.4rem, 14vw, 4rem);
     }
   }
+
+  .aloha-hero__content--round {
+    right: auto;
+    left: 50%;
+    width: min(calc(100% - #{tokens.$content-inline-gutter * 2}), tokens.$container-width);
+    transform: translateX(-50%);
+  }
 }
 
 @media (max-width: 767px) and (max-height: 600px) {
@@ -222,6 +252,10 @@
     .aloha-logo--large {
       font-size: clamp(2rem, 11vw, 3rem);
     }
+  }
+
+  .aloha-hero__content--round {
+    gap: 1rem;
   }
 
   .aloha-hero__content h3.aloha-hero__slogan {

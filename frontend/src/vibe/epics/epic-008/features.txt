@@ -29,7 +29,7 @@ Preserve all existing functionality from Epics 001–007.
 
 # Feature-001 — Page Links Title and Spacing
 
-**Status:** not started
+**Status:** complete
 
 ## Objective
 
@@ -101,11 +101,13 @@ Do not modify:
 - Existing Page Links behaviour remains unchanged.
 - Responsive layouts work without overflow.
 
+**Notes:** Complete. Page Links now renders a centred semantic `リンク集` H2 using the established Japanese heading class and Light Blue-group Mocha text. Section padding uses the exact requested safe-area-aware clamps. The production build passed; live checks at 320/375/430/768/1024/1440px confirmed the H2, Mochiy Pop P One stack, exact computed padding, unchanged 1/2/4-column behaviour, four water-animation elements and no horizontal overflow.
+
 ---
 
 # Feature-002 — Testimonials Background Overlay
 
-**Status:** not started
+**Status:** complete
 
 ## Objective
 
@@ -192,11 +194,13 @@ Do not modify:
 - No unwanted overlay edges or background gaps.
 - No visual regressions.
 
+**Notes:** Complete. A non-interactive `rgba(0, 0, 0, 0.2)` pseudo-layer now fills the existing wave-clipped Testimonials background wrapper, placing it above the parallax image and below the z-indexed carousel without applying opacity to the section or cards. The production build passed; live checks at all six required widths confirmed full zero-inset coverage, wave clipping, pointer-events none, fully opaque cards/slides, active parallax offsets and no overflow.
+
 ---
 
 # Feature-003 — Access Map Spacing and Japanese Text
 
-**Status:** not started
+**Status:** complete
 
 ## Objective
 
@@ -285,11 +289,13 @@ Do not change:
 - Map animation and embedding remain functional.
 - Responsive behaviour is preserved.
 
+**Notes:** Complete. The actual outer Access Map margin source is now `1rem auto 2rem`. The Gutenberg block saves the Japanese Google Maps label, while the React parser upgrades the legacy fixed English label so existing published content changes without an editorial rewrite; the destination, embed URL and coordinates remain untouched. Three focused tests and the production build passed. Live checks at all required widths confirmed 16px/32px margins, exact Japanese text, unchanged external destination/iframe, successful reveal animation and no overflow.
+
 ---
 
 # Feature-004 — Selectable Home Hero Logo
 
-**Status:** not started
+**Status:** complete
 
 ## Objective
 
@@ -470,11 +476,13 @@ Do not modify:
 - No unnecessary manual image selection is required when a reliable central reference is available.
 - No Hero visual or functional regressions.
 
+**Notes:** Complete. Home Hero now has a validated `logoStyle` attribute (`writing` default, `round` alternative), a Gutenberg Logo Style panel and previews for both variants. The unique `logo.png` attachment (ID 109) initialises a central WordPress option and is thereafter resolved by attachment ID; no upload URL is hardcoded in React. Dynamic markup exposes the selected style, while React applies the Round Logo layout at 250×250px on desktop, responsive mobile sizing, centred alignment and an exact 1rem slogan gap. Writing Logo markup and the published homepage selection remain unchanged. PHP/JS syntax, four focused Hero tests and the production build passed. A real Gutenberg draft smoke test confirmed default compatibility, control visibility, switching, preservation of slogan/image ID, save/reopen persistence and actual logo preview; the temporary draft was removed. Synthetic WordPress renders verified both server variants, and live checks at all required widths confirmed the real media image, responsive geometry, preserved slogan/slides/water animation and no overflow.
+
 ---
 
 # Feature-005 — Improve Small Logo Image Replacement
 
-**Status:** not started
+**Status:** complete
 
 ## Objective
 
@@ -601,11 +609,13 @@ Do not automatically replace the Header PNG simply because the Small Logo image 
 - Header logo remains unaffected.
 - Saved WordPress content remains compatible.
 
+**Notes:** Complete. Investigation confirmed the artwork is a block-level `<img>`, not a repeating CSS background: there was no background image, border, shadow or duplicate layer. The Small Logo now keeps its existing responsive 1em square but uses an explicit width/height, centred `object-fit: cover` and inset clipping; Large Logo fitting remains unchanged. Gutenberg descriptions, placeholders and Media Library actions now use generic image terminology while retaining the existing compatibility class and attributes. JS syntax and the production build passed. Live checks at all required widths confirmed unchanged responsive dimensions, centred cover fitting, no background/border/shadow artefact, unchanged wordmark and separate Header logo, and no overflow. A real Gutenberg draft test confirmed the generic control, replacement with attachment 53, unchanged 22.39px editor box and save/reopen persistence; the temporary draft was removed.
+
 ---
 
 # Feature-006 — Reusable Colour-Aware Buttons
 
-**Status:** not started
+**Status:** complete
 
 ## Objective
 
@@ -873,6 +883,8 @@ Implement the reusable component and migrate the Contact Us Submit button only.
 - Contact Us Submit uses the Primary variant.
 - Contact form submission and validation remain unchanged.
 
+**Notes:** Complete. Added the semantic shared `AlohaButton` with validated Primary/Secondary variants, automatic palettes inherited from the existing Green, Light Blue, Cream and Grey theme classes, safe 160px minimum sizing, accessible focus/disabled states and reduced-motion handling. The Primary variant reuses the Header navigation wave mixin and moves only its label; Secondary uses a compact darker lift without the wave. Contact Submit now uses Primary while retaining its Japanese labels, validation, single REST request, submitting state and success handling. All 28 focused frontend tests and the production build passed. Live browser checks at 320/375/430/768/1024/1440px confirmed sizing, palettes (6.27:1 or better tested contrast), hover/focus/disabled/reduced-motion behaviour, Header hover regression, mocked form submission and no horizontal overflow.
+
 ---
 
 # Implementation Workflow
@@ -1098,6 +1110,331 @@ Report:
 6. WordPress integration verification.
 7. Remaining limitations or unresolved issues.
 
-Only mark Epic-008 complete when all six features satisfy their acceptance criteria.
 
-**Do not begin Epic-009 or unrelated work.**
+# Epic-008 — Feature-007
+
+## Feature-007 — Page Links Colour Changes and Staggered Scroll Animations
+
+**Status:** complete
+
+**Notes:** Applied the local `#1B4672` Page Links colour, dynamic 500ms/250ms staggered directional reveal, off-screen replay reset, and reduced-motion/no-initialisation-safe states. Focused tests, production build, and live local-browser checks passed at the required widths and representative 1/4/5/8-link layouts.
+
+### Objective
+
+Make two changes to the existing Page Links section:
+
+1. Change the H2 title colour and circular link backgrounds to `#1B4672`.
+2. Introduce staggered, scroll-triggered entrance animations for the circular links.
+
+The animations should play when scrolling down to the section, but not when scrolling upwards into it.
+
+---
+
+## 1. Update Page Links Colours
+
+Introduce the following colour:
+
+**Blue — `#1B4672`**
+
+Apply it to:
+
+- The リンク集 H2 title.
+- The background of each circular link.
+
+### Requirements
+
+1. Change the H2 text colour to `#1B4672`.
+2. Change every link's blob-shaped background to `#1B4672`.
+3. Preserve Cream (`#F1FFFA`) for the link text.
+4. Preserve Cream for the Font Awesome icons.
+5. Maintain sufficient contrast between backgrounds, icons and text.
+6. Preserve the existing shape rotation hover animation.
+7. Do not change the Light Blue (`#93B7BE`) animated section background.
+8. Do not modify other sections that use the existing Green colour.
+
+Define the new blue using an appropriate SCSS variable rather than repeating the hexadecimal value throughout the component.
+
+Do not globally replace the existing Green token.
+
+---
+
+## 2. Add Scroll-Triggered Link Animations
+
+Each circular link should animate into view when the user scrolls down to the Page Links section.
+
+The animation should combine:
+
+- A fade from transparent to fully opaque.
+- A downward falling movement into its final position.
+
+### Initial State
+
+Before the entrance animation:
+
+- Opacity: `0`.
+- Positioned slightly above its final resting position.
+- The existing blob rotation should remain intact.
+
+Suggested vertical starting offset:
+
+`translateY(-30px)`
+
+The links should not affect document flow while animating.
+
+### Final State
+
+After the animation:
+
+- Opacity: `1`.
+- Vertical translation: `0`.
+- Existing blob orientation preserved.
+- All text and icons fully visible.
+
+Use CSS transforms and opacity rather than animating margins or layout positions.
+
+---
+
+## 3. Animation Duration
+
+Each individual link should take:
+
+**0.5 seconds (500ms)**
+
+Use smooth easing appropriate for an object falling gently into position.
+
+The movement should feel natural rather than abrupt or excessively bouncy.
+
+Do not introduce unnecessary overshoot.
+
+---
+
+## 4. Staggered Animation Timing
+
+Animate links one at a time, overlapping their animation periods.
+
+Each successive link should begin **0.25 seconds (250ms)** after the previous link begins.
+
+### Example: Eight Links
+
+| Link | Start | Finish |
+|---|---|---|
+| Link 1 | 0.00s | 0.50s |
+| Link 2 | 0.25s | 0.75s |
+| Link 3 | 0.50s | 1.00s |
+| Link 4 | 0.75s | 1.25s |
+| Link 5 | 1.00s | 1.50s |
+| Link 6 | 1.25s | 1.75s |
+| Link 7 | 1.50s | 2.00s |
+| Link 8 | 1.75s | 2.25s |
+
+### Implementation
+
+Use the link's index to determine its delay.
+
+Suggested calculation:
+
+```js
+const animationDelay = index * 0.25;
+```
+
+And apply a duration of:
+
+```scss
+animation-duration: 0.5s;
+```
+
+Requirements:
+
+1. Start with the first link.
+2. Animate links in their existing WordPress order.
+3. Start each subsequent animation 250ms later.
+4. Allow animations to overlap.
+5. Do not wait for a previous animation to finish completely.
+6. Continue the sequence across multiple rows.
+7. Preserve the same stagger timing on desktop, tablet and mobile.
+8. Support any number of links dynamically.
+
+Do not hardcode the animation for a specific number of links.
+
+---
+
+## 5. Scroll Direction Behaviour
+
+The entrance animation should behave like the other direction-sensitive scroll animations already implemented on the website.
+
+### Scrolling Downwards
+
+When the Page Links section enters the viewport while scrolling down:
+
+1. Trigger the entrance sequence.
+2. Start animating the first link.
+3. Stagger the remaining links by 250ms each.
+4. Continue until every link has reached its resting position.
+
+Trigger the sequence when the links are sufficiently visible, rather than waiting until the entire section has entered the viewport.
+
+### Scrolling Upwards
+
+When scrolling upwards into the Page Links section:
+
+- Do not trigger the entrance animation.
+- Do not fade the links out.
+- Do not move the links back to their starting positions.
+- Display them normally in their completed state.
+
+### Resetting
+
+Allow the entrance animation to replay on a future downward entry.
+
+Requirements:
+
+1. Track whether the section is visible.
+2. Track the direction of scrolling.
+3. Reset the animation when the section has completely left the viewport and a subsequent downward entry can be prepared.
+4. Never visibly reset links while they remain in the viewport.
+5. Do not replay the animation merely because the user scrolls upward.
+6. Avoid animation flickering near viewport boundaries.
+7. Prevent unnecessary state updates during scrolling.
+
+When the user passes completely above the section and later scrolls down to it again, the staggered animation should be able to replay.
+
+When re-entering from below while scrolling upwards, the links should appear immediately without an entrance animation.
+
+Reuse the website's existing IntersectionObserver and scroll-direction utilities where possible.
+
+---
+
+## 6. Preserve Existing Hover Animations
+
+The links already have a hover animation where:
+
+- The overall link grows slightly.
+- The organic circle shape rotates 90 degrees.
+- The text and icon remain upright.
+
+These effects must continue working after adding the entrance animation.
+
+### Important
+
+The entrance animation must not overwrite or conflict with the existing hover transforms.
+
+If necessary, use separate wrapper elements:
+
+- **Outer wrapper:** Handles falling movement and opacity.
+- **Link element:** Handles hover scaling.
+- **Decorative blob layer:** Handles shape rotation.
+- **Content layer:** Keeps icon and text upright.
+
+Requirements:
+
+1. Preserve the existing hover animation.
+2. Prevent entrance and hover animations from cancelling each other.
+3. Preserve the original resting rotation for every blob.
+4. Ensure the falling movement does not rotate the text.
+5. Keep the links clickable once visible.
+6. Avoid accidental pointer or keyboard interaction with fully hidden links before they enter.
+
+---
+
+## 7. Responsive Behaviour
+
+Preserve the existing Page Links grid:
+
+- Desktop: Four links per row.
+- Tablet: Two links per row.
+- Mobile: One link per row.
+
+Requirements:
+
+1. Animate links in their visual order.
+2. Keep animation delays consistent across responsive breakpoints.
+3. Preserve centred rows.
+4. Prevent animated elements from creating horizontal overflow.
+5. Do not change the dimensions of the circular links.
+6. Do not change the staggered blob orientations.
+7. Ensure the animation works with links added or removed through WordPress.
+
+The animation must not cause layout shifts or change the grid arrangement.
+
+---
+
+## 8. Preserve Existing Section Design
+
+Do not modify:
+
+- リンク集 heading text.
+- Existing H2 bottom margin of 2rem.
+- Section padding, including `clamp(4rem, 8vw, 5rem)` on the bottom.
+- Animated Light Blue water background.
+- Background continuity behind adjacent section waves.
+- Link destinations.
+- WordPress editing controls.
+- Font Awesome icons.
+- Cream link text.
+- Existing circular frame geometry.
+- Responsive four/two/one layout.
+
+Only implement the specified colour and entrance-animation changes.
+
+---
+
+## 9. Accessibility and Reduced Motion
+
+Respect `prefers-reduced-motion`.
+
+When reduced motion is enabled:
+
+- Display all links immediately.
+- Do not apply falling movement.
+- Do not apply staggered delays.
+- Keep all links fully visible and accessible.
+
+Preserve keyboard navigation and focus indicators.
+
+Ensure the links remain accessible when JavaScript or scroll-observation behaviour cannot initialise.
+
+---
+
+## Acceptance Criteria
+
+- H2 title uses `#1B4672`.
+- All circular link backgrounds use `#1B4672`.
+- Cream text and icons remain unchanged.
+- Light Blue animated section background remains unchanged.
+- Each link fades and falls into position.
+- Each individual entrance lasts 0.5 seconds.
+- Each subsequent link starts 0.25 seconds after the previous one.
+- Animation follows the WordPress link order.
+- Animations work across multiple rows.
+- Scrolling down into the section triggers the sequence.
+- Scrolling upwards into the section does not trigger the animation.
+- A later downward entry can replay the sequence.
+- Existing hover scaling and blob rotation remain functional.
+- No animation conflicts or layout shifts.
+- Responsive layouts remain unchanged.
+- Reduced-motion preferences are respected.
+- No horizontal overflow.
+
+---
+
+# Implementation Instructions
+
+1. Read and follow `AGENTS.md`.
+2. Read Epic-008 Feature-007 and relevant previous Page Links requirements.
+3. Inspect the existing Page Links React component and SCSS.
+4. Inspect existing scroll-direction and IntersectionObserver utilities.
+5. Introduce the new Blue colour for the heading and link shapes.
+6. Implement scroll-triggered entrance animations.
+7. Apply the 500ms duration and 250ms stagger.
+8. Ensure hover and entrance transforms do not conflict.
+9. Implement direction-sensitive triggering and safe reset behaviour.
+10. Preserve the existing WordPress block attributes and data contract.
+11. Verify at 320px, 375px, 430px, 768px, 1024px and 1440px.
+12. Test different link counts, including 1, 4, 5 and 8.
+13. Verify reduced-motion behaviour.
+14. Run relevant focused tests and frontend build.
+15. Update Feature-007 in `src/vibe/epics/epic-008/features.txt`.
+
+**No manual WordPress changes are required.**
+
+**Scope:** Implement Feature-007 only. Do not modify unrelated functionality or begin Epic-009.

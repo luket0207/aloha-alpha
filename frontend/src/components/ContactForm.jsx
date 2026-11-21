@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { getWordPressRestUrl } from '../wordpressApi.js';
+import AlohaButton from './AlohaButton.jsx';
 
 export const MAX_MESSAGE_LENGTH = 1000;
 
@@ -194,9 +195,15 @@ export default function ContactForm({ presets, presetsStatus, submitRef }) {
         </label>
       </div>
 
-      <button className="contact-us__submit" disabled={isSubmitting} ref={submitRef} type="submit">
+      <AlohaButton
+        className="contact-us__submit"
+        disabled={isSubmitting}
+        ref={submitRef}
+        type="submit"
+        variant="primary"
+      >
         {isSubmitting ? '送信中…' : '送信する'}
-      </button>
+      </AlohaButton>
 
       <div aria-live="polite" className="contact-us__submission-status">
         {submissionStatus === 'success' && <p className="is-success">{TEXT.accepted}</p>}

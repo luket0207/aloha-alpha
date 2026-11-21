@@ -56,7 +56,7 @@
                 rel: 'noreferrer',
                 target: '_blank',
             },
-            __('Open the Aloha Academy location in Google Maps', 'alohaalpha-core')
+            __('Google マップでアロハアカデミーの場所を見る', 'alohaalpha-core')
         );
     }
 

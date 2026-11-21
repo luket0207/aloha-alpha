@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import Wave from './Wave.jsx';
 import { ROUND_FRAME_PATH } from './imageFrame.js';
-import { findNextPageSection, getStickyHeaderOffset } from './hero.js';
+import { findNextPageSection, getStickyHeaderOffset, normalizeHeroLogoStyle } from './hero.js';
 import './Hero.scss';
 
 export const SLIDE_DURATION_MS = 5000;
@@ -151,12 +151,13 @@ function useReducedMotion() {
   return reducedMotion;
 }
 
-export default function Hero({ contentHtml, slides }) {
+export default function Hero({ contentHtml, logoStyle = 'writing', slides }) {
   const [activeSlide, setActiveSlide] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
   const [isDocumentVisible, setIsDocumentVisible] = useState(!document.hidden);
   const heroRef = useRef(null);
   const reducedMotion = useReducedMotion();
+  const normalizedLogoStyle = normalizeHeroLogoStyle(logoStyle);
 
   useEffect(() => {
     const hero = heroRef.current;
@@ -292,7 +293,7 @@ export default function Hero({ contentHtml, slides }) {
       </svg>
 
       <div
-        className="aloha-hero__content"
+        className={`aloha-hero__content aloha-hero__content--${normalizedLogoStyle}`}
         dangerouslySetInnerHTML={{ __html: contentHtml }}
       />
 

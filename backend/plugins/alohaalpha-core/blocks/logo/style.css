@@ -24,10 +24,14 @@
     white-space: nowrap;
 }
 
-.aloha-logo--small .aloha-logo__flower {
+.aloha-logo--small img.aloha-logo__flower {
     flex: 0 0 auto;
-    width: auto;
+    width: 1em;
     height: 1em;
+    overflow: hidden;
+    object-fit: cover;
+    object-position: center;
+    clip-path: inset(0);
     transform: translateY(-0.135em);
 }
 
