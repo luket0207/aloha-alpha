@@ -67,6 +67,11 @@ $round-logo-size: 350px;
   display: none;
 }
 
+.aloha-hero__turtle {
+  right: 38%;
+  clip-path: polygon(0 0, 69% 0, 84% 52%, 100% 100%, 0 100%);
+}
+
 .aloha-hero__content {
   position: absolute;
   z-index: 4;
@@ -208,6 +213,12 @@ $round-logo-size: 350px;
     top: 38%;
     display: block;
     height: 62%;
+  }
+
+  .aloha-hero__turtle {
+    top: 38%;
+    right: 0;
+    clip-path: polygon(0 23%, 19% 5%, 37% 33%, 59% 17%, 78% 3%, 100% 12%, 100% 100%, 0 100%);
   }
 
   .aloha-hero__content {

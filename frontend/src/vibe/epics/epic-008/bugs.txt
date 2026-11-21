@@ -579,3 +579,343 @@ These should remain separate from mouse hover and must not interfere with normal
 9. Update Bug-004 in `src/vibe/epics/epic-008/bugs.txt`.
 
 **Scope:** Fix the hover-pausing behaviour only. Do not redesign the carousel or modify unrelated functionality.
+
+
+# Epic-008 — Bug-005
+
+## Bug-005 — Improve Turtle Swimming Animation
+
+**Status:** complete
+
+**Notes:** Updated the shared SwimmingTurtle implementation with 60% opacity, trajectory-based heading, an independent continuous ±2° wiggle, 5–7 second crossings, and a fresh 5–15 second delay that begins only after each completed exit. Verified in both Hero and Page Links, across mobile/tablet/desktop widths, and with reduced motion.
+
+### Issue
+
+The background turtle animation introduced in Epic-008 Feature-009 needs several improvements.
+
+Currently:
+
+1. The turtle is too opaque.
+2. The turtle does not always face the direction it is swimming.
+3. The turtle moves too rigidly.
+4. The interval between appearances is sometimes too short.
+5. Some turtles swim across the background too quickly.
+
+These changes must apply to the turtle animation in both the Home Hero and Page Links sections.
+
+---
+
+### 1. Reduce Turtle Opacity
+
+Set the turtle image opacity to:
+
+```scss
+opacity: 0.6;
+```
+
+Requirements:
+
+- The turtle must display at 60% opacity.
+- Apply the opacity to the turtle image or its dedicated animation wrapper.
+- Preserve the transparency already present in the PNG.
+- Do not change the opacity of the surrounding water background.
+- Do not affect other foreground content.
+- Maintain this opacity throughout the entire swimming animation.
+
+Do not introduce additional fade-in or fade-out effects.
+
+---
+
+### 2. Rotate Turtle to Face Its Swimming Direction
+
+The turtle PNG is viewed from above.
+
+The top of the original image should point in the direction that the turtle is travelling.
+
+Currently, the turtle travels in a straight line between randomly generated entry and exit positions.
+
+Use those positions to calculate its heading.
+
+#### Required Behaviour
+
+For example:
+
+- Swimming directly right → top of turtle points right.
+- Swimming directly left → top of turtle points left.
+- Swimming diagonally down-right → top of turtle points down-right.
+- Swimming diagonally up-left → top of turtle points up-left.
+
+This must work for every randomly generated trajectory.
+
+#### Implementation
+
+Calculate the travel direction using the difference between the entry and exit coordinates.
+
+Assuming the original PNG points upwards and screen coordinates increase downwards, an appropriate CSS rotation calculation is:
+
+```js
+const deltaX = endX - startX;
+const deltaY = endY - startY;
+
+const heading =
+  (Math.atan2(deltaY, deltaX) * 180) / Math.PI + 90;
+```
+
+The exact implementation may differ depending on the existing component structure.
+
+Requirements:
+
+1. Calculate the turtle's heading for every swimming pass.
+2. Rotate the image so its top edge points along that trajectory.
+3. Set the heading before the turtle enters the visible area.
+4. Keep that heading consistent throughout the crossing.
+5. Do not rotate the turtle to face a different direction halfway through.
+6. Preserve the straight-line swimming trajectory.
+
+The heading rotation must work alongside the new wiggle animation.
+
+---
+
+### 3. Add Continuous Swimming Wiggle
+
+To make the turtle appear to swim, introduce a gentle back-and-forth rotation.
+
+The turtle should oscillate around its calculated travel heading.
+
+#### Rotation Range
+
+- Minimum: −2°.
+- Centre: 0°.
+- Maximum: +2°.
+
+The 0° position is relative to the turtle's calculated heading, not the original upright PNG orientation.
+
+For example, if the turtle's heading requires a 90° rotation:
+
+- Minimum rotation: 88°.
+- Centre rotation: 90°.
+- Maximum rotation: 92°.
+
+#### Behaviour
+
+1. The wiggle should run continuously while the turtle is swimming.
+2. Rotate smoothly between −2° and +2°.
+3. Repeat the movement throughout the crossing.
+4. Do not stop or pause the wiggle midway through.
+5. The oscillation should be subtle and natural.
+6. The rotation should happen around the turtle image's centre.
+7. Preserve the overall direction of travel.
+8. Do not introduce bouncing or changes to the straight-line trajectory.
+
+Use a smooth repeating animation.
+
+A wiggle cycle of approximately 1 second is an appropriate starting point.
+
+#### Important Implementation Detail
+
+The turtle now has three independent visual behaviours:
+
+1. Translation along its straight-line route.
+2. Base rotation to face its direction of travel.
+3. Wiggle rotation of ±2°.
+
+Ensure these transforms do not overwrite one another.
+
+Prefer separate nested elements or an equivalent reliable transform-composition approach.
+
+For example:
+
+- Outer wrapper: horizontal and vertical movement.
+- Inner orientation wrapper: calculated heading.
+- Turtle image: continuous ±2° wiggle.
+
+Do not apply conflicting CSS animations to the same `transform` property.
+
+---
+
+### 4. Increase Time Between Turtle Appearances
+
+Currently, the appearance interval is calculated between the starts of successive swimming passes.
+
+This can cause the next turtle to appear too soon after the previous turtle disappears.
+
+Change this behaviour.
+
+**The 5–15 second interval must begin after the previous turtle has completely exited the background.**
+
+#### Required Sequence
+
+1. Turtle begins swimming.
+2. Turtle travels across the background.
+3. Turtle completely disappears beyond the exit edge.
+4. Start a new random waiting period of 5–15 seconds.
+5. After the waiting period finishes, begin the next swimming pass.
+6. Repeat.
+
+For example:
+
+- Turtle starts swimming at 0 seconds.
+- Turtle disappears at 6 seconds.
+- Random delay is 8 seconds.
+- Next turtle begins swimming at 14 seconds.
+
+The delay must never be shorter than five seconds after the previous turtle disappears.
+
+#### Requirements
+
+1. Generate a random waiting duration between 5000ms and 15000ms.
+2. Start the waiting period only after the current swimming animation finishes.
+3. Do not measure the interval from the beginning of the previous animation.
+4. Do not allow overlapping swimming passes within the same section.
+5. Generate a new random delay for every subsequent appearance.
+6. Avoid duplicate timers.
+7. Clean up timers when the component unmounts.
+8. Preserve the existing off-screen visibility and performance handling.
+
+The initial appearance can use the same randomized waiting period.
+
+---
+
+### 5. Increase Swimming Duration
+
+The current swimming duration is 3–5 seconds.
+
+Increase it to:
+
+**5–7 seconds**
+
+Requirements:
+
+1. Randomly generate a duration between 5000ms and 7000ms for each crossing.
+2. Keep the selected duration constant for the entire pass.
+3. Continue using a straight-line trajectory.
+4. Preserve smooth, continuous movement.
+5. Do not add unnecessary acceleration or deceleration.
+6. Ensure the turtle starts completely outside the entry edge.
+7. Ensure the turtle finishes completely outside the exit edge.
+8. Generate a new random duration for each subsequent crossing.
+
+The movement should feel more relaxed and less rushed.
+
+The swimming wiggle must continue throughout this entire duration.
+
+---
+
+### 6. Preserve Existing Random Trajectories
+
+Do not change how the turtle selects its route.
+
+Preserve:
+
+- Random left-to-right or right-to-left movement.
+- Random entry positions.
+- Random exit positions.
+- Entry and exit in opposite vertical halves.
+- Straight-line travel.
+- Complete off-screen entry and exit.
+- Responsive trajectory calculations.
+
+The only directional change is that the turtle image must now rotate to face the direction of travel.
+
+---
+
+### 7. Apply Changes to Both Sections
+
+These improvements must affect:
+
+**Home Hero**
+
+- Preserve existing water animation.
+- Preserve both logo modes.
+- Preserve the slogan.
+- Preserve the background carousel.
+- Preserve the scroll-down button.
+
+**Page Links**
+
+- Preserve existing water animation.
+- Preserve the リンク集 heading.
+- Preserve all links.
+- Preserve staggered link entrance animations.
+- Preserve hover scaling and blob rotation.
+
+Both sections must continue using the same reusable SwimmingTurtle component.
+
+Do not create separate turtle animation implementations for each section.
+
+---
+
+### 8. Accessibility and Performance
+
+Preserve the existing accessibility and performance safeguards.
+
+Requirements:
+
+1. Respect `prefers-reduced-motion`.
+2. Do not animate the turtle for reduced-motion users.
+3. Keep the turtle decorative and inaccessible to keyboard focus.
+4. Preserve `pointer-events: none`.
+5. Avoid unnecessary animation work while the parent section is off-screen.
+6. Clean up pending animation and delay timers when appropriate.
+7. Prevent unnecessary React re-renders during animation.
+8. Prevent horizontal overflow.
+9. Preserve the existing missing-image fallback.
+
+If a section becomes visible again, ensure the swimming cycle can restart correctly without duplicate timers.
+
+---
+
+## Acceptance Criteria
+
+- Turtle opacity is 0.6.
+- Turtle faces the direction of travel.
+- Direction adjusts correctly for every random trajectory.
+- Turtle wiggles continuously while swimming.
+- Wiggle rotation ranges from −2° to +2° around the travel heading.
+- Wiggle and heading transforms do not conflict.
+- Each crossing lasts randomly between 5 and 7 seconds.
+- The next turtle appears 5–15 seconds after the previous turtle fully exits.
+- No turtles overlap within the same section.
+- No premature image resets or visual teleporting.
+- Straight-line movement is preserved.
+- Existing random entry and exit behaviour remains unchanged.
+- Both Home Hero and Page Links use the updated animation.
+- Existing water animations and foreground content are unaffected.
+- Reduced-motion support remains functional.
+- No horizontal overflow.
+
+---
+
+# Implementation Instructions
+
+1. Read and follow `AGENTS.md`.
+2. Review Epic-008 Feature-009 and the existing SwimmingTurtle component.
+3. Inspect how translation, rotation and appearance timing currently work.
+4. Apply 0.6 opacity.
+5. Calculate the correct heading for each trajectory.
+6. Implement the continuous ±2° wiggle.
+7. Separate transforms where necessary to prevent conflicts.
+8. Change swimming duration to 5–7 seconds.
+9. Change the waiting logic to begin after the previous turtle fully exits.
+10. Preserve the existing random route generation.
+11. Test swimming in both horizontal directions and along diagonal trajectories.
+12. Verify that waiting time is calculated from the previous animation's completion.
+13. Verify at mobile, tablet and desktop viewport sizes.
+14. Test reduced-motion behaviour and timer cleanup.
+15. Run focused regression tests and relevant frontend builds.
+16. Update Bug-005 in `src/vibe/epics/epic-008/bugs.txt`.
+
+### Testing Priorities
+
+Pay particular attention to:
+
+- Correct orientation when swimming right and left.
+- Correct orientation on diagonal routes.
+- Wiggle working without altering the trajectory.
+- The minimum five-second delay after disappearance.
+- No animation overlap.
+- Accurate five-to-seven-second swimming duration.
+
+**No manual WordPress changes are required.**
+
+**Scope:** Implement Epic-008 Bug-005 only. Do not modify unrelated components or begin another Epic.

@@ -1438,3 +1438,805 @@ Ensure the links remain accessible when JavaScript or scroll-observation behavio
 **No manual WordPress changes are required.**
 
 **Scope:** Implement Feature-007 only. Do not modify unrelated functionality or begin Epic-009.
+
+
+# Epic-008 — Additional Features
+
+## Feature-008 — Selectable Header Colour Scheme
+
+**Status:** complete
+
+**Notes:** Complete. The persisted Header Colour now reaches React through the normalized rendered data attribute and drives one shared CSS custom property for the Header, links, active state, mobile menu and shallow wave. Dark Blue hover text uses the shared Dark Blue token while both green variants retain their prior hover treatment. Focused tests, build, Gutenberg persistence and live responsive checks passed.
+
+### Objective
+
+Allow the navigation Header's background colour to be changed directly through its existing synced WordPress pattern.
+
+There should be three available colour options:
+
+1. Dark Green — `#033626`
+2. Green — `#066C4C`
+3. Dark Blue — `#1B4672`
+
+The selected colour must apply consistently to the entire navigation area, including the Header background, individual navigation links, active link backgrounds and the shallow decorative Header wave.
+
+The existing navigation hover effects should remain unchanged for both green options.
+
+For Dark Blue, the hovered link text should change to Dark Blue too.
+
+---
+
+### 1. Add Header Colour Selector to Gutenberg
+
+Extend the existing Header pattern editing interface with a colour selection setting.
+
+**Setting name:** Header Colour
+
+**Available options:**
+
+- Dark Green
+- Green
+- Dark Blue
+
+Requirements:
+
+1. The setting must be accessible when editing the existing synced Header pattern.
+2. The setting should appear in the Block settings sidebar when selecting the appropriate main Header block or wrapper.
+3. Use a simple three-option selector.
+4. Do not require manually entering hexadecimal values.
+5. Do not require manually adding CSS classes.
+6. Store the selected value in WordPress.
+7. Ensure the value persists after saving and reopening the pattern.
+8. Apply the selected colour on the public React frontend.
+9. Changing the synced pattern should update its existing instances.
+10. Preserve the current Dark Green appearance as the default.
+
+Suggested stored values:
+
+```js
+[
+  "dark-green",
+  "green",
+  "dark-blue"
+]
+```
+
+Do not introduce unnecessary additional colour options.
+
+#### Important architectural requirement
+
+The Header must remain an existing synced WordPress pattern.
+
+Do not replace the pattern system with a new independently managed Header.
+
+Inspect the current pattern structure and use the simplest compatible Gutenberg implementation.
+
+For example, an existing wrapper block's attributes, supported block style variations or a compatible existing custom block may be appropriate.
+
+If using block styles, ensure all three options are available in the editor's visible Styles controls.
+
+The setting must be genuinely editable in Gutenberg, not just registered in source code.
+
+---
+
+### 2. Define Header Colour Variants
+
+Use the existing SCSS design tokens wherever possible.
+
+#### Dark Green
+
+```scss
+#033626
+```
+
+This is the current Header background colour.
+
+#### Green
+
+```scss
+#066C4C
+```
+
+This is the existing Green Group background colour.
+
+#### Dark Blue
+
+```scss
+#1B4672
+```
+
+This is the same Blue introduced for the Page Links heading and circular links in Feature-007.
+
+If a shared Dark Blue SCSS token already exists, reuse it.
+
+Do not create duplicate global colour definitions.
+
+---
+
+### 3. Apply Colour to Entire Navigation
+
+Changing the Header Colour setting must change the background of the entire navigation system.
+
+This includes:
+
+1. Main Header container.
+2. Navigation bar background.
+3. Individual navigation link backgrounds.
+4. Active navigation link background.
+5. Any background layers or pseudo-elements currently using the previous Dark Green colour.
+6. The shallow wave along the bottom of the Header.
+7. The mobile navigation background where it forms part of the same Header.
+
+The selected colour should produce a visually continuous Header without isolated patches of the previous background colour.
+
+#### Active Links
+
+The active navigation link should always have the same background colour as the selected Header.
+
+Examples:
+
+- Dark Green Header → Dark Green active background.
+- Green Header → Green active background.
+- Dark Blue Header → Dark Blue active background.
+
+Preserve the existing active text and icon styling.
+
+Do not introduce a contrasting active-background block.
+
+---
+
+### 4. Preserve Dark Green and Green Hover Effects
+
+When either green option is selected:
+
+- Preserve existing hover colours.
+- Preserve existing hover-wave animation.
+- Preserve text movement.
+- Preserve animation duration.
+- Preserve easing.
+- Preserve rounded corners.
+- Preserve internal spacing.
+- Preserve active-state behaviour.
+
+The existing hover effect should continue to look and behave exactly as it currently does.
+
+Only the underlying Header and link background colours should change.
+
+---
+
+### 5. Dark Blue Hover Styling
+
+When Dark Blue is selected, preserve the existing navigation hover animation with one additional colour change.
+
+**On hover, navigation link text should become Dark Blue (`#1B4672`).**
+
+Requirements:
+
+1. Use the existing hover-wave effect.
+2. Preserve the existing rounded hover area.
+3. Preserve the existing hover background and wave colours.
+4. Preserve the existing text movement.
+5. Change hovered text to Dark Blue.
+6. Restore the normal text colour when hovering ends.
+7. Ensure text remains visible throughout the wave transition.
+8. Preserve the existing icon treatment unless the current implementation intentionally makes icons inherit the same text colour.
+9. Do not change hover styling outside the Header.
+
+Use theme-specific styling rather than modifying the global navigation hover animation.
+
+The change must apply only when the Dark Blue Header option is active.
+
+---
+
+### 6. Preserve Shallow Header Wave
+
+The Header has a shallow wave-shaped bottom edge.
+
+This wave must remain visually connected to the Header.
+
+Requirements:
+
+1. Preserve the corrected wave orientation from Epic-007.
+2. Preserve the existing wave depth.
+3. Preserve the existing wave geometry.
+4. Keep the flat edge against the Header.
+5. Keep the curved edge facing downwards.
+6. Change the wave's fill colour to match the selected Header colour.
+7. Prevent seams between the Header and wave.
+8. Preserve sticky positioning.
+
+Do not change the wave's shape, depth or animation as part of this feature.
+
+---
+
+### 7. Preserve Logo and Navigation Functionality
+
+Do not modify:
+
+- The WordPress-managed Header PNG.
+- Logo dimensions.
+- Logo positioning.
+- Navigation destinations.
+- Navigation text.
+- Font Awesome icons.
+- Sticky Header functionality.
+- Active link detection.
+- Desktop navigation spacing.
+- Mobile hamburger and X animation.
+- Mobile menu opening and closing.
+- Existing accessibility behaviour.
+
+The colour selector should affect only the relevant navigation colours.
+
+---
+
+### 8. WordPress-to-React Integration
+
+Ensure the selected Header colour reaches the public React Header.
+
+Requirements:
+
+1. Use the existing WordPress data contract.
+2. Persist the selected variant in the synced pattern.
+3. Expose the stored variant to React.
+4. Map each supported variant to its correct SCSS colour.
+5. Use Dark Green when no variant is stored.
+6. Handle invalid or unknown values safely.
+7. Do not require the frontend to inspect rendered pixels or infer the background colour.
+8. Avoid hardcoding the chosen colour separately in multiple Header components.
+
+Prefer a single Header theme class or CSS custom property from which the relevant internal elements inherit their background colours.
+
+---
+
+### Acceptance Criteria
+
+- Header Colour selector is visible in Gutenberg.
+- Dark Green, Green and Dark Blue are selectable.
+- Dark Green remains the default.
+- Changing the selection updates the Header.
+- Setting persists after saving and reopening the synced pattern.
+- Entire navigation background changes consistently.
+- Individual link backgrounds match the Header.
+- Active link backgrounds match the Header.
+- Shallow Header wave matches the selected colour.
+- Green hover effects remain unchanged.
+- Dark Green hover effects remain unchanged.
+- Dark Blue hover changes text to `#1B4672`.
+- Existing navigation functionality remains unchanged.
+- Mobile Header colours work correctly.
+- No gaps, incorrect colours or horizontal overflow.
+
+---
+
+## Feature-009 — Animated Swimming Turtle
+
+**Status:** complete
+
+**Notes:** Complete. Home Hero and Page Links now share one WordPress-backed turtle asset provider and reusable visibility-aware animation component. Each pass uses a randomized 5–15 second start interval, 3–5 second linear journey, random direction and opposite vertical halves with full off-edge coordinates; timers and animations stop off-screen or on cleanup, and reduced-motion users receive no turtle. Focused tests, PHP checks, production build and live desktop/mobile responsive checks passed.
+
+### Objective
+
+Add an animated turtle that occasionally swims across the animated blue water backgrounds used in:
+
+1. Home Hero.
+2. Page Links.
+
+The turtle image will be supplied through the WordPress Media Library.
+
+**Image filename:** `turtle.png`
+
+The turtle should enter from outside one side of the water background, travel across it in a straight line and disappear outside the opposite side.
+
+Its appearance time, trajectory and swimming duration should vary randomly.
+
+---
+
+### 1. Use WordPress Media Library Image
+
+Use the existing `turtle.png` image from the WordPress Media Library.
+
+Requirements:
+
+1. Use the real WordPress-managed PNG.
+2. Preserve transparency in the source image.
+3. Preserve the original image proportions.
+4. Do not draw a replacement turtle using CSS or SVG.
+5. Do not duplicate the image within the React codebase.
+6. Do not hardcode the current WordPress uploads URL.
+7. Avoid searching for the file by name on every animation cycle.
+
+#### Preferred Media Integration
+
+Both Home Hero and Page Links should use the same turtle asset.
+
+Investigate the existing WordPress media integration.
+
+Preferred options:
+
+1. Reuse an existing centrally managed media reference if suitable.
+2. Otherwise provide one shared WordPress media setting for the turtle image.
+
+Store a stable WordPress attachment ID and expose the resolved image URL through the existing public data contract.
+
+The user should not need to select the turtle separately on the Home Hero and Page Links blocks.
+
+If `turtle.png` already exists and can be identified unambiguously, reuse it.
+
+If it cannot be identified, provide a one-time Media Library selection step.
+
+Do not automatically choose an attachment when multiple matching images exist.
+
+#### Missing Image Behaviour
+
+If no turtle image is configured:
+
+- Continue rendering the normal water backgrounds.
+- Do not display a broken image.
+- Do not break either section.
+- Do not generate console errors repeatedly.
+
+---
+
+### 2. Reusable Swimming Turtle Component
+
+Create a reusable React component for the animation.
+
+Suggested name:
+
+`SwimmingTurtle`
+
+Requirements:
+
+1. Use the same component for Home Hero and Page Links.
+2. Keep animation logic separate from individual section layouts.
+3. Allow the component to use the shared WordPress turtle image.
+4. Position it inside the existing animated water background.
+5. Preserve the current water animations.
+6. Keep the turtle decorative rather than interactive.
+7. Do not change WordPress content editing for the existing Hero or Page Links.
+
+Do not create two independent implementations with different animation behaviour.
+
+---
+
+### 3. Visual Positioning
+
+The turtle should appear to swim through the blue water background.
+
+Requirements:
+
+1. Position the turtle above the animated water background.
+2. Keep it behind the section's primary content.
+3. Do not cover the Hero's logo or slogan in a way that prevents readability.
+4. Do not interfere with Page Links buttons or their hover effects.
+5. Preserve the existing water movement.
+6. Preserve all existing wave boundaries.
+7. Do not allow the turtle to appear in neighbouring sections outside the designated water area.
+
+Use a suitable positioning container and stacking order.
+
+The turtle should be decorative and must not capture pointer events.
+
+Use:
+
+```scss
+pointer-events: none;
+```
+
+And appropriate decorative image accessibility attributes.
+
+#### Image Size
+
+Use a responsive size that makes the turtle noticeable without dominating the section.
+
+Choose a sensible size based on the source image and existing layout.
+
+Keep it proportional, and avoid making the animation significantly larger on desktop than necessary.
+
+The image should scale down on smaller mobile screens.
+
+Do not distort the source PNG.
+
+---
+
+### 4. Straight-Line Swimming Animation
+
+The turtle should move in a straight line from one edge of the background to the opposite edge.
+
+Use horizontal crossings:
+
+- Left to right.
+- Right to left.
+
+Choose the direction randomly on each appearance.
+
+The turtle may travel diagonally because its entry and exit points can have different vertical positions.
+
+**Important:** The movement must still follow a straight trajectory.
+
+Do not introduce curved paths, zigzag movement, bouncing or wandering.
+
+Use a single continuous translation from the calculated start position to the calculated destination.
+
+---
+
+### 5. Random Entry and Exit Locations
+
+The turtle should not follow the same path every time.
+
+Randomly select its entry and exit positions.
+
+The entry and exit must be in opposite vertical halves of the background.
+
+#### Example A
+
+- Enter from the left side.
+- Entry position is within the top 50% of the section.
+- Exit on the right side.
+- Exit position is within the bottom 50%.
+
+#### Example B
+
+- Enter from the left side.
+- Entry position is within the bottom 50%.
+- Exit on the right side.
+- Exit position is within the top 50%.
+
+#### Example C
+
+- Enter from the right side.
+- Entry position is within the top 50%.
+- Exit on the left side.
+- Exit position is within the bottom 50%.
+
+#### Example D
+
+- Enter from the right side.
+- Entry position is within the bottom 50%.
+- Exit on the left side.
+- Exit position is within the top 50%.
+
+### Requirements
+
+1. Randomly choose the travel direction.
+2. Randomly choose whether the entry is in the top or bottom half.
+3. Randomly select the entry position within that half.
+4. Randomly select the exit position within the opposite half.
+5. Use the current background container's dimensions.
+6. Calculate a straight line between the two points.
+7. Keep the selected trajectory stable for the entire pass.
+8. Generate a new trajectory for each subsequent pass.
+
+This should create variety while ensuring the turtle always travels a meaningful distance across the background.
+
+Avoid trajectories where the turtle only briefly appears near an edge.
+
+---
+
+### 6. Enter and Exit Completely Off-Screen
+
+The turtle should never suddenly appear or disappear inside the water background.
+
+Requirements:
+
+1. Start with the entire turtle outside the entry edge.
+2. Animate it fully into the background.
+3. Continue across the background.
+4. Move the entire turtle beyond the opposite edge.
+5. Only reset its position after it has completely exited.
+6. Never visibly teleport the turtle between positions.
+7. Prevent clipping that cuts off the turtle prematurely inside the intended visible area.
+
+The start and end coordinates must account for the turtle's displayed dimensions, not just its centre point.
+
+For example, when moving left to right:
+
+- Begin far enough left that the image is completely outside the section.
+- End far enough right that the image is completely outside the section.
+
+Do not use a hardcoded travel distance that only works for one screen width.
+
+---
+
+### 7. Random Appearance Timing
+
+The turtle should appear at random intervals.
+
+**Interval range: 5–15 seconds**
+
+Requirements:
+
+1. Randomly choose a new interval between five and fifteen seconds.
+2. Schedule the next appearance using that interval.
+3. Generate a new random interval after each appearance.
+4. Avoid using one fixed repeating duration.
+5. Prevent duplicate animation timers.
+6. Never display multiple turtles simultaneously within the same water background.
+
+Interpret the interval as the time between the starts of successive swimming passes.
+
+Because each journey lasts at most five seconds, the turtle will have completed its previous journey before the next begins.
+
+Use an appropriate timeout-based scheduling approach rather than an interval that can accidentally overlap animations.
+
+---
+
+### 8. Random Swimming Duration
+
+Each crossing should take between:
+
+**3–5 seconds**
+
+Requirements:
+
+1. Randomly choose a duration between three and five seconds.
+2. Keep the duration constant throughout the selected journey.
+3. Generate a new duration for each appearance.
+4. Use smooth, continuous movement.
+5. Avoid sudden speed changes.
+6. Do not pause in the middle of the crossing.
+7. Ensure the turtle completely exits at the end.
+
+The distance travelled will vary depending on the entry and exit positions, but the total travel time must remain within the specified range.
+
+The movement should feel like the turtle is calmly swimming across the water.
+
+Do not add unnecessary rotation or flipper animations.
+
+---
+
+### 9. Reuse in Home Hero
+
+Integrate SwimmingTurtle with the existing Home Hero water background.
+
+Requirements:
+
+1. Preserve the existing Hero's blue animated water.
+2. Preserve all water wave animations.
+3. Preserve the current Hero logo.
+4. Preserve both Writing Logo and Round Logo options.
+5. Preserve the slogan.
+6. Preserve the background image carousel.
+7. Preserve the scroll-down button.
+8. Keep the turtle behind the Hero's readable foreground content.
+9. Ensure the turtle animation does not affect the Hero's full-height layout.
+
+The turtle should appear to be swimming through the Hero's water rather than floating above the logo or interface.
+
+---
+
+### 10. Reuse in Page Links
+
+Integrate the same SwimmingTurtle component into the Page Links section.
+
+Requirements:
+
+1. Preserve the existing Light Blue animated water background.
+2. Preserve the リンク集 heading.
+3. Preserve the Dark Blue heading and link backgrounds.
+4. Preserve the circular links.
+5. Preserve the staggered scroll entrance animations.
+6. Preserve link hover scaling and blob rotation.
+7. Preserve background continuity beneath neighbouring wave edges.
+8. Keep the turtle behind all clickable links.
+9. Do not alter the four/two/one responsive link layout.
+
+The turtle must not interfere with mouse hover, touch or keyboard interaction.
+
+---
+
+### 11. Visibility and Performance
+
+Avoid running unnecessary animation work when the relevant water section is off-screen.
+
+Requirements:
+
+1. Observe whether each water section is visible.
+2. Start or resume scheduling when it becomes visible.
+3. Stop unnecessary scheduling when it is no longer visible.
+4. Ensure returning to a section allows future swimming passes.
+5. Clean up timeouts and animation resources on unmount.
+6. Avoid unnecessary React re-renders on every animation frame.
+7. Use transform-based animation where practical.
+8. Recalculate the trajectory for future passes after viewport resizing.
+9. Avoid creating horizontal overflow.
+10. Do not interfere with existing scroll-triggered animations.
+
+Each water section should manage its own swimming schedule while sharing the same animation implementation.
+
+The animation should remain smooth on mobile.
+
+---
+
+### 12. Reduced Motion and Accessibility
+
+The turtle is decorative.
+
+Requirements:
+
+1. Use an empty image alt attribute.
+2. Mark the decorative layer as hidden from assistive technology where appropriate.
+3. Ensure it cannot receive keyboard focus.
+4. Do not intercept clicks or touch interactions.
+5. Respect `prefers-reduced-motion`.
+6. Disable the swimming animation for reduced-motion users.
+7. Do not leave a static turtle obstructing the content when motion is disabled.
+
+The water sections must remain functional without the turtle.
+
+---
+
+### Acceptance Criteria
+
+- `turtle.png` is sourced from WordPress.
+- Home Hero and Page Links share the same turtle asset.
+- Both sections use the same reusable animation component.
+- Turtle appears randomly every 5–15 seconds while the section is active.
+- Each crossing lasts 3–5 seconds.
+- Direction varies between left-to-right and right-to-left.
+- Entry position is random.
+- Exit position is random.
+- Entry and exit positions are in opposite vertical halves.
+- The turtle travels in a straight line.
+- The turtle starts completely outside the entry edge.
+- The turtle disappears completely beyond the exit edge.
+- No teleporting or abrupt position resets are visible.
+- No overlapping turtle animations occur within the same section.
+- The turtle does not obstruct Hero or Page Links content.
+- Existing water animations remain intact.
+- Existing Page Links entrance animations remain intact.
+- Animation works on desktop, tablet and mobile.
+- Reduced-motion preferences are respected.
+- No horizontal overflow or unnecessary performance regressions.
+
+---
+
+# Implementation Workflow
+
+## Phase 1 — Coding Prerequisites
+
+Before the manual WordPress configuration:
+
+1. Read `AGENTS.md`.
+2. Read the full Epic-008 specification.
+3. Inspect the existing synced Header pattern.
+4. Inspect the Header Gutenberg editing interface.
+5. Inspect the Header colour and hover styling.
+6. Inspect the existing WordPress media integration.
+7. Inspect Home Hero and Page Links background components.
+8. Implement the Header Colour setting and persistence.
+9. Implement the necessary shared WordPress turtle image reference.
+10. Prepare any required WordPress editor or settings controls.
+11. Build the modified WordPress plugin.
+12. Run focused registration and data-contract checks.
+
+### Mandatory WordPress Handover
+
+If the Header requires the user to select its colour or the turtle image needs manual configuration, stop after the necessary controls are ready.
+
+Provide precise instructions for completing these actions.
+
+Do not silently edit the owner's published WordPress pattern or page content.
+
+## Phase 2 — WordPress Configuration
+
+The user will:
+
+1. Open the existing Header synced pattern.
+2. Locate the Header Colour selector.
+3. Choose Dark Green, Green or Dark Blue.
+4. Save the synced pattern.
+5. Upload `turtle.png` to the Media Library if necessary.
+6. Select the image once in the provided shared asset setting, if required.
+7. Save the setting.
+8. Confirm the image reference and Header colour persist.
+
+The Header colour setting must be available even if the user keeps the default Dark Green option.
+
+Do not require selecting the turtle separately in each page.
+
+## Phase 3 — React and SCSS
+
+After the WordPress setup is complete:
+
+### Feature-008
+
+1. Read the stored Header colour.
+2. Apply the selected background to the Header and its links.
+3. Apply the same colour to active links.
+4. Apply the same colour to the shallow Header wave.
+5. Preserve both green hover treatments.
+6. Apply Dark Blue text on hover for the Dark Blue variant.
+7. Verify desktop and mobile navigation.
+
+### Feature-009
+
+1. Create the reusable SwimmingTurtle component.
+2. Load the centrally managed turtle asset.
+3. Implement randomized entry and exit points.
+4. Implement straight-line movement.
+5. Implement randomized appearance intervals.
+6. Implement randomized journey durations.
+7. Integrate with Home Hero.
+8. Integrate with Page Links.
+9. Verify layering and responsive behaviour.
+10. Verify reduced-motion and timer cleanup.
+
+---
+
+# Testing Requirements
+
+Test at:
+
+- 320px.
+- 375px.
+- 430px.
+- 768px.
+- 1024px.
+- 1440px.
+
+### Feature-008
+
+Verify:
+
+- All three colours can be selected.
+- Selected colour persists in Gutenberg.
+- Header background updates.
+- Individual links match the background.
+- Active link backgrounds match.
+- Shallow wave changes colour.
+- Dark Green hover remains unchanged.
+- Green hover remains unchanged.
+- Dark Blue hover text becomes Dark Blue.
+- Mobile navigation continues working.
+- Sticky Header continues working.
+
+### Feature-009
+
+Verify:
+
+- Turtle asset loads from WordPress.
+- Both sections use the same asset.
+- Random directions work.
+- Entry and exit always use opposite vertical halves.
+- Start and end positions are completely outside the section.
+- Travel duration is between three and five seconds.
+- Appearance intervals are between five and fifteen seconds.
+- Repeated passes do not overlap.
+- No horizontal page overflow.
+- No interaction interference.
+- Timers are cleaned up properly.
+- Reduced-motion behaviour works.
+- Missing image configuration fails safely.
+
+Use focused tests for trajectory generation, timing bounds and animation state where practical.
+
+Do not claim live WordPress or browser verification unless those checks were actually performed.
+
+---
+
+# Tracking and Completion
+
+Update:
+
+`src/vibe/epics/epic-008/features.txt`
+
+Follow the existing status and rollback rules in `AGENTS.md`.
+
+Preserve all previously completed Epic-008 features and bugs.
+
+Do not modify unrelated functionality.
+
+At completion, report:
+
+1. Feature-008 status.
+2. Feature-009 status.
+3. Files modified.
+4. WordPress controls added or changed.
+5. React and SCSS changes.
+6. Focused tests and build results.
+7. Responsive verification.
+8. Outstanding blockers or manual actions.
+
+**Scope:** Complete Features 008 and 009 only. Do not begin Epic-009.

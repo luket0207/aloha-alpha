@@ -4,6 +4,9 @@ import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import Wave from './Wave.jsx';
 import { ROUND_FRAME_PATH } from './imageFrame.js';
 import { findNextPageSection, getStickyHeaderOffset, normalizeHeroLogoStyle } from './hero.js';
+import { useSiteAssets } from './SiteAssetsContext.jsx';
+import SwimmingTurtle from './SwimmingTurtle.jsx';
+import useReducedMotion from './useReducedMotion.js';
 import './Hero.scss';
 
 export const SLIDE_DURATION_MS = 5000;
@@ -136,21 +139,6 @@ export function WaterSurface({ id, path, reducedMotion }) {
   );
 }
 
-function useReducedMotion() {
-  const [reducedMotion, setReducedMotion] = useState(
-    () => window.matchMedia('(prefers-reduced-motion: reduce)').matches,
-  );
-
-  useEffect(() => {
-    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const handleChange = (event) => setReducedMotion(event.matches);
-    media.addEventListener('change', handleChange);
-    return () => media.removeEventListener('change', handleChange);
-  }, []);
-
-  return reducedMotion;
-}
-
 export default function Hero({ contentHtml, logoStyle = 'writing', slides }) {
   const [activeSlide, setActiveSlide] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
@@ -158,6 +146,7 @@ export default function Hero({ contentHtml, logoStyle = 'writing', slides }) {
   const heroRef = useRef(null);
   const reducedMotion = useReducedMotion();
   const normalizedLogoStyle = normalizeHeroLogoStyle(logoStyle);
+  const { turtle } = useSiteAssets();
 
   useEffect(() => {
     const hero = heroRef.current;
@@ -291,6 +280,8 @@ export default function Hero({ contentHtml, logoStyle = 'writing', slides }) {
           reducedMotion={reducedMotion}
         />
       </svg>
+
+      <SwimmingTurtle asset={turtle} className="aloha-hero__turtle" />
 
       <div
         className={`aloha-hero__content aloha-hero__content--${normalizedLogoStyle}`}

@@ -13,8 +13,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'ALOHAALPHA_CORE_VERSION', '0.2.0' );
 
 require_once __DIR__ . '/contact-api.php';
+require_once __DIR__ . '/header-settings.php';
 require_once __DIR__ . '/home-hero.php';
 require_once __DIR__ . '/patterns.php';
+require_once __DIR__ . '/site-assets.php';
 
 /**
  * Load the three approved typefaces in the editor canvas only.
@@ -48,6 +50,14 @@ add_action( 'enqueue_block_editor_assets', function () {
         'alohaalpha-heading-variations',
         plugins_url( 'assets/js/editor-variations.js', __FILE__ ),
         array( 'wp-blocks', 'wp-dom-ready', 'wp-i18n' ),
+        ALOHAALPHA_CORE_VERSION,
+        true
+    );
+
+    wp_enqueue_script(
+        'alohaalpha-header-settings',
+        plugins_url( 'assets/js/editor-header-settings.js', __FILE__ ),
+        array( 'wp-block-editor', 'wp-blocks', 'wp-components', 'wp-compose', 'wp-element', 'wp-hooks', 'wp-i18n' ),
         ALOHAALPHA_CORE_VERSION,
         true
     );

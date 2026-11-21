@@ -16,6 +16,8 @@ import {
   PAGE_LINK_ENTRANCE_DURATION_MS,
   pageLinkAnimationDelay,
 } from './pageLinks.js';
+import { useSiteAssets } from './SiteAssetsContext.jsx';
+import SwimmingTurtle from './SwimmingTurtle.jsx';
 import useDirectionalReveal from './useDirectionalReveal.js';
 import useReducedMotion from './useReducedMotion.js';
 import './PageLinks.scss';
@@ -131,6 +133,7 @@ export function PageLinksContinuity({ children }) {
 export default function PageLinks({ links, sharedBackground = false }) {
   const sectionRef = useRef(null);
   const reducedMotion = useReducedMotion();
+  const { turtle } = useSiteAssets();
   const { animate, motionReady, revealed } = useDirectionalReveal(
     sectionRef,
     reducedMotion,
@@ -148,6 +151,7 @@ export default function PageLinks({ links, sharedBackground = false }) {
       style={{ '--aloha-page-link-duration': `${PAGE_LINK_ENTRANCE_DURATION_MS}ms` }}
     >
       {!sharedBackground && <PageLinksWater className="aloha-page-links__water" />}
+      <SwimmingTurtle asset={turtle} className="aloha-page-links__turtle" />
       <h2 className="aloha-page-links__title aloha-heading--japanese">リンク集</h2>
       <ul className="aloha-page-links__list">
         {links.map((link, index) => (

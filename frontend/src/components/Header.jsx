@@ -10,6 +10,11 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { Link, useLocation } from 'react-router-dom';
 import { getWordPressRestUrl } from '../wordpressApi.js';
+import {
+  DEFAULT_HEADER_COLOUR,
+  headerColourClass,
+  normalizeHeaderColour,
+} from './header.js';
 import Wave from './Wave.jsx';
 import './Header.scss';
 
@@ -68,6 +73,7 @@ function headerLogoHtml(document) {
 
 export function parseHeader(html) {
   const document = new DOMParser().parseFromString(html, 'text/html');
+  const headerElement = document.querySelector('.aloha-header');
   const logoHtml = headerLogoHtml(document);
   const links = Array.from(document.querySelectorAll('.aloha-nav a[href]')).map((link) => ({
     href: link.getAttribute('href'),
@@ -79,13 +85,18 @@ export function parseHeader(html) {
   }
 
   return {
+    colour: normalizeHeaderColour(headerElement?.dataset.alohaHeaderColour),
     logoHtml,
     links,
   };
 }
 
 export default function Header() {
-  const [header, setHeader] = useState({ logoHtml: '', links: [] });
+  const [header, setHeader] = useState({
+    colour: DEFAULT_HEADER_COLOUR,
+    logoHtml: '',
+    links: [],
+  });
   const [status, setStatus] = useState('loading');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(() => window.matchMedia(DESKTOP_MEDIA_QUERY).matches);
@@ -115,7 +126,7 @@ export default function Header() {
 
   useEffect(() => {
     const controller = new AbortController();
-    setHeader({ logoHtml: '', links: [] });
+    setHeader({ colour: DEFAULT_HEADER_COLOUR, logoHtml: '', links: [] });
     setStatus('loading');
 
     fetch(getWordPressRestUrl('aloha/v1/sections/header'), {
@@ -222,7 +233,7 @@ export default function Header() {
 
   return (
     <>
-      <header className={`aloha-header theme-green${isMenuOpen ? ' is-menu-open' : ''}`}>
+      <header className={`aloha-header ${headerColourClass(header.colour)} theme-green${isMenuOpen ? ' is-menu-open' : ''}`}>
         <div className="aloha-header__bar">
           {status === 'loading' && <p className="aloha-header__status">Loading navigation…</p>}
           {status === 'error' && <p className="aloha-header__status" role="alert">Unable to load navigation.</p>}

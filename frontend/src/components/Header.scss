@@ -9,14 +9,24 @@ $menu-bar-offset: 0.5rem;
 $menu-bar-inset: 0.65rem;
 
 .aloha-header.theme-green {
+  --aloha-header-background: #{tokens.$dark-green};
+
   position: sticky;
   top: 0;
   z-index: 100;
   flex: 0 0 auto;
   box-sizing: border-box;
-  border-bottom: 2px solid tokens.$dark-green;
-  background: tokens.$dark-green;
+  border-bottom: 2px solid var(--aloha-header-background);
+  background: var(--aloha-header-background);
   color: tokens.$cream;
+}
+
+.aloha-header.theme-green.aloha-header--green {
+  --aloha-header-background: #{tokens.$green};
+}
+
+.aloha-header.theme-green.aloha-header--dark-blue {
+  --aloha-header-background: #{tokens.$dark-blue};
 }
 
 .admin-bar .aloha-header {
@@ -44,7 +54,7 @@ $menu-bar-inset: 0.65rem;
   display: block;
   width: 100%;
   height: clamp(0.75rem, calc(1vw + 0.25rem), 1.25rem);
-  color: tokens.$dark-green;
+  color: var(--aloha-header-background);
   pointer-events: none;
 
   path {
@@ -111,7 +121,7 @@ $menu-bar-inset: 0.65rem;
   overflow: hidden;
   border: 0;
   border-radius: 0;
-  background: tokens.$dark-green;
+  background: var(--aloha-header-background);
   color: tokens.$cream;
   font-family: tokens.$font-body;
   font-size: 1rem;
@@ -142,7 +152,7 @@ $menu-bar-inset: 0.65rem;
   }
 
   &.is-active {
-    background: tokens.$dark-green;
+    background: var(--aloha-header-background);
     color: tokens.$yellow;
     cursor: default;
     font-weight: 600;
@@ -185,6 +195,10 @@ $menu-bar-inset: 0.65rem;
     > svg {
       transform: translateY(-2px);
     }
+  }
+
+  .aloha-header--dark-blue .aloha-header__navigation-link:not(.is-active):hover {
+    color: tokens.$dark-blue;
   }
 }
 
@@ -273,7 +287,7 @@ $menu-bar-inset: 0.65rem;
     padding: 1rem max(1rem, calc((100vw - #{tokens.$container-width}) / 2));
     overflow-y: auto;
     visibility: hidden;
-    background: tokens.$dark-green;
+    background: var(--aloha-header-background);
     opacity: 0;
     pointer-events: none;
     transform: translateY(-1rem);

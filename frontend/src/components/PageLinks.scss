@@ -1,7 +1,7 @@
 @use 'sass:color';
 @use '../styles/variables' as tokens;
 
-$page-links-blue: #1b4672;
+$page-links-blue: tokens.$dark-blue;
 
 .aloha-page-links,
 .aloha-page-links-continuity {
@@ -73,6 +73,10 @@ $page-links-blue: #1b4672;
   pointer-events: none;
 }
 
+.aloha-page-links__turtle {
+  z-index: 0;
+}
+
 .aloha-page-links__title {
   position: relative;
   z-index: 1;
@@ -85,6 +89,7 @@ $page-links-blue: #1b4672;
 
 .aloha-page-links__list {
   position: relative;
+  z-index: 1;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
