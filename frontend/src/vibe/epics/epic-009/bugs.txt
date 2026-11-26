@@ -1,0 +1,1094 @@
+# Epic-009 — Bugs
+
+## Bug-001 — Classes Hero Height, Bottom Wave and Heading
+
+**Status:** complete
+
+**Notes:** Classes Hero now sizes to its content and uses the Homepage wave geometry with the Kids green fill. クラス is an H1 at the existing visual size. Live checks at six widths confirmed the wave join, natural height, link layout, four H2s, anchor behavior, and a full-height Homepage Hero. The Classes turtle keeps its original duration in this change.
+
+### Issue
+
+The Classes page Hero is functionally working correctly, but I want three visual adjustments:
+
+1. Add a wave-shaped bottom edge matching the Homepage Hero.
+2. Remove the full-viewport height requirement so the Hero's height is determined by its content and padding.
+3. Change the Japanese heading クラス from H2 to H1 because it is the title of the Classes page.
+
+These changes should apply only to the Classes Hero.
+
+### 1. Add Bottom Wave
+
+The Classes Hero should have the same wave-shaped bottom edge as the Homepage Hero.
+
+Requirements:
+
+1. Reuse the existing Homepage Hero bottom wave component or implementation.
+2. Match its shape, depth, orientation and appearance.
+3. Position the wave along the bottom edge of the Classes Hero.
+4. Ensure it spans the full viewport width.
+5. The wave's flat edge should connect seamlessly to the Hero background.
+6. The irregular curved edge should extend downwards into the following section.
+7. Preserve the animated blue water background.
+8. Ensure the wave transitions naturally into the Kids section underneath.
+9. Prevent straight edges or unwanted gaps.
+10. Avoid horizontal overflow.
+
+Do not create a separate wave design when the existing Homepage Hero wave can be reused.
+
+#### Background Integration
+
+The Kids section immediately beneath the Classes Hero uses the Green Group background.
+
+Ensure the transition between the blue Hero and Green Kids section is seamless.
+
+No white or unintended background colours should appear behind the wave.
+
+Preserve the existing animated water background and swimming turtle.
+
+### 2. Remove Full-Viewport Height
+
+The Classes Hero currently occupies approximately 100vh.
+
+I no longer want this behaviour.
+
+The Hero should use its natural content height.
+
+Requirements:
+
+1. Remove `height: 100vh` or equivalent rules from the Classes Hero.
+2. Remove `min-height: 100vh` or equivalent viewport-height constraints from this Hero.
+3. Let the title, links and padding determine its overall height.
+4. Add comfortable spacing above the heading.
+5. Add comfortable spacing beneath the links.
+6. Preserve the existing spacing between the heading and links.
+7. Ensure the bottom wave does not obscure the links.
+8. Ensure the sticky Header does not obscure the Hero content.
+9. Preserve the established horizontal content margins.
+10. Prevent excessive empty space.
+
+Suggested initial padding:
+
+```scss
+padding-top: clamp(2rem, 6vw, 4rem);
+padding-bottom: clamp(3rem, 8vw, 5rem);
+```
+
+These values are starting points rather than mandatory dimensions.
+
+Adjust as necessary to ensure the spacing is visually balanced.
+
+The bottom padding must account for the wave's depth.
+
+#### Responsive Behaviour
+
+Preserve the existing layout:
+
+- Desktop: 4 links per row.
+- Tablet: 2 links per row.
+- Mobile: 1 link per row.
+
+The Hero must naturally become taller when its links wrap into additional rows.
+
+In particular, all four links must remain visible on smaller mobile screens.
+
+Do not introduce fixed heights at different breakpoints to simulate content-based sizing.
+
+**Important:** The Homepage Hero must retain its existing full-height layout.
+
+### 3. Change Heading from H2 to H1
+
+The Classes Hero currently displays:
+
+**クラス**
+
+Change this heading from H2 to H1.
+
+Requirements:
+
+1. Render クラス using a semantic `<h1>` element.
+2. Preserve the Japanese heading font, Mochiy Pop P One.
+3. Preserve Dark Blue `#1B4672`.
+4. Preserve the existing visual size unless a minor adjustment is necessary.
+5. Keep the heading horizontally centred.
+6. Preserve its margin beneath the heading.
+7. Avoid browser-default H1 margins and font sizes changing the design unintentionally.
+
+The Classes page should have one main H1.
+
+The four individual class-section headings must remain H2 elements.
+
+### 4. Preserve Existing Classes Hero Links
+
+The four links already function correctly and should remain unchanged.
+
+Preserve:
+
+- Kids.
+- First Class.
+- Second Class.
+- Third Class.
+- Organic circular blob shapes.
+- Dark Blue backgrounds.
+- Cream text and icons.
+- Font Awesome icon support.
+- Single-character Leckerli One icons.
+- Individual blob rotations.
+- Hover scaling.
+- Shape-only 90-degree rotation.
+- Smooth anchor navigation.
+- Sticky Header scroll offsets.
+- WordPress editing functionality.
+
+#### Entrance Animation
+
+Preserve:
+
+- 0.5-second animation per link.
+- 0.25-second stagger between links.
+- Fade and falling movement.
+- Animation on initial page presentation.
+
+The natural-height Hero must not interfere with these effects.
+
+### 5. Preserve Water Background and Turtle
+
+Keep the existing shared animated water background.
+
+Preserve:
+
+- Light Blue background colour.
+- Existing water-wave animations.
+- Existing animation speeds.
+- Existing wave movement.
+- Shared SwimmingTurtle component.
+- WordPress-managed `turtle.png`.
+- Turtle opacity of 0.6.
+- Direction-facing rotation.
+- ±2-degree swimming wiggle.
+- Random entry and exit positions.
+- Opposite-half trajectories.
+
+Ensure the turtle calculates its swimming route using the Classes Hero's new natural dimensions rather than assuming a full viewport height.
+
+**The turtle swimming duration for Classes will be updated separately in Bug-002.**
+
+Do not change its speed as part of Bug-001.
+
+### 6. Preserve Classes Sections
+
+Do not change the four sections beneath the Hero.
+
+They should remain:
+
+1. Kids — Green Group.
+2. First Class — Light Blue Group.
+3. Second Class — Cream Group.
+4. Third Class — Grey Group.
+
+Each section must retain:
+
+- Its existing H2 heading.
+- Its existing anchor ID.
+- Its existing background colour.
+- Its existing viewport-height layout.
+
+Only the Classes Hero should lose its 100vh minimum height.
+
+### 7. Preserve Shared Components
+
+The Classes Hero shares functionality with other sections.
+
+Requirements:
+
+1. Preserve the Homepage Hero's full-height layout.
+2. Preserve the Homepage Hero's existing wave.
+3. Preserve the Homepage Page Links section.
+4. Keep the shared water background reusable.
+5. Keep the SwimmingTurtle component reusable.
+6. Apply Classes-specific changes through scoped SCSS or existing component configuration.
+7. Avoid unrelated changes to shared components.
+
+### Acceptance Criteria
+
+- Classes Hero has the Homepage Hero's bottom wave.
+- Wave connects seamlessly with the blue background.
+- Wave transitions cleanly into the Green Kids section.
+- No gaps or straight edges appear.
+- Hero no longer has a fixed or minimum 100vh height.
+- Height adjusts naturally to its content.
+- Comfortable padding exists above and below the links.
+- All links fit on mobile.
+- クラス renders as H1.
+- Existing typography and colours remain unchanged.
+- Four individual section headings remain H2.
+- Link entrance and hover animations continue working.
+- Smooth anchor navigation remains functional.
+- Turtle animation works inside the shorter Hero.
+- Homepage Hero remains unchanged.
+- No horizontal overflow.
+
+---
+
+## Bug-002 — Reduce Turtle Swimming Speed in Page Links and Classes Hero
+
+**Status:** complete
+
+**Notes:** The shared turtle movement accepts duration bounds. Page Links and Classes use 10–14 seconds at 0.6 opacity, while the Homepage Hero retains its 5–7 seconds and existing 0.4 opacity. Focused tests and live crossings verified both directions, the original wiggle, a clean post-exit delay, offscreen cleanup, and reduced motion.
+
+### Issue
+
+The swimming turtle animation currently takes approximately 5–7 seconds to cross each water-background section.
+
+This looks appropriate on the Homepage Hero.
+
+However, the turtle appears to move too quickly across the Page Links section and Classes Hero.
+
+I want the turtle to travel at **half its current speed** in these two sections.
+
+The Homepage Hero turtle must remain unchanged.
+
+### 1. Apply Different Swimming Durations by Section
+
+Use the following durations:
+
+| Section | Swimming duration |
+|---|---|
+| Homepage Hero | 5–7 seconds |
+| Page Links | 10–14 seconds |
+| Classes Hero | 10–14 seconds |
+
+The slower duration should be randomly selected for every crossing.
+
+#### Homepage Hero
+
+Preserve the existing behaviour:
+
+```js
+minDuration = 5000;
+maxDuration = 7000;
+```
+
+#### Page Links and Classes Hero
+
+Use:
+
+```js
+minDuration = 10000;
+maxDuration = 14000;
+```
+
+These values represent milliseconds.
+
+Doubling the crossing duration for an otherwise identical trajectory produces half the previous travel speed.
+
+### 2. Use Shared Configurable Animation
+
+The existing SwimmingTurtle component is reused across multiple sections.
+
+Do not create a separate turtle component for Page Links or Classes.
+
+Instead, make the swimming duration configurable.
+
+For example:
+
+```jsx
+<SwimmingTurtle
+  image={turtleImage}
+  minDuration={5000}
+  maxDuration={7000}
+/>
+```
+
+For Page Links and Classes:
+
+```jsx
+<SwimmingTurtle
+  image={turtleImage}
+  minDuration={10000}
+  maxDuration={14000}
+/>
+```
+
+These examples illustrate the intended component interface.
+
+Follow the project's existing component conventions rather than introducing duplicate functionality.
+
+Requirements:
+
+1. Keep the existing shared SwimmingTurtle component.
+2. Accept configurable duration boundaries.
+3. Default to the existing 5–7-second duration.
+4. Override the duration in Page Links and Classes Hero.
+5. Generate a random duration within the configured range for each pass.
+6. Keep the selected duration constant throughout that pass.
+7. Do not unnecessarily restart an active crossing when unrelated React state changes.
+8. Preserve the original component's animation lifecycle.
+
+Use a simple configuration approach rather than separate conditional animation implementations.
+
+### 3. Preserve Straight-Line Movement
+
+The turtle should still swim from one edge of the section to the opposite edge.
+
+Requirements:
+
+- Preserve randomized travel direction.
+- Preserve randomized entry and exit positions.
+- Preserve entry and exit in opposite vertical halves.
+- Preserve straight-line trajectories.
+- Preserve complete off-screen entry and exit.
+- Preserve responsive route calculations.
+
+The turtle should not swim a shorter distance to compensate for its longer duration.
+
+Only the time taken to complete the journey should change.
+
+### 4. Preserve Turtle Orientation and Wiggle
+
+The swimming effect established in Epic-008 Bug-005 should remain unchanged.
+
+Preserve:
+
+- Turtle opacity: 0.6.
+- Top of the PNG facing the direction of travel.
+- Correct heading calculations for diagonal trajectories.
+- Continuous ±2-degree wiggle.
+- Existing wiggle animation duration and easing.
+- Original image dimensions and proportions.
+
+The turtle should continue wiggling at its current rate throughout the longer crossing.
+
+**Do not slow the wiggle animation. Only slow the turtle's movement across the background.**
+
+Keep translation, direction-facing rotation and wiggle transforms independent.
+
+### 5. Preserve Appearance Intervals
+
+The interval between appearances must remain:
+
+**5–15 seconds after the previous turtle has completely disappeared.**
+
+Do not change this timing.
+
+#### Example: Page Links
+
+1. Turtle starts swimming.
+2. It takes 12 seconds to cross the section.
+3. It disappears fully beyond the opposite edge.
+4. A random waiting period of 8 seconds begins.
+5. The next turtle starts swimming.
+
+Total time between these two swimming starts: 20 seconds.
+
+Requirements:
+
+1. Do not begin the waiting interval until the turtle has fully exited.
+2. Preserve the random 5–15-second waiting period.
+3. Avoid overlapping turtles within the same section.
+4. Do not start additional turtles because the swimming animation is taking longer.
+5. Maintain correct timer cleanup.
+6. Ensure each section continues managing its own appearance schedule.
+
+The only timing being changed is the crossing duration.
+
+### 6. Maintain Independent Section Behaviour
+
+Each water section should continue managing its own turtle animation schedule.
+
+Requirements:
+
+1. Homepage Hero uses the existing 5–7-second duration.
+2. Page Links uses 10–14 seconds.
+3. Classes Hero uses 10–14 seconds.
+4. Each section generates its own random trajectories.
+5. Each section generates its own random appearance delays.
+6. Off-screen sections should not perform unnecessary animation work.
+7. Becoming visible again should safely restart the animation cycle.
+8. Do not allow duplicate timers.
+9. Keep all sections using the same WordPress turtle image reference.
+
+Do not make all turtles move at the same speed through a global SCSS change.
+
+### 7. Preserve Existing Visual Design
+
+Do not change:
+
+- Water background colours.
+- Water-wave animations.
+- Turtle image.
+- Turtle size.
+- Turtle opacity.
+- Foreground content.
+- Hero logo.
+- Page Links heading.
+- Page Links circular buttons.
+- Classes Hero title or links.
+- Existing wave-shaped boundaries.
+
+The change should affect movement speed only.
+
+### 8. Performance and Accessibility
+
+Requirements:
+
+1. Preserve `prefers-reduced-motion`.
+2. Do not animate turtles for reduced-motion users.
+3. Preserve `pointer-events: none`.
+4. Keep the turtle decorative.
+5. Ensure animation timers are cleaned up correctly.
+6. Avoid React state updates on every animation frame.
+7. Use transform-based movement where practical.
+8. Prevent horizontal overflow.
+9. Preserve the missing-image fallback.
+
+### Acceptance Criteria
+
+- Homepage Hero turtle still takes 5–7 seconds per crossing.
+- Page Links turtle takes 10–14 seconds per crossing.
+- Classes Hero turtle takes 10–14 seconds per crossing.
+- Slower turtles travel the same complete trajectories.
+- Durations remain randomized within their respective ranges.
+- Wiggle animation remains unchanged.
+- Turtle orientation remains correct.
+- Opacity remains 0.6.
+- Appearance delays remain 5–15 seconds after disappearance.
+- No overlapping turtles occur.
+- All three sections use the existing shared component.
+- No changes to water backgrounds or foreground content.
+- Reduced-motion support remains intact.
+- No horizontal overflow.
+
+---
+
+# Epic-009 Bug Implementation Instructions
+
+## Preparation
+
+Before implementing either bug:
+
+1. Read and follow `AGENTS.md`.
+2. Read Epic-009 Feature-006.
+3. Review existing Classes Hero, Homepage Hero and Page Links implementations.
+4. Inspect the reusable water background and SwimmingTurtle components.
+5. Review the existing wave, layout and animation utilities.
+6. Preserve existing WordPress content and block identities.
+
+## Implementation Order
+
+### Bug-001
+
+Correct the Classes Hero's:
+
+- Bottom wave.
+- Content-based height.
+- Vertical padding.
+- H1 heading semantics.
+
+Preserve the current turtle swimming duration during this step.
+
+### Bug-002
+
+Introduce configurable SwimmingTurtle movement durations.
+
+Use:
+
+- 5–7 seconds in Homepage Hero.
+- 10–14 seconds in Page Links.
+- 10–14 seconds in Classes Hero.
+
+Preserve all other turtle timing and behaviour.
+
+## WordPress Integration
+
+No new Gutenberg blocks, settings or manual WordPress changes are required.
+
+Preserve the existing Classes page and its saved content.
+
+Do not recreate the page or require users to reconfigure its links.
+
+## Testing
+
+Test at:
+
+- 320px.
+- 375px.
+- 430px.
+- 768px.
+- 1024px.
+- 1440px.
+
+### Bug-001
+
+Verify:
+
+1. Correct bottom wave appearance.
+2. Correct transition into Kids.
+3. Natural Hero height.
+4. Appropriate top and bottom padding.
+5. Responsive four/two/one link layout.
+6. H1 title.
+7. H2 section headings.
+8. Functional anchor navigation.
+9. Existing animations preserved.
+10. Homepage Hero unchanged.
+
+### Bug-002
+
+Verify:
+
+1. Homepage turtle crosses in 5–7 seconds.
+2. Page Links turtle crosses in 10–14 seconds.
+3. Classes Hero turtle crosses in 10–14 seconds.
+4. Movement remains smooth.
+5. Wiggle speed is unchanged.
+6. Orientation is correct in both directions.
+7. Waiting intervals begin after disappearance.
+8. No overlapping animations or duplicate timers.
+9. Off-screen cleanup remains functional.
+
+Use focused tests for duration selection and scheduling where appropriate.
+
+Run relevant frontend build checks.
+
+Do not claim browser verification unless it was actually performed.
+
+## Tracking
+
+Update:
+
+`src/vibe/epics/epic-009/bugs.txt`
+
+Follow the existing per-bug status and rollback conventions in `AGENTS.md`.
+
+Only mark each bug complete when its acceptance criteria are satisfied.
+
+## Completion Report
+
+For each bug, report:
+
+1. Root cause or relevant implementation finding.
+2. Changes implemented.
+3. Files modified.
+4. Tests performed.
+5. Responsive verification.
+6. Any remaining limitations.
+
+**Scope:** Implement Epic-009 Bugs 001 and 002 only. Do not begin Epic-010 or unrelated work.
+
+
+# Epic-009 — Bug-003
+
+## Bug-003 — Vertical Turtle Swimming and Distance-Based Speed
+
+**Status:** complete
+
+**Notes:** The shared turtle now selects from four straight routes and calculates duration from the route length and the section's horizontal speed reference. Unrotated sprite dimensions leave enough clearance for the full heading and wiggle at every edge. Nine focused tests, the production build, and live desktop/tablet/mobile checks passed, including both vertical directions, resizing before the next pass, post-exit scheduling, and reduced motion.
+
+### Issue
+
+The swimming turtle currently travels horizontally, moving from left to right or right to left, with random entry and exit positions in opposite halves of the section.
+
+I want to extend this so the turtle can also swim vertically:
+
+- North to South (top to bottom).
+- South to North (bottom to top).
+
+The same positioning rules should apply, except vertical movement should use opposite horizontal halves.
+
+I also want to improve how swimming speed is calculated.
+
+The current horizontal swimming speed looks correct, but applying the same animation duration to a shorter vertical journey would make the turtle travel too quickly.
+
+Instead, calculate the swimming duration based on the actual distance travelled so the turtle moves at a consistent speed regardless of direction.
+
+---
+
+## 1. Support Four Swimming Directions
+
+The turtle should randomly select one of four directions for each swimming pass:
+
+1. West to East — left to right.
+2. East to West — right to left.
+3. North to South — top to bottom.
+4. South to North — bottom to top.
+
+Requirements:
+
+- Preserve both existing horizontal directions.
+- Introduce both vertical directions.
+- Randomly select the direction for each new swimming pass.
+- Allow all four directions to occur naturally over time.
+- Do not use a predictable repeating direction sequence.
+- Preserve straight-line travel.
+- Do not introduce curved or zigzag paths.
+
+The movement should continue to feel random and natural.
+
+---
+
+## 2. Preserve Horizontal Entry and Exit Rules
+
+For horizontal movement, preserve the existing system.
+
+### Left to Right
+
+The turtle enters from the left edge and exits through the right edge.
+
+If it enters within the top 50% of the section, it must exit within the bottom 50%.
+
+If it enters within the bottom 50%, it must exit within the top 50%.
+
+### Right to Left
+
+Apply the same rules in reverse.
+
+The turtle enters from the right and exits through the left.
+
+Its entry and exit must still use opposite vertical halves.
+
+Do not modify the existing successful horizontal trajectory behaviour.
+
+---
+
+## 3. Add Vertical Entry and Exit Rules
+
+When swimming vertically, apply the same concept using the horizontal position.
+
+### North to South
+
+The turtle enters from above the section and exits below it.
+
+If it enters in the left 50% of the section, it must exit in the right 50%.
+
+If it enters in the right 50%, it must exit in the left 50%.
+
+### South to North
+
+The turtle enters from below the section and exits above it.
+
+If it enters in the left 50%, it must exit in the right 50%.
+
+If it enters in the right 50%, it must exit in the left 50%.
+
+### Requirements
+
+1. Randomly select the entry position within one horizontal half.
+2. Randomly select the exit position within the opposite horizontal half.
+3. Preserve meaningful movement across the section.
+4. Use the actual section width to calculate these positions.
+5. Keep the movement in a straight line.
+6. Support different viewport and section dimensions.
+7. Avoid trajectories that only briefly enter the visible section.
+
+The selection logic should be reusable for every direction rather than implementing four completely separate animation systems.
+
+---
+
+## 4. Replace Fixed Swimming Duration with Distance-Based Speed
+
+### Objective
+
+The turtle currently swims at an appropriate speed when moving horizontally.
+
+I want this same perceived swimming speed to apply when it moves vertically.
+
+Instead of applying the same duration to every journey, calculate the animation duration based on the journey's actual distance.
+
+### Existing Horizontal Timing
+
+Preserve the horizontal speed established in Epic-009 Bug-002.
+
+**Homepage Hero**
+
+Existing horizontal journey duration:
+
+5–7 seconds.
+
+**Page Links and Classes Hero**
+
+Existing horizontal journey duration:
+
+10–14 seconds.
+
+These should remain the baseline for calculating swimming speed.
+
+### 4.1 Calculate the Reference Swimming Speed
+
+For each swimming pass, calculate a suitable baseline speed in pixels per second.
+
+Use the existing horizontal movement as the reference.
+
+The reference should account for the current section's dimensions and the distance of a representative horizontal crossing.
+
+For example:
+
+```js
+const referenceDistance = Math.hypot(
+  referenceEndX - referenceStartX,
+  referenceEndY - referenceStartY
+);
+
+const referenceDuration = randomBetween(
+  minDuration,
+  maxDuration
+);
+
+const speed = referenceDistance / referenceDuration;
+```
+
+For Page Links and Classes Hero, `minDuration` and `maxDuration` are 10 and 14 seconds.
+
+For Homepage Hero, they are 5 and 7 seconds.
+
+**Important:** Use a representative horizontal crossing based on the actual section geometry, including the existing off-screen travel requirements.
+
+Do not calculate speed from a completely unrelated fixed viewport dimension.
+
+### 4.2 Calculate the Actual Journey Distance
+
+Once a random trajectory has been selected, calculate its actual length.
+
+Use the Euclidean distance formula:
+
+```js
+const deltaX = endX - startX;
+const deltaY = endY - startY;
+
+const distance = Math.hypot(deltaX, deltaY);
+```
+
+This works for:
+
+- Horizontal movement.
+- Vertical movement.
+- Diagonal movement.
+
+Both the starting and ending points must account for the turtle being completely outside the section boundaries.
+
+### 4.3 Calculate the Swimming Duration
+
+Use:
+
+```js
+const duration = distance / speed;
+```
+
+This produces the time required to cover the selected distance at the desired swimming speed.
+
+Convert to milliseconds when passing the result to CSS or the Web Animations API.
+
+### Example
+
+Suppose the reference horizontal movement is:
+
+- Distance: 1,200px.
+- Duration: 12 seconds.
+
+Swimming speed:
+
+**100 pixels per second.**
+
+Now suppose a new vertical trajectory is only 600px long.
+
+<box gap={2}>
+  <grid columns={2} gap={2}>
+    <grid-item>
+      <box border radius="lg" padding={3} gap={1}>
+        <text color="secondary" weight="medium" size="xs">Horizontal crossing</text>
+        <title size="xl" color="default" tabularNums>12s</title>
+        <text color="secondary" size="xs">1,200px at 100px/s</text>
+      </box>
+    </grid-item>
+    <grid-item>
+      <box border radius="lg" padding={3} gap={1}>
+        <text color="secondary" weight="medium" size="xs">Vertical crossing</text>
+        <title size="xl" color="default" tabularNums>6s</title>
+        <text color="secondary" size="xs">600px at 100px/s</text>
+      </box>
+    </grid-item>
+  </grid>
+</box>
+
+Both turtles now move at the same speed.
+
+### Requirements
+
+1. Calculate the actual trajectory distance.
+2. Derive a swimming speed from the existing horizontal timing.
+3. Calculate journey duration from distance and speed.
+4. Preserve the current perceived horizontal swimming speed.
+5. Use the same speed calculation for all four directions.
+6. Do not force vertical journeys to take 10–14 seconds when they are significantly shorter.
+7. Do not force vertical journeys to take 5–7 seconds on the Homepage Hero when their distance requires less time.
+8. Do not arbitrarily clamp calculated durations to the old horizontal duration ranges.
+9. Maintain a constant movement speed throughout each crossing.
+10. Calculate a new speed and duration for each pass.
+
+The objective is consistent travel speed, not identical animation duration.
+
+---
+
+## 5. Preserve Different Speed Settings for Each Section
+
+Continue using the shared SwimmingTurtle component.
+
+Preserve the established differences:
+
+| Section | Reference horizontal duration |
+|---|---|
+| Homepage Hero | 5–7 seconds |
+| Page Links | 10–14 seconds |
+| Classes Hero | 10–14 seconds |
+
+The Homepage Hero turtle should continue swimming faster than the turtles in Page Links and Classes Hero.
+
+Requirements:
+
+1. Preserve the existing configurable duration properties.
+2. Use them to calculate baseline swimming speed.
+3. Calculate actual duration using each journey's distance.
+4. Preserve the existing relative speed difference between sections.
+5. Do not globally change animation timing.
+
+A horizontal crossing should continue looking approximately as it does now.
+
+A vertical crossing should move at a matching speed, taking less or more time depending on distance.
+
+---
+
+## 6. Update Turtle Orientation for All Directions
+
+The turtle must continue facing the direction it travels.
+
+The top of `turtle.png` represents the turtle's forward direction.
+
+Calculate its heading from the actual trajectory.
+
+Assuming the original PNG points upwards:
+
+```js
+const deltaX = endX - startX;
+const deltaY = endY - startY;
+
+const heading =
+  (Math.atan2(deltaY, deltaX) * 180) / Math.PI + 90;
+```
+
+Expected behaviour:
+
+| Travel direction | Turtle faces |
+|---|---|
+| Left to right | Right |
+| Right to left | Left |
+| Top to bottom | Down |
+| Bottom to top | Up |
+
+Diagonal trajectories must also produce the appropriate heading.
+
+Requirements:
+
+1. Calculate the heading before each pass begins.
+2. Keep the turtle facing along its trajectory.
+3. Preserve correct rotation for all four directions.
+4. Do not abruptly change orientation mid-animation.
+5. Preserve the existing heading calculation where possible.
+
+---
+
+## 7. Preserve Swimming Wiggle
+
+The turtle currently wiggles by rotating back and forth:
+
+**−2° to +2°**
+
+This must remain unchanged.
+
+Requirements:
+
+1. Preserve the existing wiggle duration.
+2. Preserve the existing easing.
+3. Keep the wiggle centred around the calculated travel heading.
+4. Continue the wiggle throughout the entire crossing.
+5. Do not change wiggle speed based on swimming duration.
+6. Keep translation, heading rotation and wiggle rotation independent.
+
+The turtle should still look as though it is gently swimming rather than rigidly sliding across the background.
+
+---
+
+## 8. Ensure Complete Off-Screen Entry and Exit
+
+This is particularly important for vertical movement.
+
+Requirements:
+
+1. For North-to-South movement, begin with the entire turtle above the section.
+2. Finish with the entire turtle below the section.
+3. For South-to-North movement, begin entirely below the section.
+4. Finish entirely above the section.
+5. Preserve the equivalent rules for horizontal movement.
+6. Account for the actual turtle dimensions.
+7. Account for its rotated footprint when calculating safe off-screen positions.
+8. Do not make the turtle disappear while part of it remains visible.
+9. Do not allow teleporting or abrupt resets within the section.
+10. Prevent the movement from creating horizontal or vertical page overflow.
+
+The turtle should enter, swim across and completely disappear before its position resets.
+
+---
+
+## 9. Preserve Appearance Intervals
+
+Do not change the waiting time between turtles.
+
+The next turtle should appear:
+
+**5–15 seconds after the previous turtle has completely disappeared.**
+
+This interval must be independent of the actual swimming duration.
+
+### Example
+
+1. Turtle begins a vertical crossing.
+2. The calculated journey duration is 6 seconds.
+3. Turtle completely disappears.
+4. A random waiting period of 9 seconds begins.
+5. The next turtle appears.
+
+Requirements:
+
+- Preserve randomized waiting periods.
+- Start the wait only after the swimming animation has completed.
+- Prevent overlapping turtles within the same section.
+- Avoid duplicate timers.
+- Clean up pending timeouts correctly.
+- Preserve section visibility handling.
+
+Do not calculate the next appearance from the beginning of the previous swimming pass.
+
+---
+
+## 10. Responsive Dimensions
+
+All trajectory calculations must account for the actual size of the containing water section.
+
+Requirements:
+
+1. Measure the width and height of the current water background.
+2. Do not assume every section has the same dimensions.
+3. Support the full-height Homepage Hero.
+4. Support the naturally sized Page Links section.
+5. Support the naturally sized Classes Hero.
+6. Calculate random positions using the current dimensions.
+7. Calculate reference speed using the current dimensions.
+8. Recalculate future passes following viewport or container resizing.
+9. Avoid resetting an active pass unnecessarily during ordinary React rendering.
+
+The Classes Hero no longer uses a fixed 100vh height, so its actual dimensions must be measured.
+
+---
+
+## 11. Preserve Existing Visual Behaviour
+
+Do not modify:
+
+- Turtle PNG.
+- Turtle opacity of 0.6.
+- Turtle size.
+- Turtle wiggle amplitude.
+- Water background colours.
+- Water animations.
+- Section wave boundaries.
+- Homepage Hero logo.
+- Homepage Hero slogan.
+- Page Links title and buttons.
+- Classes Hero title and links.
+- Existing hover and entrance animations.
+
+These changes should affect only turtle route selection and distance-based travel timing.
+
+---
+
+## 12. Accessibility and Performance
+
+Requirements:
+
+1. Preserve `prefers-reduced-motion`.
+2. Do not animate turtles for reduced-motion users.
+3. Preserve decorative image semantics.
+4. Preserve `pointer-events: none`.
+5. Avoid animation work while sections are off-screen.
+6. Clean up timers and animations on unmount.
+7. Avoid unnecessary React re-renders during movement.
+8. Use transform-based animations.
+9. Prevent horizontal overflow.
+10. Preserve the existing missing-image fallback.
+
+---
+
+# Acceptance Criteria
+
+- Turtle can swim left to right.
+- Turtle can swim right to left.
+- Turtle can swim top to bottom.
+- Turtle can swim bottom to top.
+- All four directions are randomly selected.
+- Horizontal crossings use opposite vertical halves.
+- Vertical crossings use opposite horizontal halves.
+- All trajectories remain straight lines.
+- Actual travel distance is calculated correctly.
+- Swimming duration is derived from distance and speed.
+- Vertical movement has the same perceived speed as horizontal movement within a section.
+- Homepage Hero retains its existing faster reference speed.
+- Page Links retains its slower reference speed.
+- Classes Hero retains its slower reference speed.
+- Turtle faces its direction of travel.
+- Continuous ±2° wiggle remains unchanged.
+- Turtle starts and finishes completely outside the section.
+- Appearance delays remain 5–15 seconds after disappearance.
+- No overlapping turtles.
+- All sections use the existing shared SwimmingTurtle component.
+- Responsive sizing works correctly.
+- Reduced-motion support remains intact.
+- No horizontal overflow or visual regressions.
+
+---
+
+# Implementation Instructions
+
+1. Read and follow `AGENTS.md`.
+2. Read Epic-009 Bug-002 and the current SwimmingTurtle implementation.
+3. Inspect the existing trajectory-selection logic.
+4. Add North-to-South and South-to-North directions.
+5. Implement opposite-half entry and exit selection for vertical movement.
+6. Inspect existing horizontal swimming distances and durations.
+7. Calculate a reference swimming speed from the established horizontal timing.
+8. Calculate the actual length of each selected trajectory.
+9. Derive each crossing's duration using distance divided by speed.
+10. Preserve the existing configurable speed difference between water sections.
+11. Update heading calculations to handle all four directions.
+12. Preserve the existing swimming wiggle.
+13. Ensure complete off-screen entry and exit for all directions.
+14. Preserve the existing appearance-delay scheduling.
+15. Test trajectory generation and distance calculations.
+16. Test all four swimming directions.
+17. Verify on desktop, tablet and mobile.
+18. Run relevant focused regression tests and frontend build checks.
+19. Update Bug-003 in `src/vibe/epics/epic-009/bugs.txt`.
+
+## Testing Priorities
+
+Focus on:
+
+- Opposite-half positioning for vertical crossings.
+- Accurate distance-based duration calculation.
+- Matching vertical and horizontal speeds.
+- Preserving faster Homepage Hero swimming.
+- Correct orientation in all four directions.
+- Maintaining the five-to-fifteen-second delay after disappearance.
+- Avoiding abrupt position resets.
+- Correct behaviour after container resizing.
+
+**No manual WordPress changes are required.**
+
+**Scope:** Implement Epic-009 Bug-003 only. Do not modify unrelated components or begin another Epic.

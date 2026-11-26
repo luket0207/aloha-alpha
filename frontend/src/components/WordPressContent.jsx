@@ -76,6 +76,7 @@ function renderWordPressNode(node, key, options = {}) {
   if (node.matches('.wp-block-aloha-page-links')) {
     return (
       <PageLinks
+        classesHero={node.dataset.displayMode === 'classes-hero'}
         key={key}
         links={pageLinksDataFromElement(node)}
         sharedBackground={options.pageLinksContinuity}
@@ -124,7 +125,11 @@ function renderWordPressNode(node, key, options = {}) {
     renderWordPressNode(child, `${key}-${index}`, options)
   ));
 
-  return createElement(node.tagName.toLowerCase(), elementProps(node, key), ...children);
+  const props = elementProps(node, key);
+  if (options.classesPage && node.matches('.wp-block-group.aloha-class-placeholder[id]')) {
+    props.tabIndex = -1;
+  }
+  return createElement(node.tagName.toLowerCase(), props, ...children);
 }
 
 function nextElementIndex(nodes, startIndex) {
@@ -136,7 +141,7 @@ function nextElementIndex(nodes, startIndex) {
   return -1;
 }
 
-function parseWordPressContent(html) {
+function parseWordPressContent(html, classesPage) {
   const parsed = new DOMParser().parseFromString(html, 'text/html');
   const nodes = Array.from(parsed.body.childNodes);
   const content = [];
@@ -148,7 +153,7 @@ function parseWordPressContent(html) {
       ? nextElementIndex(nodes, index + 1)
       : -1;
     const testimonialsIndex = pageLinksIndex >= 0
-      && nodes[pageLinksIndex].matches('.wp-block-aloha-page-links')
+      && nodes[pageLinksIndex].matches('.wp-block-aloha-page-links:not([data-display-mode="classes-hero"])')
       ? nextElementIndex(nodes, pageLinksIndex + 1)
       : -1;
 
@@ -160,7 +165,7 @@ function parseWordPressContent(html) {
         renderWordPressNode(
           groupNode,
           `wordpress-node-${index + groupIndex}`,
-          { pageLinksContinuity: true },
+          { classesPage, pageLinksContinuity: true },
         )
       ));
       content.push(
@@ -172,13 +177,13 @@ function parseWordPressContent(html) {
       continue;
     }
 
-    content.push(renderWordPressNode(node, `wordpress-node-${index}`));
+    content.push(renderWordPressNode(node, `wordpress-node-${index}`, { classesPage }));
   }
 
   return content;
 }
 
-export default function WordPressContent({ className, html }) {
-  const content = useMemo(() => parseWordPressContent(html), [html]);
+export default function WordPressContent({ className, classesPage = false, html }) {
+  const content = useMemo(() => parseWordPressContent(html, classesPage), [classesPage, html]);
   return <article className={className}>{content}</article>;
 }

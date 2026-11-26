@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getWordPressRestUrl } from '../wordpressApi.js';
+import { footerColourClass } from './footer.js';
 import Wave from './Wave.jsx';
 import './Footer.scss';
 
@@ -24,12 +25,12 @@ const FOOTER_WAVE = {
 };
 
 export default function Footer() {
-  const [html, setHtml] = useState('');
+  const [section, setSection] = useState(null);
   const [status, setStatus] = useState('loading');
 
   useEffect(() => {
     const controller = new AbortController();
-    setHtml('');
+    setSection(null);
     setStatus('loading');
 
     fetch(getWordPressRestUrl('aloha/v1/sections/footer'), {
@@ -41,7 +42,12 @@ export default function Footer() {
       })
       .then((section) => {
         const currentYear = String(new Date().getFullYear());
-        setHtml(section.html.replaceAll(CURRENT_YEAR_PLACEHOLDER, currentYear));
+        const document = new DOMParser().parseFromString(section.html, 'text/html');
+        const wrapper = document.querySelector('.wp-block-group.aloha-footer');
+        setSection({
+          colour: wrapper?.dataset.alohaFooterColour,
+          html: section.html.replaceAll(CURRENT_YEAR_PLACEHOLDER, currentYear),
+        });
         setStatus('ready');
       })
       .catch((error) => {
@@ -55,14 +61,14 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="site-footer aloha-footer theme-light-blue">
+    <footer className={`site-footer aloha-footer ${footerColourClass(section?.colour)}`}>
       <Wave className="aloha-footer__wave" {...FOOTER_WAVE} />
       {status === 'loading' && <p>Loading footer…</p>}
       {status === 'error' && <p role="alert">Unable to load footer.</p>}
       {status === 'ready' && (
         <div
           className="aloha-footer__content"
-          dangerouslySetInnerHTML={{ __html: html }}
+          dangerouslySetInnerHTML={{ __html: section.html }}
         />
       )}
     </footer>

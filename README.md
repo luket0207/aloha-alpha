@@ -22,6 +22,8 @@ npm run build
 
 Visit http://localhost:8888/wp-admin (local-only login: `admin` / `password`).
 
+`npm run wp:start` (or `npx wp-env start`) starts the development site on port 8888. The repository has no workflow that uses the legacy WordPress test site on port 8889, so normal startup leaves that site disabled. Its existing database volume is retained.
+
 Create and publish pages called **Home** (slug `home`) and **About** (slug `about`). Under **Settings → Reading**, set the homepage to a static page: Home. Under **Settings → Permalinks**, use **Post name**. Visit http://localhost:8888/ to see the React site.
 
 During development, keep WordPress running and start a second terminal:

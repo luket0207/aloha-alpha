@@ -1,0 +1,1530 @@
+# Epic-009 — Loading Screens, Footer Themes and Classes Page
+
+## Overview
+
+This Epic contains six features:
+
+- Feature-001 — Remove the wp-env startup deprecation warning.
+- Feature-002 — Add selectable Footer colour schemes.
+- Feature-003 — Add a full-screen navigation loading overlay.
+- Feature-004 — Add an in-page content loading screen.
+- Feature-005 — Smooth Contact Form preset hover transitions.
+- Feature-006 — Build the initial Classes page.
+
+Continue using:
+
+- WordPress as the backend and content management system.
+- Gutenberg for editable page content and settings.
+- React for public-facing components.
+- SCSS for styling and animations.
+- The existing AlohaAlpha Core plugin.
+- The existing design system and shared components.
+
+Read and follow `AGENTS.md`.
+
+Preserve functionality established in Epics 001–008.
+
+---
+
+# Feature-001 — Remove wp-env Startup Deprecation Warning
+
+**Status:** complete
+
+**Notes:** `npm run wp:start` now starts only the development site and runs without the dual-environment warning on wp-env 12.1.0. The legacy site contained only sample content and has no repository workflow. Verified the original URL, Admin login screen, active theme and plugins, existing pages/patterns/media, and retention of both database volumes.
+
+## Objective
+
+Remove the deprecation warning displayed when starting the local WordPress environment.
+
+The warning states that starting both development and test environments by default is deprecated and recommends separate configurations.
+
+I want the local environment to continue operating as it does now, without displaying this warning.
+
+## 1. Investigate Current Configuration
+
+Inspect:
+
+- `.wp-env.json`
+- `.wp-env.override.json`, where present.
+- `package.json` scripts.
+- The installed `@wordpress/env` version.
+- Existing development and test environment configuration.
+- Current startup commands.
+- WordPress plugin and theme mappings.
+- Existing local port assignments.
+
+Determine whether the project currently starts both development and test environments and whether either is required by the existing workflow.
+
+Do not assume the test environment is unused.
+
+## 2. Resolve the Warning Safely
+
+The warning suggests:
+
+```json
+{
+  "testsEnvironment": false
+}
+```
+
+However, this option is itself deprecated, and setting it to false can disable the legacy test environment.
+
+Requirements:
+
+1. Use the simplest supported approach for the installed wp-env version.
+2. Preserve the existing development WordPress instance.
+3. Preserve its existing URL and port.
+4. Preserve the existing database.
+5. Preserve plugins and theme mappings.
+6. Preserve any test environment that is actively required.
+7. Do not accidentally replace or recreate existing test data.
+8. Remove the deprecation warning from the normal startup workflow.
+9. Do not merely suppress or filter the warning text.
+
+If the test environment is not needed, explicitly disabling it may be appropriate.
+
+If both environments must remain available, migrate the startup workflow to the supported separate-configuration approach.
+
+Use a separate test configuration and an appropriate combined startup script where necessary.
+
+If the user's exact existing command cannot retain both environments without the warning, preserve the functionality using a clearly documented replacement command and explain that distinction.
+
+## 3. Preserve Existing Development Environment
+
+Do not:
+
+- Run `wp-env destroy`.
+- Run `wp-env reset`.
+- Run `wp-env clean`.
+- Delete Docker volumes.
+- Remove databases.
+- Reinstall WordPress unnecessarily.
+- Change existing theme or plugin mappings.
+- Upgrade packages without a demonstrated compatibility requirement.
+- Recreate the project configuration from scratch.
+
+Only change the configuration and scripts necessary to resolve the warning safely.
+
+## 4. Verification
+
+Test the normal startup workflow.
+
+Verify:
+
+1. The warning no longer appears.
+2. WordPress starts correctly.
+3. The existing development URL is unchanged.
+4. WordPress Admin is accessible.
+5. AlohaAlpha Core remains active.
+6. The existing theme remains active.
+7. Existing pages and patterns remain available.
+8. Any required test environment remains accessible.
+
+If Docker is unavailable, verify configuration validity and report what remains untested.
+
+## Acceptance Criteria
+
+- The specified deprecation warning is no longer displayed during normal startup.
+- Existing development behaviour is preserved.
+- WordPress data and plugin mappings are preserved.
+- Any required test environment remains usable.
+- Startup commands are documented if changed.
+- No destructive environment operations are performed.
+
+---
+
+# Feature-002 — Selectable Footer Colour Schemes
+
+**Status:** complete
+
+**Notes:** The existing synced Footer pattern exposes Light Blue, Dark Blue, and Green. Verified all schemes and the matching wave at six viewport widths, and confirmed the owner's saved Dark Blue selection through the live Footer REST response.
+
+## Objective
+
+Give the Footer the same colour-selection capability introduced for the Header in Epic-008.
+
+The Footer should have three available colour schemes:
+
+1. Light Blue — current.
+2. Dark Blue.
+3. Green.
+
+I want to select **Dark Blue** as the Footer's active colour scheme now.
+
+## 1. Add Footer Colour Setting
+
+Extend the existing Footer synced WordPress pattern.
+
+Add a setting named:
+
+**Footer Colour**
+
+Options:
+
+- Light Blue
+- Dark Blue
+- Green
+
+Requirements:
+
+1. The selector must be accessible when editing the Footer synced pattern.
+2. Place it in the Block settings sidebar or another clearly identifiable Gutenberg control.
+3. Preserve the existing Footer pattern.
+4. Do not create a separate Footer block unless the current architecture requires it.
+5. Persist the chosen option in WordPress.
+6. Restore the selected value when reopening the editor.
+7. Apply the stored value to the public React Footer.
+8. Keep the setting compatible with existing Footer content.
+
+Suggested values:
+
+```js
+"light-blue"
+"dark-blue"
+"green"
+```
+
+For backwards compatibility, an unset value should use Light Blue.
+
+## 2. Light Blue Scheme
+
+This is the existing Footer appearance.
+
+Use the established Light Blue Group:
+
+- Background: `#93B7BE`
+- Text: `#4E3D42`
+- Highlights: `#D81E5B`
+
+Preserve the existing Footer styling when this option is selected.
+
+Do not unnecessarily change the existing hover effects or text styling.
+
+## 3. Dark Blue Scheme
+
+Use:
+
+**Background: `#1B4672`**
+
+Requirements:
+
+1. Apply Dark Blue to the entire Footer background.
+2. Use an appropriate contrasting foreground from the existing design palette.
+3. Prefer Cream (`#F1FFFA`) for regular text and links.
+4. Ensure footer icons remain legible.
+5. Preserve existing hover effects wherever their colours remain suitable.
+6. Keep any existing decorative waves or transitions visually connected to the new background.
+7. Prevent remnants of the previous Light Blue background from appearing within the Footer.
+
+This is the colour scheme I want to use immediately after implementation.
+
+## 4. Green Scheme
+
+Use the existing Green Group:
+
+- Background: `#066C4C`
+- Text: `#F1FFFA`
+- Highlights: `#E8AA14`
+
+Requirements:
+
+1. Apply the established Green Group colours consistently.
+2. Preserve readable text.
+3. Preserve Footer links and icons.
+4. Keep existing layout and interaction behaviour.
+5. Ensure decorative background elements inherit the correct theme.
+
+Do not create a new alternative Green palette.
+
+## 5. Apply the Theme Consistently
+
+The selected colour should affect all relevant Footer surfaces.
+
+Inspect:
+
+- Main Footer background.
+- Internal Footer containers.
+- Navigation links.
+- Icon colours.
+- Background pseudo-elements.
+- Decorative waves.
+- Hover states.
+- Copyright or secondary text.
+- Mobile Footer layout.
+
+Ensure the selected colour does not leave inconsistent blocks of the previous scheme.
+
+Reuse the existing Header colour-selection architecture where appropriate, without unnecessarily coupling the Header and Footer settings.
+
+Changing the Footer must not alter the Header.
+
+## 6. Activate Dark Blue
+
+After implementing the Gutenberg selector, the selected Footer pattern should be configured to Dark Blue.
+
+Preferred process:
+
+1. Implement the setting.
+2. Stop for WordPress configuration.
+3. I will open the Footer synced pattern.
+4. Select Dark Blue.
+5. Save the pattern.
+6. Confirm the public Footer uses Dark Blue.
+
+Do not silently edit unrelated published Footer content.
+
+## 7. Preserve Footer Functionality
+
+Do not modify:
+
+- Footer links.
+- Existing text content.
+- Footer layout.
+- Existing WordPress pattern identity.
+- Contact information.
+- Mobile responsiveness.
+- Existing navigation destinations.
+
+## Acceptance Criteria
+
+- Footer Colour selector exists.
+- Three colour options are available.
+- Existing content defaults to Light Blue until changed.
+- Dark Blue applies `#1B4672`.
+- Green uses the existing Green Group palette.
+- Foreground colours remain readable.
+- Setting persists after saving and reopening.
+- Header theme remains independent.
+- Footer is set to Dark Blue after the WordPress handover.
+- No layout or functional regressions.
+
+---
+
+# Feature-003 — Full-Screen Navigation Loading Screen
+
+**Status:** complete
+
+**Notes:** Added the initial navigation overlay with a shared three-second minimum and half-second fade. It uses the existing Header request and resolves to the existing error state on failure. The live browser check verified readiness, concurrent requests, layout at six widths, reduced motion, and no repeat overlay on client navigation.
+
+## Objective
+
+Introduce a full-screen loading overlay while the website's navigation is being loaded.
+
+I do not want users to see the navigation gradually appearing or displaying incomplete content.
+
+When the site is initially opened, the loading overlay should conceal the entire website until the navigation is ready.
+
+The overlay should also remain visible for a minimum amount of time to prevent flashing.
+
+## 1. Full-Screen Overlay
+
+The loading screen must cover the entire viewport.
+
+Requirements:
+
+1. Cover the entire website behind it.
+2. Cover the Header, content and Footer.
+3. Use a solid Dark Blue background.
+4. Prevent incomplete website content from being visible.
+5. Keep the overlay above all normal website elements.
+6. Prevent interaction with underlying content while active.
+7. Avoid creating additional page height or scrollbars.
+
+Background:
+
+```scss
+background: #1B4672;
+```
+
+Use the existing Dark Blue token.
+
+The overlay should not depend on the Header's selected colour.
+
+## 2. Loading Content
+
+Display two elements:
+
+1. Shaka SVG.
+2. Japanese loading text.
+
+Vertically and horizontally centre these as a single group.
+
+The Shaka should appear above the text.
+
+Use the Japanese label:
+
+**読み込み中**
+
+Requirements:
+
+- Centre the content group in the viewport.
+- Maintain comfortable spacing between Shaka and text.
+- Use the existing Japanese typography.
+- Keep the text centred.
+- Do not display the website logo.
+- Do not add additional loading messages or progress bars.
+
+## 3. Colours
+
+Use:
+
+- Overlay background: Dark Blue `#1B4672`.
+- Shaka: Light Blue `#93B7BE`.
+- Loading text: Light Blue `#93B7BE`.
+
+The Shaka should inherit its colour through the existing `currentColor` implementation.
+
+Do not modify the original SVG geometry.
+
+Do not add unwanted outlines or strokes.
+
+## 4. Shaka Dimensions
+
+Maximum Shaka width:
+
+**400px**
+
+Requirements:
+
+1. Use the existing reusable Shaka SVG component.
+2. Preserve its aspect ratio.
+3. Scale down responsively on mobile.
+4. Never exceed the available viewport width.
+5. Prevent clipping.
+6. Keep the Shaka centred.
+
+The maximum width is 400px, not a mandatory width on small screens.
+
+## 5. Shaka Animation
+
+Reuse the existing Shaka shake animation.
+
+Preserve its established shake movement:
+
+- Resting orientation: −30°.
+- Shake between approximately −15° and −45°.
+- Four back-and-forth oscillations.
+- Shake duration: 1.5 seconds.
+
+However, change the rest interval for the loading screen.
+
+**Loading-screen pause: 0.5 seconds**
+
+Animation sequence:
+
+1. Shake for 1.5 seconds.
+2. Remain stationary for 0.5 seconds.
+3. Repeat.
+
+The total cycle should be approximately 2 seconds.
+
+Do not globally change the Shaka animation used by other components.
+
+Make the pause duration configurable or use a dedicated animation modifier that reuses the existing shake keyframes.
+
+Respect reduced-motion preferences.
+
+## 6. Loading Completion Condition
+
+The overlay should remain active until the navigation has loaded.
+
+Requirements:
+
+1. Detect when the application's required Header/navigation data has successfully loaded.
+2. Do not dismiss the overlay merely because the React application has mounted.
+3. Ensure the navigation is ready to render before revealing the website.
+4. Include required menu data and other critical Header dependencies in the readiness check.
+5. Avoid treating decorative image completion as a prerequisite unless it is essential to the Header's appearance.
+6. Do not create duplicate navigation data requests.
+7. Avoid race conditions between navigation loading and overlay dismissal.
+
+If navigation loading fails, use the application's established error or fallback behaviour.
+
+Do not leave users trapped behind an indefinite loading overlay.
+
+## 7. Minimum Loading Time
+
+The overlay must remain fully displayed for at least:
+
+**3 seconds**
+
+This minimum begins when the loading screen first appears.
+
+Even if navigation finishes loading immediately, the overlay must remain displayed for the full three seconds.
+
+If navigation takes longer than three seconds, remain visible until it is ready.
+
+The dismissal should begin only when:
+
+- Navigation is ready.
+- At least three seconds have elapsed.
+
+Do not restart the minimum timer unnecessarily.
+
+## 8. Fade-Out Animation
+
+After both completion conditions are met, fade out the overlay.
+
+Duration:
+
+**0.5 seconds**
+
+Requirements:
+
+1. Fade the entire overlay from opacity 1 to 0.
+2. Keep the website fully concealed until the fade begins.
+3. Use a smooth opacity transition.
+4. Do not abruptly remove the overlay.
+5. Remove the overlay from interaction and rendering after fading completes.
+6. Do not leave an invisible element blocking the website.
+7. Prevent double transitions.
+
+Minimum total visible lifetime:
+
+**3.5 seconds**, including the fade.
+
+## 9. Preserve Initial Page Loading
+
+Navigation and page content may load concurrently.
+
+Do not unnecessarily force them to load sequentially.
+
+If both navigation and page content are ready when the overlay finishes, reveal the completed page directly.
+
+If navigation is ready but page content is still loading, allow Feature-004's in-page loading screen to appear behind the fading overlay.
+
+Avoid stacking multiple full minimum-duration delays when the underlying loading operations have already been happening concurrently.
+
+## 10. Accessibility and Performance
+
+Requirements:
+
+- Respect reduced-motion preferences.
+- Reduced-motion users may see a static Shaka, but should still receive an understandable loading state.
+- Provide appropriate loading status semantics.
+- Prevent focus from moving into concealed content.
+- Restore normal interaction after dismissal.
+- Clean up timers.
+- Do not introduce polling when existing loading state can be reused.
+- Do not re-display this initial navigation overlay for ordinary client-side page changes when the navigation is already loaded.
+
+## Acceptance Criteria
+
+- Full-screen Dark Blue loading screen appears during initial navigation loading.
+- No incomplete navigation is exposed.
+- Shaka is Light Blue and no wider than 400px.
+- 読み込み中 appears beneath the Shaka.
+- Shaka shakes for 1.5 seconds and rests for 0.5 seconds.
+- Overlay remains fully visible for at least three seconds.
+- Overlay waits for navigation readiness.
+- Overlay fades out over 0.5 seconds.
+- Minimum total lifetime is 3.5 seconds.
+- Website becomes interactive after dismissal.
+- Loading errors do not permanently block the site.
+- Existing navigation and page content remain functional.
+
+---
+
+# Feature-004 — In-Page Content Loading Screen
+
+**Status:** complete
+
+**Notes:** The in-page Shaka loader shares the navigation loader's timing, starts concurrently on initial load, and keeps the Header visible during client navigation. Verified fast and slow responses, three-second minimum and half-second fade on client navigation, six viewport widths, delayed fragment scrolling, reduced motion, and the existing error state.
+
+## Objective
+
+Add a loading screen for when page content is being loaded.
+
+Unlike the navigation loading overlay, this loading screen should form part of the normal page layout.
+
+The Header should remain visible above it.
+
+The loading screen should occupy enough vertical space to keep the Footer and Contact Us form below the viewport while the page is loading.
+
+## 1. In-Page Loading Layout
+
+Render the content loader beneath the Header.
+
+Requirements:
+
+1. Keep the Header visible.
+2. Do not cover the Header with this loader.
+3. Display the loading content at the top centre of the page content area.
+4. Maintain padding between the Header and Shaka.
+5. Give the loading section enough height to prevent the Footer or Contact Us form from appearing prematurely.
+6. Do not introduce horizontal overflow.
+7. Preserve the current page layout when content finishes loading.
+
+### Height
+
+Use a full viewport-height loading region as the design target.
+
+Suggested:
+
+```scss
+min-height: 100vh;
+```
+
+Or use an equivalent header-aware calculation such as:
+
+```scss
+min-height: calc(100svh - var(--header-height));
+```
+
+Choose whichever implementation correctly keeps the Footer below the fold in the existing page structure.
+
+The user's intended behaviour is a tall loading section, not a literal 1%-of-viewport element.
+
+Do not force an unnecessarily large fixed height once the actual page content is ready.
+
+## 2. Loading Content
+
+Display:
+
+1. The existing Shaka SVG.
+2. 読み込み中 beneath it.
+
+Requirements:
+
+- Horizontally centre both elements.
+- Position the content group near the top of the loading section.
+- Add appropriate spacing beneath the Header.
+- Preserve comfortable spacing between the Shaka and text.
+- Do not vertically centre the group in the entire page.
+- Do not add a separate logo or progress bar.
+
+## 3. Colours
+
+Use:
+
+- Shaka: Dark Blue `#1B4672`.
+- Text: Dark Blue `#1B4672`.
+
+The loading section itself should use the normal page background or existing appropriate background scheme.
+
+Do not introduce the full-screen Dark Blue overlay used in Feature-003.
+
+## 4. Shaka Dimensions
+
+Maximum width:
+
+**300px**
+
+Requirements:
+
+1. Reuse the existing Shaka SVG.
+2. Preserve its aspect ratio.
+3. Scale responsively.
+4. Prevent clipping.
+5. Keep the image centred.
+6. Preserve the original SVG geometry and fill.
+
+## 5. Animation
+
+Use the same loading-specific Shaka animation as Feature-003.
+
+- Shake duration: 1.5 seconds.
+- Rest interval: 0.5 seconds.
+- Repeat while loading.
+
+Do not change the existing Contact Us Shaka animation.
+
+## 6. Loading Conditions
+
+Display this loader while the current page's required content is being fetched or prepared.
+
+Requirements:
+
+1. Reuse the existing page-loading state.
+2. Do not render an empty page while data is pending.
+3. Do not display the completed page until its required content is ready.
+4. Preserve existing WordPress page resolution and REST integration.
+5. Avoid flickering during ordinary React re-renders.
+6. Do not remount the loader for unrelated state changes.
+7. Ensure loading failures resolve into the established error state.
+
+When navigating between pages, the Header should remain visible and usable.
+
+## 7. Minimum Duration
+
+Apply the same minimum display period as the navigation loading screen:
+
+**3 seconds**
+
+The content loading screen should not begin its dismissal until:
+
+- The required page content is ready.
+- Its minimum three-second display time has elapsed.
+
+### Fade Out
+
+Fade the loading content away over:
+
+**0.5 seconds**
+
+After fading, display the completed page content without an unnecessary blank interval.
+
+Use the same loading animation utilities from Feature-003 where practical.
+
+Do not create a second independent timer architecture.
+
+For initial navigation, account for time during which page content was already loading behind the navigation overlay so that the two minimum periods are not unnecessarily stacked.
+
+## 8. Preserve Page Navigation Behaviour
+
+The website currently resets the scroll position to the top when navigating to a new page.
+
+Preserve that behaviour.
+
+Requirements:
+
+1. New page navigation starts at the top.
+2. The Header remains visible.
+3. The page loader appears below the Header.
+4. The Footer remains below the fold.
+5. Completed content replaces the loader.
+6. Existing intentional anchor scrolling remains functional.
+7. Do not interrupt the Contact Us Jump button or the Home Hero scroll-down button.
+8. Do not cause unexpected scrolling when loading completes.
+
+If a user intentionally navigates to an anchor on another page, honour the destination after the required content has loaded.
+
+## 9. Reduced Motion and Accessibility
+
+Requirements:
+
+- Disable Shaka movement when reduced motion is preferred.
+- Keep a readable loading label.
+- Avoid moving keyboard focus unpredictably.
+- Preserve usable page navigation.
+- Prevent loading-state announcements from repeating unnecessarily.
+- Ensure timers and async work are cleaned up correctly.
+
+## Acceptance Criteria
+
+- Header remains visible during page loading.
+- Loading section appears beneath the Header.
+- Loading content is horizontally centred near the top.
+- Footer and Contact Us are pushed below the initial viewport.
+- Shaka is Dark Blue and no wider than 300px.
+- 読み込み中 appears beneath it.
+- Shaka uses the 1.5-second shake and 0.5-second pause.
+- Loading state lasts at least three seconds when displayed.
+- Fade-out takes 0.5 seconds.
+- Completed page content appears correctly.
+- Navigation and scroll behaviour remain functional.
+- No layout flickering or horizontal overflow.
+
+---
+
+# Feature-005 — Smooth Contact Form Preset Hover Effects
+
+**Status:** complete
+
+**Notes:** Preset and Clear controls now transition their existing colours over 200ms. Live hover and hover-exit checks confirmed the original yellow and cream colours, preset selection, and clearing the message.
+
+## Objective
+
+Improve the hover transitions on the preset-message buttons within the existing Contact Us form.
+
+The buttons currently change appearance too abruptly.
+
+I want the existing hover effects to remain the same, but with a short, smooth fade.
+
+These buttons should remain bespoke to the Contact Form.
+
+Do not replace them with the shared Primary or Secondary button component.
+
+## 1. Preserve Existing Hover Colours
+
+The preset buttons currently use different hover appearances, including:
+
+- Yellow.
+- White.
+
+Preserve these existing colours.
+
+Requirements:
+
+1. Do not change default button colours.
+2. Do not change hover target colours.
+3. Do not change selected preset styling.
+4. Do not change the preset text.
+5. Do not modify spacing, size or layout.
+
+Only improve the transition between existing visual states.
+
+## 2. Add Smooth Colour Transitions
+
+Use a short CSS transition for the properties that change.
+
+Suggested starting point:
+
+```scss
+transition:
+  background-color 0.2s ease,
+  color 0.2s ease,
+  border-color 0.2s ease;
+```
+
+Adapt these properties to the actual existing implementation.
+
+Requirements:
+
+1. Yellow hover changes should fade smoothly.
+2. White hover changes should fade smoothly.
+3. The reverse transition should also be smooth.
+4. Avoid abrupt switching caused by competing selectors.
+5. Do not delay the button's actual click response.
+6. Keep the effect subtle rather than slow.
+
+If the current effects use pseudo-elements or opacity, apply transitions to the appropriate existing layers.
+
+## 3. Preserve Form Behaviour
+
+Do not change:
+
+- Preset selection logic.
+- Preset messages.
+- Message textarea.
+- Contact Form validation.
+- Submit button styling.
+- Clear button behaviour.
+- WordPress REST submission.
+- Existing focus and disabled states.
+
+## Acceptance Criteria
+
+- Yellow hover fades smoothly.
+- White hover fades smoothly.
+- Hover exit transitions are smooth.
+- Existing colours remain unchanged.
+- Preset selection continues working.
+- Buttons are not converted into shared template buttons.
+- No Contact Form functional regressions.
+
+---
+
+# Feature-006 — Initial Classes Page
+
+**Status:** complete
+
+**Notes:** Verified the owner's saved Classes page on the public React site. The Classes Hero uses the shared water and turtle, editable Page Links and staggered entrance. The four native Groups render centred H2s in the approved palettes. All four anchors, keyboard activation, direct fragment navigation, reduced motion, and six viewport widths passed. The production build and 12 focused tests passed.
+
+## Objective
+
+Create the initial design and structure of the Classes page.
+
+The page should have:
+
+1. A Hero containing four circular navigation links.
+2. Four corresponding sections beneath the Hero.
+
+The four sections are:
+
+- Kids.
+- First Class.
+- Second Class.
+- Third Class.
+
+Future Epics will introduce dedicated custom class-content blocks.
+
+**Those class-content blocks are not part of this feature.**
+
+For now, the four sections should be simple, full-height placeholders containing only centred H2 headings.
+
+## 1. Reuse the Existing Classes Page
+
+Inspect the existing WordPress Classes page.
+
+Preserve:
+
+- Its existing page identity.
+- Its WordPress permalink.
+- Its navigation link.
+- Existing page publishing status.
+- Existing Header.
+- Existing Contact Us and Footer.
+
+Do not create a duplicate Classes page if one already exists.
+
+The new layout should be managed through the existing WordPress page composition system.
+
+## 2. Classes Hero Background
+
+The Classes Hero should use the same animated blue water background as the Homepage Hero.
+
+Requirements:
+
+1. Reuse the existing water background.
+2. Preserve its existing colours.
+3. Preserve wave movement.
+4. Preserve animation timing.
+5. Preserve responsive behaviour.
+6. Include the existing swimming turtle animation.
+7. Use the WordPress-managed `turtle.png`.
+8. Preserve the turtle's current opacity, direction, wiggle, duration and appearance timing.
+
+Do not implement a second turtle animation system.
+
+### Shared Background Component
+
+If the blue water background is currently implemented directly inside Home Hero, extract the necessary shared functionality into a reusable component.
+
+Suggested name:
+
+`WaterBackground`
+
+It should support the current use cases:
+
+- Home Hero.
+- Page Links.
+- Classes Hero.
+
+Keep the shared implementation focused on the existing repeated behaviour.
+
+Do not unnecessarily refactor unrelated Hero content.
+
+The Home Hero must continue working exactly as before.
+
+## 3. Classes Hero Title
+
+Display:
+
+**クラス**
+
+This is the Japanese title corresponding to Classes and matches the site's existing navigation terminology.
+
+Requirements:
+
+1. Use an H2.
+2. Use the existing Japanese heading font.
+3. Centre the title.
+4. Preserve the title styling established for the Page Links section.
+5. Use Dark Blue `#1B4672` for the title.
+6. Maintain appropriate spacing beneath the title.
+
+Do not display the English title "Classes" as an additional heading.
+
+## 4. Four Circular Navigation Links
+
+The Classes Hero should contain four circular links corresponding to its four sections.
+
+Links:
+
+1. Kids.
+2. First Class.
+3. Second Class.
+4. Third Class.
+
+Reuse the existing Page Links circle design.
+
+Requirements:
+
+1. Use the same organic Round Frame blob silhouette.
+2. Preserve individual blob rotations.
+3. Use Dark Blue `#1B4672` backgrounds.
+4. Use Cream `#F1FFFA` text and icons.
+5. Preserve icon-above-text layout.
+6. Preserve existing spacing.
+7. Preserve existing hover scaling.
+8. Preserve 90-degree shape-only hover rotation.
+9. Keep the icon and text upright.
+10. Make the entire circular shape clickable.
+
+Avoid creating a visually separate link design for Classes.
+
+## 5. Reuse the Existing Page Links Block
+
+I want to edit the Classes Hero links in WordPress just like the Homepage Page Links block.
+
+Prefer extending the existing Page Links block rather than creating a duplicate editor.
+
+Requirements:
+
+1. Reuse the existing add/remove/reorder functionality.
+2. Reuse editable link labels.
+3. Reuse editable destinations.
+4. Reuse existing Font Awesome icon options.
+5. Support the new one-character icon type described below.
+6. Allow the Classes version to display クラス instead of リンク集.
+7. Preserve the Homepage version's existing behaviour and data.
+8. Do not require recreating the Homepage Page Links block.
+
+If necessary, introduce a minimal block variation or display-mode attribute for the Classes Hero.
+
+The Homepage should continue using its current appearance by default.
+
+Do not build a separate general-purpose page-builder system.
+
+## 6. Add One-Character Icon Option
+
+Currently, the Page Links block uses Font Awesome icons.
+
+I now want the additional option of using a single text character in the icon position.
+
+Each link should support an icon type selection.
+
+**Icon Type:**
+
+- Font Awesome.
+- Character.
+
+### Font Awesome
+
+When Font Awesome is selected:
+
+- Show the existing icon selector.
+- Preserve the existing icon rendering.
+- Preserve existing saved icon choices.
+
+### Character
+
+When Character is selected:
+
+- Show a text input.
+- Allow the user to enter one character.
+- Use that character in place of the Font Awesome icon.
+- Hide the Font Awesome selector when it is not relevant.
+
+The character must use:
+
+**Leckerli One**
+
+### Character Styling
+
+Render the selected character using heading-style typography.
+
+Suggested structure:
+
+```jsx
+<span className="aloha-page-link__character">
+  A
+</span>
+```
+
+Requirements:
+
+1. Display only one user-perceived character.
+2. Centre it in the existing icon position.
+3. Use Leckerli One.
+4. Use Cream text.
+5. Use a size visually comparable to the existing Font Awesome icon.
+6. Keep the link label beneath it.
+7. Preserve vertical alignment.
+8. Do not rotate the character during hover.
+9. Prevent excessively long input.
+10. Preserve the entered character after saving.
+
+Use appropriate character validation rather than assuming one JavaScript code unit always represents one visible character.
+
+Do not permit arbitrary HTML or React markup in the character field.
+
+### Data Contract
+
+Extend the existing link item data structure without breaking old saved links.
+
+Suggested additional properties:
+
+```js
+{
+  iconType: "fontawesome",
+  iconCharacter: ""
+}
+```
+
+Existing links without these attributes should continue rendering with their saved Font Awesome icons.
+
+The new Character option should be available in both Homepage Page Links and the Classes Hero.
+
+Do not require a separate version of the Page Links block just to support character icons.
+
+## 7. Responsive Layout
+
+Use the same Page Links layout:
+
+- Desktop: Four links per row.
+- Tablet: Two links per row.
+- Mobile: One link per row.
+
+Requirements:
+
+1. Keep the links horizontally centred.
+2. Preserve consistent spacing.
+3. Do not allow four links to wrap into an accidental 3 + 1 arrangement on desktop.
+4. Maintain appropriate blob dimensions.
+5. Avoid horizontal overflow.
+6. Accommodate the stacked mobile layout.
+
+The Classes Hero should have enough vertical space for all links.
+
+Use a full-height Hero as the minimum where practical, but allow it to become taller when required by the four stacked links on mobile.
+
+Do not clip the links to force them into a fixed viewport height.
+
+## 8. Entrance Animations
+
+Reuse the staggered Page Links entrance animation from Epic-008 Feature-007.
+
+When the Classes page first loads, the links should animate into view.
+
+### Animation
+
+Each link:
+
+- Starts slightly above its final position.
+- Starts transparent.
+- Falls into place.
+- Fades to full opacity.
+
+Duration:
+
+**0.5 seconds per link**
+
+Stagger:
+
+**0.25 seconds between link starts**
+
+For the four links:
+
+| Link | Start | Finish |
+|---|---|---|
+| Kids | 0.00s | 0.50s |
+| First Class | 0.25s | 0.75s |
+| Second Class | 0.50s | 1.00s |
+| Third Class | 0.75s | 1.25s |
+
+Requirements:
+
+1. Trigger when the Classes Hero is first displayed after page loading.
+2. Preserve the original link order.
+3. Use the same falling motion as Homepage Page Links.
+4. Preserve existing hover animations.
+5. Keep transformations independent.
+6. Avoid layout shifts.
+7. Respect reduced-motion preferences.
+
+Unlike a lower-page section, the Classes Hero is initially visible when visiting the page, so the entrance animation should trigger on first presentation without requiring an additional scroll action.
+
+Reuse the existing entrance animation utilities.
+
+## 9. Link Destinations
+
+Each circular link must scroll to its corresponding section.
+
+Use these anchor targets:
+
+| Link | Anchor |
+|---|---|
+| Kids | `#kids` |
+| First Class | `#first-class` |
+| Second Class | `#second-class` |
+| Third Class | `#third-class` |
+
+Requirements:
+
+1. Use genuine anchor targets.
+2. Preserve normal keyboard accessibility.
+3. Smoothly scroll to the selected section.
+4. Respect the sticky Header offset.
+5. Avoid landing with the section heading hidden behind the Header.
+6. Ensure the links work on desktop and mobile.
+7. Do not navigate to a different page.
+8. Preserve browser URL fragment behaviour where appropriate.
+
+Reuse the existing smooth-scroll utilities.
+
+Do not implement a new scrolling system if the existing one already supports the required behaviour.
+
+## 10. Create Four Placeholder Sections
+
+Below the Classes Hero, create four sections in this order:
+
+1. Kids.
+2. First Class.
+3. Second Class.
+4. Third Class.
+
+These are temporary placeholders for future class-specific blocks.
+
+Do not build the future class-content components.
+
+### Section Content
+
+Each section should contain only:
+
+- One H2.
+- No additional descriptive text.
+- No images.
+- No buttons.
+- No cards.
+
+The H2 should be horizontally and vertically centred.
+
+### Height
+
+Each section should have a minimum height of one full viewport.
+
+Suggested:
+
+```scss
+min-height: 100vh;
+```
+
+Use an appropriate modern viewport unit or equivalent where needed for mobile.
+
+The original instruction of 1vh is interpreted as 100vh so that each placeholder visibly occupies a complete screen.
+
+Avoid forcing headings into an impossibly short container.
+
+### Colour Groups
+
+Use a different existing colour group for each section.
+
+**Kids**
+
+Green Group:
+
+- Background: `#066C4C`.
+- Heading: `#F1FFFA`.
+
+**First Class**
+
+Light Blue Group:
+
+- Background: `#93B7BE`.
+- Heading: `#4E3D42`.
+
+**Second Class**
+
+Cream Group:
+
+- Background: `#F1FFFA`.
+- Heading: `#066C4C`.
+
+**Third Class**
+
+Grey Group:
+
+- Background: `#6D6466`.
+- Heading: Use the existing accessible Grey Group heading treatment.
+
+Use only existing approved colours.
+
+Do not add gradients, decorative patterns, images or unnecessary animations to the placeholder sections.
+
+### Section IDs
+
+Assign:
+
+```text
+kids
+first-class
+second-class
+third-class
+```
+
+Each anchor must uniquely identify its section.
+
+### WordPress Page Composition
+
+Use the existing WordPress editing and React rendering architecture.
+
+Prefer ordinary WordPress Group and Heading blocks where the frontend integration already supports them.
+
+Provide stable section anchors and appropriate colour classes.
+
+Do not register four new class-specific Gutenberg blocks.
+
+If the existing React page renderer requires a small adapter for these basic placeholder sections, implement only what is necessary.
+
+Keep the page suitable for replacing these placeholders with dedicated class blocks in a later Epic.
+
+## 11. Preserve Existing Site Structure
+
+Do not change:
+
+- Global Header.
+- Footer.
+- Contact Us form.
+- Contact Us Jump.
+- Existing Classes navigation URL.
+- Homepage Hero.
+- Homepage Page Links.
+- Global colour schemes.
+- Existing page-loading screens.
+- Scroll restoration behaviour.
+
+Ensure the new Classes page works within the existing site structure.
+
+## Acceptance Criteria
+
+- Existing Classes page displays the new layout.
+- Hero uses the established blue animated water background.
+- Turtle swims through the Hero background.
+- Hero displays クラス.
+- Four organic circular links are shown.
+- Links use the same design as Homepage Page Links.
+- Link icons can be Font Awesome or a single character.
+- Character icons use Leckerli One.
+- New icon controls are visible in Gutenberg.
+- Existing Homepage links remain compatible.
+- Four links animate with 0.5-second duration and 0.25-second stagger.
+- Clicking each link smoothly scrolls to its matching section.
+- Sticky Header offsets are respected.
+- Kids, First Class, Second Class and Third Class sections exist.
+- Each section has a centred H2.
+- Each section has a distinct existing colour group.
+- Each section is approximately one viewport high.
+- The future class-content blocks are not implemented.
+- Responsive layouts work.
+- No horizontal overflow or unrelated regressions.
+
+---
+
+# Epic-009 Implementation Workflow
+
+Use:
+
+`//completeEpic-009`
+
+Follow the existing command rules in `AGENTS.md`.
+
+Process features in written order, respecting WordPress handovers and blockers.
+
+## Phase 1 — Development Setup and Footer Controls
+
+### Feature-001
+
+Investigate and resolve the wp-env deprecation warning.
+
+Verify that the existing local WordPress environment continues to operate correctly.
+
+### Feature-002
+
+Implement the Footer colour selector and its React/SCSS support.
+
+Once the control is ready, provide the WordPress instructions to select Dark Blue.
+
+Stop if manual editing is required.
+
+Do not modify other Footer content.
+
+## Phase 2 — Loading Screens and Contact Form
+
+After any necessary Footer handover:
+
+### Feature-003
+
+Implement the global navigation loading overlay.
+
+### Feature-004
+
+Implement the in-page content loading screen.
+
+Reuse the common loading animation and timing logic wherever practical.
+
+Ensure the two loaders cooperate rather than creating unnecessary sequential waiting.
+
+### Feature-005
+
+Improve the Contact Form preset hover transitions.
+
+No WordPress configuration should be required for these features.
+
+## Phase 3 — Classes Page Coding Prerequisites
+
+### Feature-006
+
+Before the user edits WordPress:
+
+1. Inspect the existing Classes page structure.
+2. Make the water background reusable if needed.
+3. Extend Page Links with the Character icon option.
+4. Add the Classes-specific title and Hero presentation support.
+5. Ensure anchor destinations are supported.
+6. Prepare the frontend representation for the four placeholder sections.
+7. Ensure existing Homepage Page Links remain unchanged.
+8. Build the required Gutenberg editor assets.
+9. Verify the new editor controls can persist data.
+
+Then stop for the WordPress handover.
+
+## Phase 4 — Manual WordPress Configuration
+
+The user will:
+
+1. Open the Classes page in WordPress.
+2. Insert or configure the reusable links block in its Classes Hero mode.
+3. Confirm the heading displays クラス.
+4. Add four links.
+5. Give the links the labels Kids, First Class, Second Class and Third Class.
+6. Choose Font Awesome or Character icons for each link.
+7. Set each link's anchor destination.
+8. Add the four placeholder sections using the provided supported block structure.
+9. Assign the required section IDs.
+10. Set the four section colour groups.
+11. Save the page.
+12. Reopen it and verify that the links and sections persist.
+
+Do not automatically replace or remove unrelated WordPress content.
+
+After the manual configuration, resume:
+
+`//completeEpic-009`
+
+## Phase 5 — Classes Page Completion
+
+Finish the Classes Hero, animated links, anchor navigation and placeholder section styling.
+
+Verify the live editor-to-React integration where possible.
+
+Do not create the future Kids, First Class, Second Class or Third Class custom content blocks.
+
+---
+
+# Technical Constraints
+
+1. Read and follow `AGENTS.md`.
+2. Preserve Epics 001–008 functionality.
+3. Keep WordPress as the source of truth for content.
+4. Keep public presentation in React/SCSS.
+5. Preserve existing Gutenberg block identities.
+6. Preserve existing synced patterns.
+7. Reuse the existing Shaka SVG.
+8. Reuse the existing Shaka shake keyframes.
+9. Reuse the existing water background.
+10. Reuse the existing turtle animation.
+11. Reuse the existing Page Links design and editor where appropriate.
+12. Reuse existing scroll and entrance-animation utilities.
+13. Do not build four new class-specific blocks.
+14. Do not modify unrelated components.
+15. Do not reset the local WordPress environment.
+16. Do not introduce unnecessary dependencies.
+17. Do not alter existing WordPress content without the required handover.
+18. Respect reduced-motion preferences.
+19. Prevent horizontal overflow.
+
+Develop the plugin directly in its existing mapped source directory.
+
+Do not create a plugin ZIP for ordinary local development.
+
+---
+
+# Testing
+
+Verify appropriate functionality at:
+
+- 320px.
+- 375px.
+- 430px.
+- 768px.
+- 1024px.
+- 1440px.
+
+## Feature-001
+
+- Warning removal.
+- WordPress startup.
+- Development port.
+- Active theme and plugin.
+- Preservation of any required testing environment.
+
+## Feature-002
+
+- Three Footer options.
+- Persisted Gutenberg selection.
+- Dark Blue active Footer.
+- Correct foreground contrast.
+- Unchanged Header theme.
+- Responsive Footer layout.
+
+## Feature-003
+
+- Initial loading overlay.
+- Navigation readiness.
+- Minimum three-second display.
+- Half-second fade.
+- Responsive Shaka up to 400px.
+- Correct colours.
+- Error handling.
+- No underlying content interaction.
+
+## Feature-004
+
+- In-page loader positioning.
+- Header remains visible.
+- Footer stays below fold.
+- Responsive Shaka up to 300px.
+- Loading timing and fade.
+- Successful page-content replacement.
+- Navigation and anchor behaviour.
+
+## Feature-005
+
+- Yellow hover transition.
+- White hover transition.
+- Smooth reverse transition.
+- Preset selection functionality.
+- Contact Form regression check.
+
+## Feature-006
+
+- Existing Classes page preserved.
+- Hero water animation.
+- Turtle integration.
+- Four-link layout.
+- Japanese title.
+- WordPress link editing.
+- Font Awesome icons.
+- Single-character icons.
+- Leckerli One rendering.
+- Staggered entrance.
+- Smooth anchor scrolling.
+- Four full-height sections.
+- Correct colour groups.
+- No unrelated visual changes.
+
+Run focused automated tests and relevant builds.
+
+Report any integration that cannot be verified in the available environment.
+
+---
+
+# Status Tracking
+
+Update:
+
+`src/vibe/epics/epic-009/features.txt`
+
+Follow the feature status and rollback conventions in `AGENTS.md`.
+
+Keep independent rollback records for each feature.
+
+Do not mark a feature complete while required WordPress configuration or frontend integration remains unfinished.
+
+Do not modify `bugs.txt` unless the user explicitly requests a bug entry.
+
+---
+
+# Completion Report
+
+At each mandatory handover, report:
+
+1. Completed work.
+2. Files modified.
+3. Relevant tests.
+4. Exact WordPress steps.
+5. Remaining implementation.
+
+At final completion, report:
+
+1. Status of all six features.
+2. Configuration changes.
+3. WordPress editor changes.
+4. React/SCSS changes.
+5. Relevant build and test results.
+6. Responsive verification.
+7. Any remaining limitations.
+
+**Scope:** Complete Epic-009 only. Do not begin Epic-010 or unrelated work.

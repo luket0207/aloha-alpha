@@ -58,7 +58,7 @@ add_action( 'enqueue_block_editor_assets', function () {
         'alohaalpha-header-settings',
         plugins_url( 'assets/js/editor-header-settings.js', __FILE__ ),
         array( 'wp-block-editor', 'wp-blocks', 'wp-components', 'wp-compose', 'wp-element', 'wp-hooks', 'wp-i18n' ),
-        ALOHAALPHA_CORE_VERSION,
+        (string) filemtime( __DIR__ . '/assets/js/editor-header-settings.js' ),
         true
     );
 } );

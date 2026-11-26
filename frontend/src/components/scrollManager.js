@@ -21,13 +21,11 @@ export function resetScrollPosition(windowObject = window) {
   });
 }
 
-export function scrollToHashTarget(hash, documentObject = document) {
+export function scrollToHashTarget(hash, documentObject = document, { behavior = 'auto', focus = false } = {}) {
   const target = findHashTarget(hash, documentObject);
   if (!target) return false;
 
-  target.scrollIntoView({
-    behavior: 'auto',
-    block: 'start',
-  });
+  if (focus) target.focus({ preventScroll: true });
+  target.scrollIntoView({ behavior, block: 'start' });
   return true;
 }

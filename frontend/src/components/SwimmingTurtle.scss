@@ -17,7 +17,7 @@
   }
 
   &[data-active='true'] &__traveller {
-    opacity: 0.4;
+    opacity: var(--aloha-swimming-turtle-opacity, 0.5);
   }
 
   &__heading {

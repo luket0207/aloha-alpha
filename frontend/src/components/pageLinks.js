@@ -10,6 +10,10 @@ export const PAGE_LINK_ICON_NAMES = [
 export const PAGE_LINK_ENTRANCE_DURATION_MS = 500;
 export const PAGE_LINK_STAGGER_MS = 250;
 
+const characterSegmenter = typeof Intl.Segmenter === 'function'
+  ? new Intl.Segmenter(undefined, { granularity: 'grapheme' })
+  : null;
+
 export function pageLinkAnimationDelay(index) {
   const normalizedIndex = Number.isFinite(index) ? Math.max(0, Math.floor(index)) : 0;
   return normalizedIndex * PAGE_LINK_STAGGER_MS;
@@ -17,6 +21,15 @@ export function pageLinkAnimationDelay(index) {
 
 export function normalizePageLinkIcon(icon) {
   return PAGE_LINK_ICON_NAMES.includes(icon) ? icon : 'house';
+}
+
+export function normalizePageLinkCharacter(value) {
+  if (typeof value !== 'string') return '';
+  const text = value.trim().normalize();
+  const first = characterSegmenter
+    ? characterSegmenter.segment(text)[Symbol.iterator]().next().value?.segment
+    : Array.from(text)[0];
+  return first && first.length <= 64 ? first : '';
 }
 
 export function pageLinkOrientation(id, index = 0) {
@@ -40,6 +53,9 @@ export function pageLinksDataFromElement(element) {
     return {
       href: link?.getAttribute('href') || '',
       icon: normalizePageLinkIcon(icon?.dataset.icon),
+      iconCharacter: icon?.dataset.iconType === 'character'
+        ? normalizePageLinkCharacter(icon.dataset.iconCharacter || icon.textContent)
+        : '',
       id,
       label: label?.textContent.trim() || '',
       orientation: pageLinkOrientation(id, index),

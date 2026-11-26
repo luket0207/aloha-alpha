@@ -10,14 +10,13 @@ import {
 } from './swimmingTurtle.js';
 import './SwimmingTurtle.scss';
 
-export default function SwimmingTurtle({ asset, className = '' }) {
+export default function SwimmingTurtle({ asset, className = '', minDurationMs, maxDurationMs }) {
   const [imageAvailable, setImageAvailable] = useState(Boolean(asset?.url));
   const [isDocumentVisible, setIsDocumentVisible] = useState(!document.hidden);
   const [isVisible, setIsVisible] = useState(() => !('IntersectionObserver' in window));
   const animationRef = useRef(null);
   const headingRef = useRef(null);
   const layerRef = useRef(null);
-  const imageRef = useRef(null);
   const timerRef = useRef(null);
   const travellerRef = useRef(null);
   const reducedMotion = useReducedMotion();
@@ -47,7 +46,6 @@ export default function SwimmingTurtle({ asset, className = '' }) {
   useEffect(() => {
     const layer = layerRef.current;
     const heading = headingRef.current;
-    const image = imageRef.current;
     const traveller = travellerRef.current;
     const enabled = Boolean(
       asset?.url
@@ -57,7 +55,6 @@ export default function SwimmingTurtle({ asset, className = '' }) {
       && !reducedMotion
       && layer
       && heading
-      && image
       && traveller
     );
 
@@ -111,7 +108,8 @@ export default function SwimmingTurtle({ asset, className = '' }) {
       }
 
       const containerBounds = layer.getBoundingClientRect();
-      const turtleBounds = image.getBoundingClientRect();
+      // The traveller translates without rotating, so these dimensions include no heading or wiggle.
+      const turtleBounds = traveller.getBoundingClientRect();
       if (!containerBounds.width || !containerBounds.height || !turtleBounds.width || !turtleBounds.height) {
         scheduleNext(1000);
         return;
@@ -120,6 +118,8 @@ export default function SwimmingTurtle({ asset, className = '' }) {
       const journey = createTurtleJourney({
         containerHeight: containerBounds.height,
         containerWidth: containerBounds.width,
+        minDurationMs,
+        maxDurationMs,
         turtleHeight: turtleBounds.height,
         turtleWidth: turtleBounds.width,
       });
@@ -173,7 +173,7 @@ export default function SwimmingTurtle({ asset, className = '' }) {
       clearTimer();
       clearAnimation();
     };
-  }, [asset?.url, imageAvailable, isDocumentVisible, isVisible, reducedMotion]);
+  }, [asset?.url, imageAvailable, isDocumentVisible, isVisible, minDurationMs, maxDurationMs, reducedMotion]);
 
   if (!asset?.url || !imageAvailable || reducedMotion) return null;
 
@@ -193,7 +193,6 @@ export default function SwimmingTurtle({ asset, className = '' }) {
             draggable="false"
             height={asset.height || undefined}
             onError={() => setImageAvailable(false)}
-            ref={imageRef}
             src={asset.url}
             width={asset.width || undefined}
           />

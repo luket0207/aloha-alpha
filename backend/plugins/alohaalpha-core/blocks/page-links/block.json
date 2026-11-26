@@ -9,6 +9,11 @@
   "description": "Editable page destinations displayed as Aloha Academy link buttons.",
   "textdomain": "alohaalpha-core",
   "attributes": {
+    "displayMode": {
+      "type": "string",
+      "default": "page-links",
+      "enum": ["page-links", "classes-hero"]
+    },
     "links": {
       "type": "array",
       "default": [],

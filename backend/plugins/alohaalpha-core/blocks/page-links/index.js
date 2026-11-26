@@ -19,6 +19,9 @@
         { dashicon: 'admin-users', label: __('Recruitment', 'alohaalpha-core'), value: 'person-circle-plus' },
     ];
     const ICON_VALUES = ICON_OPTIONS.map((option) => option.value);
+    const characterSegmenter = typeof Intl.Segmenter === 'function'
+        ? new Intl.Segmenter(undefined, { granularity: 'grapheme' })
+        : null;
 
     function createItemId() {
         if (window.crypto && typeof window.crypto.randomUUID === 'function') {
@@ -32,10 +35,21 @@
         return ICON_VALUES.includes(icon) ? icon : ICON_OPTIONS[0].value;
     }
 
+    function normalizeCharacter(value) {
+        if (typeof value !== 'string') return '';
+        const text = value.trim().normalize();
+        const first = characterSegmenter
+            ? characterSegmenter.segment(text)[Symbol.iterator]().next().value?.segment
+            : Array.from(text)[0];
+        return first && first.length <= 64 ? first : '';
+    }
+
     function normalizeLink(item) {
         return {
             id: typeof item.id === 'string' && item.id ? item.id : createItemId(),
             icon: normalizeIcon(item.icon),
+            iconType: item.iconType === 'character' ? 'character' : 'fontawesome',
+            iconCharacter: normalizeCharacter(item.iconCharacter),
             label: typeof item.label === 'string' ? item.label : '',
             url: typeof item.url === 'string' ? item.url : '',
         };
@@ -67,10 +81,12 @@
         const content = [
             el('span', {
                 'aria-hidden': 'true',
-                className: 'aloha-page-links__icon',
-                'data-icon': normalizeIcon(item.icon),
+                className: item.iconType === 'character' ? 'aloha-page-links__icon wp-exclude-emoji' : 'aloha-page-links__icon',
+                ...(item.iconType === 'character'
+                    ? { 'data-icon-type': 'character', 'data-icon-character': item.iconCharacter }
+                    : { 'data-icon': normalizeIcon(item.icon) }),
                 key: 'icon',
-            }),
+            }, item.iconType === 'character' ? item.iconCharacter : undefined),
             el('span', { className: 'aloha-page-links__label', key: 'label' }, item.label),
         ];
         const contentProps = {
@@ -98,11 +114,13 @@
         category: 'aloha-layouts',
         icon: 'admin-links',
         attributes: {
+            displayMode: { type: 'string', default: 'page-links', enum: ['page-links', 'classes-hero'] },
             links: { type: 'array', default: [], items: { type: 'object' } },
         },
         supports: { align: ['wide', 'full'], anchor: true, html: false, reusable: true },
         edit: function Edit({ attributes, setAttributes }) {
             const links = (attributes.links || []).map(normalizeLink);
+            const isClassesHero = attributes.displayMode === 'classes-hero';
             const blockProps = useBlockProps({ className: 'aloha-page-links aloha-page-links-editor' });
 
             function commit(nextLinks) {
@@ -134,9 +152,18 @@
                 el(
                     'div',
                     { className: 'aloha-page-links-editor__header' },
-                    el('strong', null, __('Page Links', 'alohaalpha-core')),
+                    el('strong', null, isClassesHero ? 'クラス' : __('Page Links', 'alohaalpha-core')),
                     el(Button, { onClick: addLink, variant: 'primary' }, __('Add link', 'alohaalpha-core'))
                 ),
+                el(SelectControl, {
+                    label: __('Display mode', 'alohaalpha-core'),
+                    options: [
+                        { label: __('Page Links', 'alohaalpha-core'), value: 'page-links' },
+                        { label: __('Classes Hero', 'alohaalpha-core'), value: 'classes-hero' },
+                    ],
+                    onChange: (displayMode) => setAttributes({ displayMode }),
+                    value: isClassesHero ? 'classes-hero' : 'page-links',
+                }),
                 links.length
                     ? el(
                         'ol',
@@ -147,7 +174,12 @@
                             el(
                                 'div',
                                 { className: 'aloha-page-links-editor__preview' },
-                                iconPreview(item.icon),
+                                item.iconType === 'character'
+                                    ? el('span', {
+                                        'aria-hidden': 'true',
+                                        className: 'aloha-page-links-editor__icon aloha-heading--latin wp-exclude-emoji',
+                                    }, item.iconCharacter)
+                                    : iconPreview(item.icon),
                                 el(
                                     'span',
                                     null,
@@ -160,12 +192,36 @@
                                 value: item.label,
                             }),
                             el(SelectControl, {
-                                label: __('Font Awesome icon', 'alohaalpha-core'),
-                                onChange: (icon) => update(index, { icon: normalizeIcon(icon) }),
-                                options: ICON_OPTIONS,
-                                value: item.icon,
+                                label: __('Icon Type', 'alohaalpha-core'),
+                                options: [
+                                    { label: __('Font Awesome', 'alohaalpha-core'), value: 'fontawesome' },
+                                    { label: __('Character', 'alohaalpha-core'), value: 'character' },
+                                ],
+                                onChange: (iconType) => update(index, { iconType }),
+                                value: item.iconType,
                             }),
-                            LinkControl
+                            item.iconType === 'character'
+                                ? el(TextControl, {
+                                    label: __('Icon character', 'alohaalpha-core'),
+                                    help: __('Enter one visible character.', 'alohaalpha-core'),
+                                    maxLength: 64,
+                                    onChange: (iconCharacter) => update(index, { iconCharacter }),
+                                    value: item.iconCharacter,
+                                })
+                                : el(SelectControl, {
+                                    label: __('Font Awesome icon', 'alohaalpha-core'),
+                                    onChange: (icon) => update(index, { icon: normalizeIcon(icon) }),
+                                    options: ICON_OPTIONS,
+                                    value: item.icon,
+                                }),
+                            isClassesHero
+                                ? el(TextControl, {
+                                    label: __('Destination anchor', 'alohaalpha-core'),
+                                    help: __('Enter a section anchor, for example #kids.', 'alohaalpha-core'),
+                                    onChange: (url) => update(index, { url }),
+                                    value: item.url,
+                                })
+                                : LinkControl
                                 ? el(
                                     'div',
                                     { className: 'aloha-page-links-editor__destination' },
@@ -220,6 +276,7 @@
             const blockProps = useBlockProps.save({
                 className: 'aloha-page-links',
                 'data-page-links-version': '1',
+                ...(attributes.displayMode === 'classes-hero' && { 'data-display-mode': 'classes-hero' }),
             });
 
             return el(

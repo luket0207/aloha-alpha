@@ -1,0 +1,2008 @@
+# Epic-010 — Client Demo Deployment, Classes Blocks and Contact Us Improvements
+
+## Overview
+
+This Epic contains three features:
+
+- **Feature-001:** One-command static demo export and GitHub Pages deployment.
+- **Feature-002:** Four editable Classes sections with structured timetables, images and booking buttons.
+- **Feature-003:** Contact Us booking buttons and editable business information.
+
+The website uses:
+
+- WordPress for content management.
+- Gutenberg for editable blocks and patterns.
+- React for the public-facing frontend.
+- SCSS for styling and animations.
+- AlohaAlpha Core for custom Gutenberg functionality.
+- Docker and wp-env for local development.
+
+Read and follow the repository-root `AGENTS.md`.
+
+Preserve all existing functionality from Epics 001–009.
+
+---
+
+# Feature-001 — One-Command Static Demo Export and GitHub Pages Deployment
+
+**Status:** not started
+
+## Objective
+
+I want to publish a demonstration version of my Aloha Academy website to GitHub Pages so my client can view it as a normal visitor.
+
+I do not want to host WordPress publicly yet.
+
+Instead, I want to export the current website from my local WordPress environment into a standalone React website that can be hosted on GitHub Pages.
+
+## 1. Main Deployment Command
+
+Create the following npm command:
+
+```bash
+npm run demo:deploy
+```
+
+It must automatically:
+
+1. Retrieve the latest published content from local WordPress.
+2. Export the required WordPress images and media.
+3. Generate a standalone version of the React frontend.
+4. Build the website for GitHub Pages.
+5. Validate the generated website.
+6. Publish the generated files to GitHub.
+7. Preserve the existing public demo URL.
+
+After the initial configuration, I should not have to manually export content, copy images, build the website or upload files.
+
+Running this command should update the client demo.
+
+## 2. Preserve Existing Development Architecture
+
+My local development environment must continue working as it currently does.
+
+Requirements:
+
+- WordPress remains the content management system.
+- React continues fetching live WordPress content during local development.
+- Gutenberg editing remains unchanged.
+- Existing pages, blocks and patterns remain intact.
+- WordPress media remains intact.
+- Contact Form submission continues working locally.
+- Existing Docker and wp-env configuration remains intact.
+
+The static demo must be an additional deployment mode, not a replacement for WordPress.
+
+Do not introduce a separate frontend implementation containing manually duplicated content.
+
+## 3. Introduce a Static Demo Data Source
+
+The same React frontend should support two data sources.
+
+### Normal Development
+
+Use the existing WordPress REST API and WordPress integration.
+
+### Demo Mode
+
+Read exported static content instead of making live requests to WordPress.
+
+Requirements:
+
+1. Reuse existing React components.
+2. Reuse existing SCSS and design tokens.
+3. Reuse existing animations.
+4. Preserve responsive behaviour.
+5. Preserve the current WordPress-to-React structured content contract.
+6. Do not create separate hardcoded demo versions of individual pages.
+7. Do not implement another Gutenberg content renderer.
+
+Prefer a small data-source adapter so the existing frontend receives the same structured data regardless of the source.
+
+## 4. Export WordPress Content
+
+Export all published content required to reproduce the public website.
+
+This includes:
+
+- Home.
+- Classes.
+- Gallery.
+- FAQs.
+- Booking.
+- Recruit.
+- Any additional published pages supported by the frontend.
+- Header navigation.
+- Footer.
+- Synced patterns.
+- Gutenberg block attributes.
+- Page section ordering.
+- Public site settings.
+- WordPress-managed media references.
+
+Preserve data used by custom blocks, including:
+
+- Home Hero.
+- Page Links.
+- Testimonials.
+- Image Divider.
+- Text Image — Side by Side.
+- Image Frame.
+- Access Map.
+- Contact Us.
+- Class Section blocks introduced in Feature-002.
+- Contact Details block introduced in Feature-003.
+- Other existing Aloha Academy blocks.
+
+Use the existing structured block data integration wherever possible.
+
+### Security
+
+Do not export:
+
+- Drafts.
+- Private pages.
+- Unpublished revisions.
+- WordPress users.
+- Passwords.
+- API credentials.
+- Private database data.
+- Server configuration.
+- WordPress administration information.
+
+Only public-facing data necessary for the client demo should be included.
+
+## 5. Export WordPress Media
+
+The deployed website must work without access to the local WordPress installation.
+
+Export all referenced public images and other required media.
+
+This includes:
+
+- Header logo.
+- Small Logo images.
+- Home Hero images.
+- Round Logo.
+- Swimming turtle PNG.
+- Testimonials background images.
+- Image Divider images.
+- Class featured images.
+- Other Gutenberg-managed image assets.
+
+Requirements:
+
+1. Identify public media referenced by exported content.
+2. Copy those assets into the static build.
+3. Preserve suitable formats, transparency and dimensions.
+4. Rewrite WordPress URLs to deployed static asset paths.
+5. Preserve alt text and useful metadata.
+6. Preserve responsive image variants where practical.
+7. Avoid unnecessary duplicate assets.
+8. Avoid exporting unrelated Media Library content.
+
+The deployed website must not request assets from:
+
+```text
+http://localhost:8888/
+```
+
+Also inspect media references embedded in Gutenberg attributes, configuration data and CSS background properties.
+
+## 6. Build Standalone React
+
+GitHub Pages cannot execute WordPress PHP or use its database.
+
+The demo therefore requires a static frontend build.
+
+Requirements:
+
+1. Reuse the current React application.
+2. Produce a valid static HTML entry point.
+3. Bundle JavaScript and SCSS-generated CSS.
+4. Include required fonts and assets.
+5. Read the exported content snapshot.
+6. Preserve routing and navigation.
+7. Preserve visual effects and animations.
+8. Preserve responsive layouts.
+
+If the current React application only mounts through a WordPress theme, create a minimal demo-specific entry point.
+
+Do not rewrite the website.
+
+### Independence Requirement
+
+The deployed demo must continue working when:
+
+- My computer is switched off.
+- Docker is stopped.
+- WordPress is unavailable.
+
+No frontend feature should require my local WordPress server to remain online.
+
+## 7. GitHub Pages Deployment
+
+Use the existing GitHub repository associated with the project.
+
+Prefer a dedicated branch:
+
+```text
+gh-pages
+```
+
+This branch should contain only the generated static website.
+
+Requirements:
+
+1. Preserve the normal development branch.
+2. Do not automatically commit unrelated source-code changes.
+3. Do not publish the entire repository as the public website.
+4. Do not publish WordPress source files as web-accessible assets.
+5. Do not publish credentials or private configuration.
+6. Publish only the generated website.
+7. Keep the same public URL.
+8. Use existing Git authentication where possible.
+9. Avoid requiring manual commits and pushes.
+
+A suitable deployment utility such as `gh-pages` may be used if compatible with the existing build system.
+
+Inspect the repository before selecting a publishing implementation.
+
+### One-Time GitHub Setup
+
+Provide exact instructions for:
+
+1. Confirming the repository and remote.
+2. Configuring Git authentication.
+3. Enabling GitHub Pages.
+4. Selecting the deployment branch.
+5. Selecting the appropriate publishing directory.
+6. Finding the demo URL.
+
+Do not modify my GitHub account settings or publish the demo during initial implementation without authorisation.
+
+## 8. GitHub Pages Paths
+
+GitHub Pages project websites commonly use a repository-specific path:
+
+```text
+https://USERNAME.github.io/REPOSITORY/
+```
+
+Requirements:
+
+- Configure the correct base path.
+- Preserve JavaScript and CSS asset URLs.
+- Preserve image URLs.
+- Preserve page navigation.
+- Preserve anchor links.
+- Ensure the Home logo returns to the demo homepage.
+- Avoid hardcoding the GitHub username or repository into shared React components.
+
+Use deployment-specific configuration.
+
+## 9. Preserve Navigation and Direct Links
+
+The client should be able to navigate as a normal visitor.
+
+Requirements:
+
+1. All existing published pages should be accessible.
+2. Header navigation must work.
+3. Footer links must work.
+4. Page Links must work.
+5. Classes anchor navigation must work.
+6. Contact Us Jump must work.
+7. Browser Back and Forward must work.
+8. Direct page links must work.
+9. Refreshing a nested page must work.
+
+Implement an appropriate GitHub Pages-compatible routing strategy.
+
+Prefer generating static entry HTML files for each published route where compatible with the current application.
+
+Do not rely on a routing implementation that only works when navigating from the homepage.
+
+## 10. Preserve Website Visuals
+
+The static demo must preserve:
+
+- Water background animations.
+- Swimming turtles.
+- Organic waves.
+- Blob hover effects.
+- Page Links entrance animations.
+- Testimonials carousel.
+- Parallax backgrounds.
+- Header and Footer colour schemes.
+- Shaka animations.
+- Scroll-triggered animations.
+- Classes layouts.
+- Image frames.
+- Responsive design.
+
+Do not replace React animations with screenshots or static images.
+
+### Loading Screens
+
+Adapt the existing navigation and page-content loading screens to the static data source.
+
+Do not leave the demo waiting indefinitely for WordPress.
+
+Preserve the existing intended minimum loading-screen behaviour where applicable.
+
+## 11. Contact Form in Demo Mode
+
+The Contact Form currently submits through WordPress.
+
+GitHub Pages cannot submit to the local WordPress endpoint.
+
+In demo mode:
+
+1. Preserve the Contact Us layout.
+2. Preserve text inputs.
+3. Preserve preset message buttons.
+4. Preserve client-side validation.
+5. Preserve button styling and animations.
+6. Preserve the editable business details from Feature-003.
+7. Preserve booking-page navigation buttons.
+8. Disable real WordPress form submission.
+9. Do not pretend messages have been delivered.
+10. Do not create an unrelated form backend.
+
+When the user tries to submit, display:
+
+**こちらはデモサイトのため、お問い合わせは送信されません。**
+
+Do not display the normal successful-delivery message.
+
+The normal local Contact Form must continue submitting normally.
+
+## 12. Deployment Command Workflow
+
+Implement the command as a repeatable sequence.
+
+### Step 1 — Validate Environment
+
+Check:
+
+- Project configuration.
+- Dependencies.
+- Git repository and remote.
+- WordPress availability.
+- Required content APIs.
+- GitHub deployment configuration.
+
+If WordPress is unavailable, either use the existing safe wp-env startup workflow or provide a clear error.
+
+Do not reset the environment.
+
+### Step 2 — Export Content
+
+Retrieve the latest published WordPress data.
+
+Save it in a clearly identified generated directory.
+
+For example:
+
+```text
+demo/generated/content/
+```
+
+Use the actual project structure to determine appropriate paths.
+
+### Step 3 — Export Media
+
+Copy all required public assets.
+
+Rewrite media references so they work on GitHub Pages.
+
+### Step 4 — Build
+
+Generate the standalone React website.
+
+### Step 5 — Validate
+
+Verify:
+
+- HTML entry points exist.
+- JavaScript bundles exist.
+- CSS bundles exist.
+- Content snapshots exist.
+- Required images exist.
+- Asset references resolve.
+- Required routes can load.
+- No localhost WordPress dependencies remain.
+- No private credentials or files are included.
+
+If validation fails, do not publish the broken build.
+
+### Step 6 — Publish
+
+Publish the generated static files to the configured GitHub Pages branch.
+
+Do not change the normal development branch.
+
+### Step 7 — Report
+
+Show:
+
+- Export status.
+- Media export status.
+- Build result.
+- Validation result.
+- Publication result.
+- Demo URL.
+
+Only claim publication was successful when the publishing operation actually succeeded.
+
+Public GitHub Pages availability may follow after a short deployment delay.
+
+## 13. Failure Handling
+
+The command should fail safely.
+
+### WordPress Unavailable
+
+Do not silently deploy stale content and call it the latest version.
+
+### Missing Media
+
+Identify the missing asset and affected page or section.
+
+### Build Failure
+
+Report the build error and do not publish incomplete output.
+
+### Git Authentication Failure
+
+Explain the required authentication action.
+
+### Publishing Failure
+
+Report the error and preserve the previous deployment where possible.
+
+Do not introduce unnecessarily complicated recovery systems.
+
+## 14. Repeatable Updates
+
+Expected workflow:
+
+1. Update React code.
+2. Update WordPress content.
+3. Save the WordPress changes.
+4. Run `npm run demo:deploy`.
+5. The GitHub Pages client demo updates.
+
+Requirements:
+
+- Export current published content on every run.
+- Include changed images.
+- Remove outdated exported content.
+- Include current React changes.
+- Preserve the existing public URL.
+- Avoid accumulating obsolete generated files.
+- Require no manual content export.
+- Require no manual branch switching.
+- Require no manual commit or push.
+- Do not modify WordPress content.
+
+## 15. Generated Files and Repository Hygiene
+
+Requirements:
+
+1. Keep generated files separate from handwritten source.
+2. Exclude temporary output from normal source control where appropriate.
+3. Do not commit snapshots to the development branch automatically.
+4. Publish only the compiled website.
+5. Exclude `.env` files.
+6. Exclude credentials.
+7. Exclude database files.
+8. Exclude Docker configuration.
+9. Exclude agent instructions and internal documentation.
+
+Add `.nojekyll` when needed for static asset delivery.
+
+## 16. Optional Local Preview
+
+If straightforward, provide:
+
+```bash
+npm run demo:preview
+```
+
+This should serve the generated standalone website locally without WordPress requests.
+
+Use the existing build-tool preview capability where possible.
+
+Do not introduce another backend solely for previewing.
+
+## Acceptance Criteria
+
+- `npm run demo:deploy` exists.
+- Latest published WordPress content is exported.
+- Required media is exported.
+- React builds independently of WordPress.
+- Published demo works with Docker stopped.
+- All existing pages remain accessible.
+- Direct links and refreshes work.
+- Existing animations work.
+- Contact Form does not attempt real submission in demo mode.
+- Booking buttons navigate correctly.
+- Correct GitHub Pages asset paths are used.
+- Build validation happens before publishing.
+- Generated files are published automatically.
+- Public demo URL remains stable.
+- Re-running the command updates the demo.
+- Development source changes are not automatically committed.
+- Private information is not exposed.
+- Normal WordPress development remains unaffected.
+
+---
+
+# Feature-002 — Four Editable Classes Blocks
+
+**Status:** not started
+
+## Objective
+
+Replace the temporary placeholder sections on the Classes page with four fully designed, independently editable class sections.
+
+The four classes are:
+
+1. Kids Class.
+2. First Class.
+3. Second Class.
+4. Third Class.
+
+Each section must contain five elements:
+
+1. Title.
+2. Introduction paragraph.
+3. Featured image.
+4. Timetable.
+5. Book a Demo Lesson button.
+
+The content should be edited through WordPress.
+
+The layout and animations should be implemented in React and SCSS.
+
+## 1. Gutenberg Block Architecture
+
+Create a reusable class-section block.
+
+Suggested block identity:
+
+```text
+aloha/class-section
+```
+
+Register it under:
+
+**Aloha Academy Layouts**
+
+Use this one reusable implementation for all four classes.
+
+Provide four clearly named variations or insertion presets:
+
+- Kids Class.
+- First Class.
+- Second Class.
+- Third Class.
+
+Requirements:
+
+1. Each class section is an independently editable Gutenberg block instance.
+2. All four share the same underlying React component.
+3. All four share the same structured editing system.
+4. Each instance maintains its own title, introduction, image and timetable.
+5. Editing one class must not change another class.
+6. The editor should clearly identify which class is being edited.
+7. Do not create four separate implementations containing duplicated layout code.
+8. Preserve the ability to extend the shared layout later.
+
+Use stable class identifiers so the existing Classes Hero links continue working.
+
+### Existing Anchors
+
+Preserve:
+
+```text
+#kids
+#first-class
+#second-class
+#third-class
+```
+
+Do not change the current Classes Hero link destinations.
+
+## 2. Block Content
+
+Each block should expose the following editable content.
+
+### Title
+
+The class name.
+
+Examples:
+
+- Kids Class.
+- First Class.
+- Second Class.
+- Third Class.
+
+Requirements:
+
+- Editable through Gutenberg.
+- Rendered as an H2.
+- Centred at the top.
+- Uses the existing heading typography.
+- Maintains appropriate spacing below.
+
+Do not change the Classes Hero's existing H1.
+
+The Classes page should retain one page-level H1, クラス, followed by H2 headings for the individual class sections.
+
+### Introduction Paragraph
+
+Provide an editable introduction for each class.
+
+Requirements:
+
+1. Support one or more paragraphs.
+2. Support Japanese text.
+3. Allow normal paragraph breaks.
+4. Preserve appropriate line spacing.
+5. Render beneath the image/timetable row.
+6. Centre the introduction content.
+7. Constrain line length for comfortable reading.
+8. Do not hardcode the introduction in React.
+
+Use an appropriate Gutenberg RichText or equivalent editor control.
+
+Do not add unnecessary text formatting options.
+
+### Featured Image
+
+Each class should have one editable featured image.
+
+Requirements:
+
+1. Select the image from the WordPress Media Library.
+2. Allow replacing it.
+3. Allow removing it where supported.
+4. Preserve image metadata and alt text.
+5. Maintain responsive behaviour.
+6. Do not distort the source image.
+7. Integrate with the existing Image Frame components.
+
+### Timetable
+
+Each class should have an editable weekly timetable.
+
+The timetable must use structured day/time inputs rather than requiring the user to type the entire schedule as freeform text.
+
+See the detailed timetable requirements below.
+
+### Book a Demo Lesson Button
+
+Each class should end with a booking button.
+
+Requirements:
+
+1. Use the existing reusable AlohaButton component.
+2. Use the Primary variant.
+3. Inherit the correct colour scheme from the section.
+4. Centre the button.
+5. Link to the existing WordPress Booking page.
+6. Preserve responsive sizing.
+7. Preserve the existing Primary hover-wave animation.
+
+Use the Japanese label:
+
+**体験レッスンを予約する**
+
+Do not hardcode a GitHub Pages URL or local WordPress URL.
+
+Resolve the booking destination using the existing page-routing system.
+
+This link must also work in the static GitHub Pages demo.
+
+## 3. Two Alternating Colour Styles
+
+The class sections should alternate between two styles.
+
+### Style A — Light Background
+
+Use the existing theme background:
+
+```scss
+background: var(--aloha-theme-background);
+```
+
+Text should use the existing Green colour:
+
+```scss
+color: #066C4C;
+```
+
+This style should be used for:
+
+- Kids Class.
+- Second Class.
+
+### Style B — Light Blue Background
+
+Use:
+
+```scss
+background: #93B7BE;
+color: #4E3D42;
+```
+
+This style should be used for:
+
+- First Class.
+- Third Class.
+
+### Requirements
+
+1. Preserve the two established colour treatments.
+2. Alternate the colours in the order described above.
+3. Use existing global SCSS variables where available.
+4. Do not introduce additional colour schemes.
+5. Ensure headings, paragraphs and timetables inherit the correct colours.
+6. Ensure booking buttons receive the correct theme information.
+7. Preserve readable contrast.
+8. Persist the style variation with each block rather than relying solely on its position in the page.
+
+Reordering sections must not silently change their saved style.
+
+## 4. Block Layout
+
+All four blocks should use the same overall structure.
+
+### Desktop Structure
+
+1. Centred class title.
+2. Two-column image and timetable area.
+3. Centred introduction paragraph.
+4. Centred booking button.
+
+The image and timetable positions should depend on the selected colour style.
+
+### Style A — Light Background
+
+<escape>
+                CLASS TITLE
+
+   TIMETABLE                    IMAGE
+
+
+          INTRODUCTION PARAGRAPH
+
+
+             BOOKING BUTTON
+</escape>
+
+### Style B — Light Blue Background
+
+<escape>
+                CLASS TITLE
+
+      IMAGE                    TIMETABLE
+
+
+          INTRODUCTION PARAGRAPH
+
+
+             BOOKING BUTTON
+</escape>
+
+### Requirements
+
+1. The title is always at the top.
+2. The timetable and image are side by side on desktop.
+3. The introduction is underneath both.
+4. The booking button is underneath the introduction.
+5. The layout is symmetrical and visually balanced.
+6. Use consistent maximum content widths.
+7. Do not allow long timetable entries to force excessive horizontal width.
+8. Maintain comfortable spacing between all elements.
+
+## 5. Alternate Image and Timetable Positions
+
+For Style A:
+
+- Timetable on the left.
+- Image on the right.
+
+For Style B:
+
+- Image on the left.
+- Timetable on the right.
+
+Requirements:
+
+1. Use the saved style variation to determine layout.
+2. Do not require the user to manually reorder Gutenberg blocks.
+3. Keep the visual structure consistent.
+4. Preserve a sensible document order for accessibility.
+5. Do not duplicate content merely to achieve the alternate layout.
+
+Use CSS Grid or an equivalent responsive technique.
+
+## 6. Responsive Layout
+
+On desktop, use two columns.
+
+On narrower screens, collapse into a single-column layout when there is insufficient space.
+
+Requirements:
+
+1. Preserve the title at the top.
+2. Stack the image and timetable without clipping.
+3. Keep the introduction beneath both.
+4. Keep the booking button at the bottom.
+5. Ensure timetable entries remain readable.
+6. Preserve suitable image proportions.
+7. Use appropriate mobile padding.
+8. Avoid horizontal overflow.
+
+Do not enforce a two-column layout on screens where the timetable would become cramped.
+
+The same class block must work on desktop, tablet and mobile.
+
+## 7. Image Frame Selection
+
+Each class block should allow the featured image to use either existing image-frame design.
+
+Options:
+
+- Round Frame.
+- Square Frame.
+
+These are the existing organic shapes created in earlier Epics.
+
+### Gutenberg Setting
+
+Add a setting such as:
+
+**Image Frame Style**
+
+Options:
+
+- Round.
+- Square.
+
+Requirements:
+
+1. The setting is available for every Class Section block.
+2. Use the existing image frame system.
+3. Preserve the existing organic silhouettes.
+4. Preserve image clipping and sizing.
+5. Preserve responsive behaviour.
+6. Persist the chosen frame style.
+7. Do not create new frame designs.
+
+The selected frame should affect only the featured image, not the timetable or entire section.
+
+## 8. Structured Timetable Editor
+
+The timetable requires a dedicated editing interface.
+
+I do not want to manually format the schedule as plain text.
+
+Each class should support a variable number of timetable days.
+
+Each day should support multiple lesson times.
+
+### Data Structure
+
+Use a structured representation similar to:
+
+```js
+[
+  {
+    id: "day-1",
+    weekday: "monday",
+    lessons: [
+      {
+        id: "lesson-1",
+        start: "16:00",
+        end: "16:50"
+      }
+    ]
+  },
+  {
+    id: "day-2",
+    weekday: "saturday",
+    lessons: [
+      {
+        id: "lesson-2",
+        start: "09:30",
+        end: "10:20"
+      },
+      {
+        id: "lesson-3",
+        start: "10:30",
+        end: "11:20"
+      },
+      {
+        id: "lesson-4",
+        start: "14:30",
+        end: "15:40"
+      }
+    ]
+  }
+]
+```
+
+Follow the existing Gutenberg attribute conventions.
+
+Use stable identifiers when dynamically adding or reordering entries.
+
+### Timetable Editor Controls
+
+The editor should allow the user to:
+
+1. Add a timetable day.
+2. Select the day of the week.
+3. Remove a day.
+4. Reorder days where appropriate.
+5. Add a lesson time to a day.
+6. Remove a lesson time.
+7. Edit each lesson's start time.
+8. Edit each lesson's end time.
+9. Add multiple lessons to the same day.
+10. Save and reopen the block without losing the timetable.
+
+Use WordPress editor components appropriate for structured input.
+
+### Days of the Week
+
+Provide all seven days:
+
+- Monday.
+- Tuesday.
+- Wednesday.
+- Thursday.
+- Friday.
+- Saturday.
+- Sunday.
+
+Use a select control instead of requiring the user to type weekday names.
+
+### Time Inputs
+
+Use structured time inputs, preferably native time controls or suitable Gutenberg components.
+
+Requirements:
+
+1. Use a 24-hour time format.
+2. Store a consistent time representation.
+3. Allow independent start and end times.
+4. Validate that the end time follows the start time.
+5. Display understandable validation feedback.
+6. Preserve time values when saving and reopening.
+7. Do not introduce date or timezone conversions for a recurring weekly timetable.
+
+The timetable represents recurring local lesson times, not individual dated appointments.
+
+### Multiple Lessons Per Day
+
+Support any reasonable number of lessons per day.
+
+For example, Saturday may contain:
+
+- 09:30–10:20.
+- 10:30–11:20.
+- 14:30–15:40.
+
+Do not assume every class has the same number of lesson days or lesson times.
+
+Do not hardcode the example timetable as actual class data.
+
+## 9. Japanese Timetable Display
+
+The frontend timetable must display in Japanese.
+
+### Day Labels
+
+Map stored weekdays to Japanese:
+
+| Stored value | Frontend display |
+|---|---|
+| monday | 月曜日 |
+| tuesday | 火曜日 |
+| wednesday | 水曜日 |
+| thursday | 木曜日 |
+| friday | 金曜日 |
+| saturday | 土曜日 |
+| sunday | 日曜日 |
+
+### Time Display
+
+Display time ranges clearly.
+
+Example:
+
+**月曜日**
+
+16:00〜16:50
+
+**土曜日**
+
+09:30〜10:20
+
+10:30〜11:20
+
+14:30〜15:40
+
+### Requirements
+
+1. Display weekday names in Japanese.
+2. Display the times underneath or alongside the corresponding weekday.
+3. Group lessons belonging to the same day.
+4. Allow multiple time ranges per day.
+5. Preserve a clear visual hierarchy.
+6. Use the existing body font and relevant heading treatment.
+7. Keep the timetable readable on small screens.
+8. Do not display an additional "Timetable" section title.
+9. Handle an empty timetable gracefully without showing invented schedules.
+
+The timetable should be the visual content itself, without a separate heading above it.
+
+## 10. Entrance Animations
+
+The class sections should reuse the existing scroll-triggered animation system from the homepage.
+
+Animate:
+
+- Timetable.
+- Featured image.
+- Introduction.
+- Booking button.
+
+### Timetable and Image
+
+These should slide in from the closest side of the page.
+
+For Style A:
+
+- Timetable enters from the left.
+- Image enters from the right.
+
+For Style B:
+
+- Image enters from the left.
+- Timetable enters from the right.
+
+Both should fade into full opacity as they move into position, following the established animation style.
+
+### Introduction
+
+The introduction should:
+
+1. Begin slightly below its final position.
+2. Begin transparent.
+3. Move upwards into place.
+4. Fade to full opacity.
+
+### Booking Button
+
+The booking button should use the same fade-and-rise entrance style.
+
+The button's normal hover animation must continue working after its entrance completes.
+
+### Trigger Behaviour
+
+Reuse the existing scroll-direction and viewport-position rules already implemented elsewhere.
+
+Requirements:
+
+1. Animate when scrolling down into view.
+2. Do not replay the entrance animation when scrolling upwards into the element.
+3. Reset only when safely outside the viewport for a future downward entry.
+4. Do not visibly reset elements while they remain on screen.
+5. Preserve the established animation duration and easing.
+6. Avoid animation conflicts with existing hover transforms.
+7. Respect `prefers-reduced-motion`.
+
+Do not introduce a separate scroll-observation framework when an existing shared utility can be reused.
+
+The title does not require a new animation.
+
+## 11. Organic Wave Borders
+
+Every Class Section should have wave-shaped boundaries.
+
+Requirements:
+
+1. Use the existing wave system.
+2. Apply an organic wave at the top.
+3. Apply an organic wave at the bottom.
+4. Preserve distinct top and bottom wave geometry.
+5. Ensure section backgrounds extend behind appropriate transparent regions.
+6. Avoid straight-edged seams.
+7. Prevent unintended white gaps.
+8. Support adjacency to sections of different backgrounds.
+9. Preserve responsive behaviour.
+10. Prevent horizontal overflow.
+
+### Adjacent Sections
+
+These blocks may appear next to:
+
+- Classes Hero.
+- Other Class Section blocks.
+- Image Dividers.
+- Contact Us.
+- Other existing wave-based components.
+
+They must integrate visually with those components.
+
+Where neighbouring sections each have their own wave, inspect the existing stacking and masking system so the waves do not produce unintended double gaps or exposed background.
+
+Do not assume every adjacent section has the same background colour.
+
+Do not use hardcoded white overlays to cover wave boundaries.
+
+## 12. Booking Button Integration
+
+Use the shared AlohaButton component created in Epic-008.
+
+Requirements:
+
+1. Use the Primary variant.
+2. Inherit the relevant background/theme context.
+3. Preserve theme-aware colours.
+4. Preserve the navigation-style hover wave.
+5. Preserve its minimum width.
+6. Centre the button.
+7. Use the Japanese label 体験レッスンを予約する.
+8. Link to the existing Booking page.
+9. Preserve keyboard focus and touch usability.
+
+Do not recreate the button with bespoke CSS.
+
+The button acts as a navigation link styled using the shared button system.
+
+It does not need to open a booking form inside the Class Section.
+
+## 13. WordPress Page Integration
+
+The four temporary Classes placeholders should be replaced by the new Class Section blocks.
+
+The existing Classes Hero must remain.
+
+### Preserve Existing Structure
+
+Keep:
+
+- Classes Hero.
+- Four circular class links.
+- Existing anchor IDs.
+- Water animation.
+- Turtle animation.
+- Classes page permalink.
+- Global Header.
+- Contact Us.
+- Footer.
+
+### WordPress Editing
+
+Each Class Section must be independently editable.
+
+The user should be able to:
+
+- Change the class title.
+- Edit the introduction.
+- Change the image.
+- Change the image-frame style.
+- Add and remove timetable days.
+- Add and remove lesson sessions.
+- Change lesson times.
+
+The section's structural layout and animations remain controlled by React.
+
+### Existing Placeholder Replacement
+
+Do not automatically delete published placeholder sections.
+
+After the new Gutenberg blocks are available, stop and provide instructions for replacing the placeholders.
+
+The user will insert and configure the four Class Section blocks.
+
+When all required content has been configured, resume frontend integration and verification.
+
+## 14. Static Demo Compatibility
+
+The new blocks must work in the GitHub Pages demo created in Feature-001.
+
+Requirements:
+
+1. Export Class Section block attributes.
+2. Preserve introductions and titles.
+3. Export featured images.
+4. Preserve image-frame selections.
+5. Export structured timetable data.
+6. Preserve Japanese timetable rendering.
+7. Preserve booking destinations.
+8. Preserve animations.
+9. Do not require a live WordPress API after export.
+
+Use the same React Class Section component in development and demo modes.
+
+Do not create a separate static version of the component.
+
+## Acceptance Criteria
+
+- Four Class Section instances can be added in Gutenberg.
+- Each class is independently editable.
+- Each section has a centred H2 title.
+- Each section has an introduction, image, timetable and booking button.
+- Styles alternate between Light Background and Light Blue.
+- Style A displays timetable left and image right.
+- Style B displays image left and timetable right.
+- Mobile layout stacks appropriately.
+- Image Frame can be Round or Square.
+- Timetable supports multiple days.
+- Each day supports multiple lessons.
+- Structured start/end time controls work.
+- Japanese weekday and time display works.
+- Timetable has no visible title.
+- Image and timetable slide in from opposite sides.
+- Introduction fades upwards.
+- Booking button fades upwards.
+- Existing scroll-direction rules are respected.
+- Booking button uses the shared Primary component.
+- Booking button navigates to the Booking page.
+- Every section has compatible wave-shaped edges.
+- No white gaps appear between neighbouring sections.
+- Existing Classes Hero anchors continue working.
+- Gutenberg values persist.
+- GitHub Pages demo supports the new class blocks.
+- No horizontal overflow or unrelated regressions.
+
+---
+
+# Feature-003 — Contact Us Booking Buttons and Editable Business Details
+
+**Status:** not started
+
+## Objective
+
+Update the existing Contact Us section to include:
+
+1. Booking calls-to-action linking to the Booking page.
+2. An editable group containing the business's contact information.
+
+The existing Contact Form must remain functional.
+
+I want the booking buttons to stand out from the form's Submit button so visitors understand that they perform different actions.
+
+## 1. Preserve the Existing Contact Us Section
+
+The current Contact Us component includes:
+
+- Contact Us heading.
+- Existing form.
+- Preset message buttons.
+- Submit button.
+- Shaka artwork and animations.
+- Surfboard artwork and animations.
+- Organic wave borders.
+- WordPress-managed synced pattern.
+
+Preserve all of these.
+
+Do not create a separate Contact Us page or replace the current Contact Form.
+
+The new elements should be integrated into the existing section.
+
+## 2. Add Booking Calls-to-Action
+
+Add a booking button labelled in Japanese:
+
+**体験レッスンを今すぐ予約**
+
+The English meaning is "Book a Demo Lesson Now!"
+
+Two instances should be displayed:
+
+1. Directly beneath the Contact Us heading.
+2. At the very bottom of the Contact Us section, below all business contact details.
+
+The existing form Submit button remains between these positions.
+
+### Intended Layout
+
+<escape>
+                 CONTACT US
+
+         BOOK A DEMO LESSON BUTTON
+
+
+                CONTACT FORM
+
+                SUBMIT BUTTON
+
+
+             BUSINESS DETAILS
+
+             Company name
+             Address
+             Email
+             Telephone
+             Opening hours
+
+
+         BOOK A DEMO LESSON BUTTON
+</escape>
+
+There should therefore be two booking calls-to-action and the existing Submit button.
+
+The two booking calls-to-action should be visually identical to one another.
+
+## 3. Booking Button Destination
+
+For now, both booking buttons should link to the existing Booking page.
+
+Requirements:
+
+1. Use the current WordPress Booking page destination.
+2. Preserve the site's existing route handling.
+3. Support the GitHub Pages demo.
+4. Do not open a new booking form inside Contact Us.
+5. Do not submit the Contact Form.
+6. Do not trigger form validation.
+7. Preserve keyboard and touch accessibility.
+
+Use an anchor/link navigation action rather than a form-submit action.
+
+Do not hardcode a local WordPress URL.
+
+## 4. Reuse the Shared Button Component
+
+Use the reusable AlohaButton component.
+
+Requirements:
+
+1. Both booking buttons use the same component.
+2. The existing Submit button remains a Primary button.
+3. Booking buttons must look different from Submit.
+4. Booking buttons must retain appropriate hover and focus behaviour.
+5. Keep a minimum width of 160px.
+6. Allow wider Japanese labels.
+7. Preserve responsive sizing.
+
+### Visual Distinction
+
+The booking buttons should use a distinct appearance from the Submit button.
+
+Prefer the existing Secondary variant or a small dedicated booking colour treatment using existing approved design tokens.
+
+Do not unnecessarily create a new design system.
+
+If a dedicated booking appearance is required, implement it as a reusable theme or tone of AlohaButton rather than copying the button markup.
+
+Requirements:
+
+- Booking and Submit actions must be clearly distinguishable.
+- Both must remain readable against the Contact Us Green background.
+- Do not make the booking buttons look disabled.
+- Preserve hover animation appropriate to the selected variant.
+- Preserve visible keyboard focus.
+- Do not change the existing Submit button's established appearance.
+
+The objective is to distinguish navigation to Booking from submitting a message.
+
+## 5. Add Editable Business Contact Details
+
+Add a grouped block containing the business's contact information.
+
+This must be editable through WordPress.
+
+Suggested Gutenberg block:
+
+```text
+aloha/contact-details
+```
+
+Register under:
+
+**Aloha Academy Layouts**
+
+The block should integrate with the existing Contact Us synced pattern.
+
+### Initial Content
+
+**Company name**
+
+株式会社 Aloha Academy
+
+**Address**
+
+東京都羽村市小作台3丁目21-1,1階
+
+**Email**
+
+info.englishschool.hawaii@gmail.com
+
+**Telephone**
+
+080-5360-7747
+
+**Opening Hours**
+
+営業時間
+
+火曜日-金曜日15:00-19:00
+
+土曜日 9:30-16:30
+
+Preserve these details as supplied.
+
+Do not substitute the separate Google Maps address from the Access Map block.
+
+## 6. WordPress Editing Controls
+
+Provide clearly labelled editing controls for:
+
+1. Company name.
+2. Postal address.
+3. Email address.
+4. Telephone number.
+5. Opening hours.
+
+Requirements:
+
+1. The details are editable from the WordPress editor.
+2. The fields are grouped logically.
+3. Do not require editing React source.
+4. Do not require raw HTML.
+5. Values persist after saving.
+6. Values appear correctly on the public frontend.
+7. The editor preview clearly identifies the Contact Details block.
+
+### Opening Hours
+
+Allow the opening hours to be edited without changing code.
+
+Prefer a simple structured list of opening-hour entries.
+
+Each entry can contain:
+
+- Day or day range.
+- Time range.
+
+Initial entries:
+
+**火曜日-金曜日** — **15:00-19:00**
+
+**土曜日** — **9:30-16:30**
+
+Allow entries to be added, edited and removed where appropriate.
+
+Do not create a complex scheduling system.
+
+These are display-only business hours, not appointment availability.
+
+## 7. Contact Details Layout
+
+The contact details should appear together as one group.
+
+Position the group:
+
+**Directly below the Contact Form Submit button.**
+
+Requirements:
+
+1. Keep the group visually unified.
+2. Display the company name.
+3. Display the address.
+4. Display the email.
+5. Display the telephone.
+6. Display the opening hours.
+7. Maintain appropriate spacing between entries.
+8. Keep text readable against the Green Contact Us background.
+9. Preserve responsive behaviour.
+10. Centre or align the content consistently with the existing Contact Us design.
+
+Do not introduce unnecessary decorative cards or additional section titles.
+
+The opening-hours label 営業時間 should remain.
+
+## 8. Functional Contact Information
+
+Where appropriate, make contact details interactive.
+
+### Email
+
+Render the email address as a mail link:
+
+```text
+mailto:info.englishschool.hawaii@gmail.com
+```
+
+Derive the URL from the saved WordPress value.
+
+### Telephone
+
+Render the telephone number as a clickable telephone link.
+
+Preserve the displayed number:
+
+```text
+080-5360-7747
+```
+
+Generate an appropriate `tel:` URL from the saved value.
+
+### Address
+
+Display the saved address clearly.
+
+Do not automatically overwrite the existing Access Map location or Google Maps destination.
+
+No new map is required inside Contact Us.
+
+### Opening Hours
+
+Render the saved opening hours in Japanese.
+
+Preserve the stored values.
+
+Do not implement automatic opening-status calculations or booking availability.
+
+## 9. No New Entrance Animation for Contact Details
+
+The new Contact Details group should not animate into view.
+
+Requirements:
+
+1. Display the details normally.
+2. Do not apply slide-in effects.
+3. Do not apply fade-in effects.
+4. Preserve the existing section's animations elsewhere.
+5. Avoid layout shifts caused by delayed contact information.
+
+The booking buttons may use their normal component hover animations, but no new scroll entrance animation is required.
+
+## 10. Contact Us Pattern Integration
+
+The Contact Us section is used as an existing synced WordPress pattern.
+
+Requirements:
+
+1. Preserve the existing synced pattern.
+2. Integrate Contact Details with the pattern's structured content.
+3. Keep all business information editable through Gutenberg.
+4. Ensure changes to the synced pattern propagate to its normal instances.
+5. Avoid duplicating the contact details in React source.
+6. Preserve existing Contact Form configuration and functionality.
+7. Preserve the existing WordPress-to-React content mapping.
+
+If the pattern needs a new nested Contact Details block or structured attribute, implement the editor support before the user updates the pattern.
+
+Do not automatically overwrite existing published pattern content.
+
+### WordPress Handover
+
+Once the editor controls are ready:
+
+1. Open the Contact Us — Full synced pattern through the WordPress editor.
+2. Add or select the Contact Details block.
+3. Enter or confirm the supplied business information.
+4. Save the synced pattern.
+5. Reopen it to verify the data persists.
+
+The booking buttons should be part of the React Contact Us layout and should not require manually adding separate Button blocks each time.
+
+## 11. Preserve Contact Form Behaviour
+
+Do not modify:
+
+- Form field labels.
+- Existing validation.
+- Preset message functionality.
+- Preset hover effects.
+- Email submission.
+- WordPress REST integration.
+- FluentSMTP integration.
+- Clear button behaviour.
+- Form Submit button styling.
+- Existing error messages.
+- Existing successful-submission behaviour.
+
+The Contact Form should function exactly as before.
+
+The new booking buttons must not accidentally submit the form.
+
+## 12. Existing Shaka and Surfboard Assets
+
+Preserve:
+
+- Shaka SVG artwork.
+- Shaka outline/fill corrections.
+- Shaka shake animation.
+- Surfboard artwork.
+- Surfboard entrance animation.
+- Existing responsive positioning.
+
+Inspect whether the additional content affects decorative element positioning.
+
+Make the minimum necessary layout adjustments so the artwork does not obscure the new booking buttons or business details.
+
+Do not redesign the animations.
+
+## 13. Wave Borders and Background Integration
+
+Preserve the Contact Us section's Green background and existing wave system.
+
+Requirements:
+
+1. Keep the top wave.
+2. Keep the bottom wave where currently supported.
+3. Preserve the established wave geometry.
+4. Ensure neighbouring sections blend correctly.
+5. Do not expose white background gaps.
+6. Ensure the Contact Us section grows naturally to accommodate the additional content.
+7. Avoid fixed-height restrictions that clip the contact details.
+8. Preserve mobile responsiveness.
+
+## 14. Static Demo Compatibility
+
+The GitHub Pages demo must display the updated Contact Us section.
+
+Requirements:
+
+1. Export Contact Details block data.
+2. Preserve business name and address.
+3. Preserve email and telephone links.
+4. Preserve opening hours.
+5. Preserve the two booking buttons.
+6. Ensure booking buttons navigate within the static demo.
+7. Preserve visual and responsive layout.
+8. Keep the Contact Form in demo-only submission mode.
+
+The contact details should come from the exported WordPress snapshot.
+
+Do not hardcode separate demo contact information.
+
+## Acceptance Criteria
+
+- Booking button appears beneath Contact Us heading.
+- Booking button appears at the bottom of Contact Us.
+- Both booking buttons have the same appearance.
+- Both link to the existing Booking page.
+- Existing Submit button remains present.
+- Booking buttons look distinguishable from Submit.
+- Shared AlohaButton component is reused.
+- Business contact details appear beneath Submit.
+- Contact Details are editable through Gutenberg.
+- Company name, address, email, telephone and opening hours are supported.
+- Supplied initial values display correctly after configuration.
+- Email link works.
+- Telephone link works.
+- Opening hours are editable.
+- Contact Details do not animate into view.
+- Existing Shaka and Surfboard remain functional.
+- Contact Us waves remain intact.
+- Contact Form submission remains functional locally.
+- Static demo displays the correct contact information.
+- Static demo booking links work.
+- No horizontal overflow or layout regressions.
+
+---
+
+# Epic-010 Implementation Workflow
+
+Run this Epic using:
+
+```text
+//completeEpic-010
+```
+
+Follow the existing AGENTS.md command rules.
+
+Process features in written order while respecting required manual handovers.
+
+## Phase 1 — GitHub Pages Demo Implementation
+
+### Feature-001
+
+1. Inspect the repository and frontend build.
+2. Inspect the WordPress data contract.
+3. Implement static content export.
+4. Implement public media export.
+5. Add demo data-source support.
+6. Configure static routes.
+7. Add demo-only Contact Form submission behaviour.
+8. Implement build validation.
+9. Add `npm run demo:deploy`.
+10. Test local static build functionality.
+
+### GitHub Setup Handover
+
+If GitHub account configuration or authentication is required, stop and provide exact instructions.
+
+Do not publish during initial implementation without authorisation.
+
+After GitHub configuration is complete, the user can resume the Epic.
+
+## Phase 2 — Classes Block Coding Prerequisites
+
+### Feature-002
+
+Before WordPress editing:
+
+1. Register the Class Section block.
+2. Add four named class insertion variations.
+3. Implement editable title and introduction.
+4. Implement image selection.
+5. Implement Round/Square frame selection.
+6. Implement structured timetable controls.
+7. Implement structured timetable persistence.
+8. Add the two alternating style variants.
+9. Implement the React Class Section component.
+10. Implement the animation and wave integration.
+11. Preserve the existing Classes Hero and section anchors.
+12. Extend the demo export data contract for the new block.
+13. Build and verify the Gutenberg editor changes.
+
+### Classes WordPress Handover
+
+Stop and provide exact instructions.
+
+The user will:
+
+1. Open the existing Classes page.
+2. Keep the existing Classes Hero.
+3. Replace the Kids placeholder with a Kids Class block.
+4. Replace the First Class placeholder with a First Class block.
+5. Replace the Second Class placeholder with a Second Class block.
+6. Replace the Third Class placeholder with a Third Class block.
+7. Add the class titles.
+8. Add the introduction paragraphs.
+9. Select a featured image for each class.
+10. Select Round or Square image frames.
+11. Enter timetable days and lesson times.
+12. Confirm the alternating colour styles.
+13. Save the page.
+14. Reopen the editor to confirm values persist.
+
+Do not invent class descriptions, images or timetables when no actual content has been supplied.
+
+Keep the four anchor IDs unchanged.
+
+After the WordPress work is complete, resume the Epic.
+
+## Phase 3 — Contact Us Coding Prerequisites
+
+### Feature-003
+
+Before manual WordPress editing:
+
+1. Inspect the existing Contact Us — Full synced pattern.
+2. Inspect the current Contact Us frontend component.
+3. Register Contact Details editing functionality.
+4. Implement company name, address, email and phone fields.
+5. Implement opening-hours editing.
+6. Extend the WordPress data contract.
+7. Update the Contact Us React component.
+8. Add the booking button beneath the heading.
+9. Add the booking button below Contact Details.
+10. Preserve the existing Submit button.
+11. Ensure booking buttons use the shared AlohaButton component.
+12. Preserve the existing Contact Form behaviour.
+13. Extend static demo export support.
+14. Build the editor changes.
+
+### Contact Us WordPress Handover
+
+Stop and provide exact instructions.
+
+The user will:
+
+1. Open the Contact Us — Full synced pattern.
+2. Select or insert the Contact Details block.
+3. Enter the company name.
+4. Enter the address.
+5. Enter the email address.
+6. Enter the telephone number.
+7. Enter the opening hours.
+8. Save the synced pattern.
+9. Reopen it to verify persistence.
+10. Confirm that all required values appear correctly.
+
+After confirmation, resume the Epic.
+
+## Phase 4 — Final Integration
+
+Once the required WordPress content has been configured:
+
+1. Verify all four Class Sections.
+2. Verify structured timetable rendering.
+3. Verify Class Section animations.
+4. Verify wave transitions.
+5. Verify class booking links.
+6. Verify Contact Details.
+7. Verify both Contact Us booking buttons.
+8. Verify normal Contact Form submission.
+9. Re-export the latest WordPress content.
+10. Verify the static demo includes both new content types.
+11. Verify the standalone build.
+12. Verify GitHub Pages deployment when authorised.
+13. Complete relevant regression tests.
+
+Do not require the user to recreate existing Gutenberg blocks or published content unnecessarily.
+
+---
+
+# General Development Constraints
+
+1. Read and follow `AGENTS.md`.
+2. Preserve Epics 001–009 functionality.
+3. Keep WordPress as the source of truth for editable content.
+4. Keep public-facing presentation in React and SCSS.
+5. Register new blocks under Aloha Academy Layouts.
+6. Reuse existing components and animations.
+7. Reuse existing design tokens.
+8. Reuse existing Image Frames.
+9. Reuse existing organic wave components.
+10. Reuse the existing AlohaButton.
+11. Preserve existing synced patterns.
+12. Preserve all existing WordPress media.
+13. Do not hardcode editable class or contact information.
+14. Do not reset or destroy the WordPress environment.
+15. Do not automatically delete published content.
+16. Do not modify unrelated website functionality.
+17. Do not introduce unnecessary dependencies.
+18. Prevent horizontal overflow.
+19. Respect reduced-motion preferences.
+20. Preserve existing accessibility functionality.
+
+Use the current local plugin source, including:
+
+```text
+backend/plugins/alohaalpha-core/
+```
+
+Do not generate a plugin ZIP for normal local development.
+
+---
+
+# Testing Requirements
+
+Verify relevant frontend behaviour at:
+
+- 320px.
+- 375px.
+- 430px.
+- 768px.
+- 1024px.
+- 1440px.
+
+## Feature-001
+
+Test:
+
+- WordPress content export.
+- Media export.
+- Local URL rewriting.
+- GitHub Pages base paths.
+- Static page navigation.
+- Direct route loading.
+- No live WordPress dependency.
+- Contact Form demo behaviour.
+- Build validation.
+- Deployment error handling.
+- Repeatable updates.
+
+## Feature-002
+
+Test:
+
+- All four class block variations.
+- Independent editing.
+- Title and introduction persistence.
+- Media selection.
+- Round/Square frame selection.
+- Alternating section styles.
+- Timetable day entry.
+- Multiple times per day.
+- Japanese weekday display.
+- Time validation.
+- Desktop column reversal.
+- Mobile stacking.
+- Entrance animations.
+- Wave backgrounds and section transitions.
+- Booking navigation.
+- Existing class anchors.
+- Static demo export.
+
+## Feature-003
+
+Test:
+
+- Two booking CTA placements.
+- Correct booking destination.
+- Distinction from Submit.
+- Contact Details persistence.
+- Email and telephone links.
+- Opening-hours editing.
+- Existing Contact Form submission.
+- Contact Form presets.
+- Shaka and Surfboard positioning.
+- Synced pattern behaviour.
+- Responsive Contact Us layout.
+- Static demo compatibility.
+
+Run focused tests and appropriate build checks.
+
+Where the local WordPress editor is available, verify Gutenberg save/reopen behaviour.
+
+Where GitHub Pages is available and deployment is authorised, verify the published website.
+
+Do not claim tests or external publication have succeeded unless actually performed.
+
+---
+
+# Feature Tracking
+
+Update each feature in:
+
+```text
+src/vibe/epics/epic-010/features.txt
+```
+
+Use the existing valid statuses:
+
+- not started
+- in progress
+- blocked
+- complete
+
+Follow the existing rollback safeguards.
+
+Keep rollback records independently for each feature.
+
+Do not mark a feature complete while essential functionality remains unfinished.
+
+Preserve all user-supplied requirements and existing content.
+
+Do not modify `bugs.txt` unless explicitly instructed.
+
+---
+
+# Completion Reporting
+
+## At Each Mandatory Handover
+
+Report:
+
+1. Completed coding prerequisites.
+2. Files modified.
+3. Relevant checks performed.
+4. Exact manual WordPress or GitHub steps.
+5. Outstanding work.
+
+Stop until the required user configuration is complete.
+
+## At Final Completion
+
+Report:
+
+1. Status of Features 001–003.
+2. Files created and modified.
+3. Gutenberg blocks and controls added.
+4. React and SCSS changes.
+5. Demo export and deployment commands.
+6. Tests and builds performed.
+7. WordPress integration verification.
+8. GitHub Pages verification.
+9. Any remaining limitations.
+
+**Scope:** Complete Epic-010 only. Do not begin Epic-011 or unrelated work.

@@ -1,8 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import { getWordPressRestUrl } from '../wordpressApi.js';
 import Hero from './Hero.jsx';
 import { normalizeHeroLogoStyle } from './hero.js';
+import LoadingScreen from './LoadingScreen.jsx';
+import useLoadingScreen from './useLoadingScreen.js';
 import WordPressContent from './WordPressContent.jsx';
+import './WordPressPage.scss';
+
+const PAGE_REQUEST_TIMEOUT_MS = 30000;
 
 function extractHomeHero(html) {
   const document = new DOMParser().parseFromString(html, 'text/html');
@@ -52,13 +58,16 @@ function extractHomeHero(html) {
 }
 
 export default function WordPressPage({ slug }) {
-  const [page, setPage] = useState(null);
-  const [status, setStatus] = useState('loading');
+  const [{ page, status }, setResult] = useState({ page: null, status: 'loading' });
+  const navigationOverlayActive = useOutletContext();
+  const stage = useLoadingScreen(status !== 'loading', navigationOverlayActive);
 
   useEffect(() => {
     const controller = new AbortController();
-    setStatus('loading');
-    setPage(null);
+    const timeout = window.setTimeout(() => {
+      controller.abort();
+      setResult({ page: null, status: 'error' });
+    }, PAGE_REQUEST_TIMEOUT_MS);
 
     async function loadPage() {
       try {
@@ -68,26 +77,26 @@ export default function WordPressPage({ slug }) {
         );
         if (!response.ok) throw new Error(`WordPress API error ${response.status}`);
         const pages = await response.json();
-
-        if (!pages.length) {
-          setStatus('missing');
-          return;
-        }
-
         if (controller.signal.aborted) return;
-        setPage(pages[0]);
-        setStatus('ready');
+
+        const found = pages.find((item) => item.slug === slug);
+        setResult({ page: found, status: found ? 'ready' : 'missing' });
       } catch (error) {
         if (error.name !== 'AbortError') {
           console.error(error);
-          setStatus('error');
+          setResult({ page: null, status: 'error' });
         }
+      } finally {
+        window.clearTimeout(timeout);
       }
     }
 
     loadPage();
 
-    return () => controller.abort();
+    return () => {
+      window.clearTimeout(timeout);
+      controller.abort();
+    };
   }, [slug]);
 
   const homeContent = useMemo(() => {
@@ -95,10 +104,12 @@ export default function WordPressPage({ slug }) {
     return extractHomeHero(page.content.rendered);
   }, [page, slug]);
 
-  const isCurrentPage = page?.slug === slug;
-
-  if (status === 'loading' || (status === 'ready' && !isCurrentPage)) {
-    return <main className="container"><p>Loading page…</p></main>;
+  if (stage !== 'complete') {
+    return (
+      <main className="aloha-loading-page">
+        <LoadingScreen fading={stage === 'fading'} variant="content" />
+      </main>
+    );
   }
   if (status === 'missing') return <main className="container"><h1>Page not found</h1><p>Create and publish the <strong>{slug}</strong> page in WordPress.</p></main>;
   if (status === 'error') return <main className="container"><h1>Unable to load WordPress content</h1><p>Check that WordPress is running and its REST API is accessible.</p></main>;
@@ -116,9 +127,11 @@ export default function WordPressPage({ slug }) {
     );
   }
 
+  const classesPage = slug === 'classes';
+  const pageClass = classesPage ? 'classes-page container' : slug === 'home' ? 'home-page' : 'container';
   return (
-    <main className={slug === 'home' ? 'home-page' : 'container'} key={page.id}>
-      <WordPressContent className="wp-content" html={page.content.rendered} />
+    <main className={pageClass} key={page.id}>
+      <WordPressContent className="wp-content" classesPage={classesPage} html={page.content.rendered} />
     </main>
   );
 }

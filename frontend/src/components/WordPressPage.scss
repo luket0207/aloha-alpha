@@ -1,0 +1,24 @@
+@use '../styles/variables' as tokens;
+
+main.classes-page:has(.aloha-page-links--classes-hero) {
+  width: 100%;
+  padding-block: 0;
+}
+
+.classes-page .aloha-class-placeholder {
+  display: grid;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 1.25rem;
+  text-align: center;
+  place-items: center;
+
+  &.theme-grey {
+    color: tokens.$cream;
+  }
+
+  h2 {
+    margin: 0;
+    color: inherit;
+  }
+}

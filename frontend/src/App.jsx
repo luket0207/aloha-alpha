@@ -24,7 +24,7 @@ export default function App() {
       <Routes>
         <Route element={<Layout />}>
           {pages.map(({ path, slug }) => (
-            <Route key={slug} path={path} element={<WordPressPage slug={slug} />} />
+            <Route key={slug} path={path} element={<WordPressPage key={slug} slug={slug} />} />
           ))}
           <Route path="*" element={<NotFoundPage />} />
         </Route>

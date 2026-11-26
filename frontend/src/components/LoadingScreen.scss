@@ -1,0 +1,60 @@
+@use '../styles/variables' as tokens;
+
+.aloha-loading {
+  display: grid;
+  justify-items: center;
+  gap: 1.5rem;
+  padding: 2rem;
+  text-align: center;
+  transition: opacity 0.5s ease;
+
+  &.is-fading {
+    opacity: 0;
+  }
+
+  p {
+    margin: 0;
+    font-family: tokens.$font-heading-japanese;
+  }
+}
+
+.aloha-loading--navigation {
+  --aloha-loading-shaka-width: 400px;
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  align-content: center;
+  background: tokens.$dark-blue;
+  color: tokens.$light-blue;
+}
+
+html:has(.aloha-loading--navigation) {
+  overflow: hidden;
+}
+
+.aloha-loading--content {
+  --aloha-loading-shaka-width: 300px;
+  min-height: 100vh;
+  min-height: 100svh;
+  align-content: start;
+  padding-top: clamp(2.5rem, 7vw, 5rem);
+  color: tokens.$dark-blue;
+}
+
+.aloha-loading-page {
+  padding-block: 0;
+}
+
+.aloha-loading__shaka {
+  display: block;
+  width: min(100%, 68vw, 62svh, var(--aloha-loading-shaka-width));
+  height: auto;
+  rotate: -30deg;
+  animation: aloha-shaka-loading-cycle 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aloha-loading__shaka {
+    animation: none;
+  }
+}

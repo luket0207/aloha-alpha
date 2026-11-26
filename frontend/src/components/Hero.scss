@@ -3,6 +3,11 @@
 
 $round-logo-size: 350px;
 
+.aloha-hero,
+.aloha-page-links--classes-hero {
+  --aloha-hero-bottom-wave-height: clamp(4rem, 8vw, 7rem);
+}
+
 .aloha-hero {
   --aloha-hero-water-dark: #{tokens.$light-blue};
   --aloha-hero-water-light: #{color.mix(#fff, tokens.$light-blue, 24%)};
@@ -126,7 +131,7 @@ $round-logo-size: 350px;
   left: 0;
   display: block;
   width: 100%;
-  height: clamp(4rem, 8vw, 7rem);
+  height: var(--aloha-hero-bottom-wave-height);
   color: tokens.$cream;
   pointer-events: none;
 
@@ -189,7 +194,7 @@ $round-logo-size: 350px;
   width: 100%;
   height: 100%;
   overflow: visible;
-  fill: tokens.$green;
+  fill: tokens.$dark-blue;
 }
 
 @media (hover: hover) and (pointer: fine) {

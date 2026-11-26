@@ -1,4 +1,4 @@
-import { useId, useLayoutEffect, useRef } from 'react';
+import { useId, useLayoutEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCalendarDays,
@@ -8,8 +8,8 @@ import {
   faPersonCirclePlus,
   faQuestion,
 } from '@fortawesome/free-solid-svg-icons';
-import { Link } from 'react-router-dom';
-import { WaterSurface } from './Hero.jsx';
+import { Link, useOutletContext } from 'react-router-dom';
+import { HERO_BOTTOM_WAVE } from './hero.js';
 import { IMAGE_DIVIDER_WAVE_OVERSCAN_RATIO } from './imageDivider.js';
 import { ROUND_FRAME_PATH } from './imageFrame.js';
 import {
@@ -20,6 +20,8 @@ import { useSiteAssets } from './SiteAssetsContext.jsx';
 import SwimmingTurtle from './SwimmingTurtle.jsx';
 import useDirectionalReveal from './useDirectionalReveal.js';
 import useReducedMotion from './useReducedMotion.js';
+import { WaterSurface } from './WaterSurface.jsx';
+import Wave from './Wave.jsx';
 import './PageLinks.scss';
 
 const PAGE_LINK_ICONS = {
@@ -37,7 +39,7 @@ function isInternalHref(href) {
   return url.origin === window.location.origin && href.startsWith('/');
 }
 
-function PageLink({ link }) {
+function PageLink({ classesHero, link }) {
   const content = (
     <>
       <svg
@@ -50,7 +52,11 @@ function PageLink({ link }) {
         <path d={ROUND_FRAME_PATH} />
       </svg>
       <span className="aloha-page-links__content">
-        <FontAwesomeIcon aria-hidden="true" icon={PAGE_LINK_ICONS[link.icon] || faHouse} />
+        {link.iconCharacter ? (
+          <span aria-hidden="true" className="aloha-page-links__character wp-exclude-emoji">{link.iconCharacter}</span>
+        ) : (
+          <FontAwesomeIcon aria-hidden="true" icon={PAGE_LINK_ICONS[link.icon] || faHouse} />
+        )}
         <span>{link.label}</span>
       </span>
     </>
@@ -58,8 +64,16 @@ function PageLink({ link }) {
   const className = 'aloha-page-links__link';
   const style = { '--aloha-page-link-angle': `${link.orientation}deg` };
 
-  return isInternalHref(link.href) ? (
-    <Link className={className} style={style} to={link.href}>{content}</Link>
+  const isClassAnchor = classesHero && link.href.startsWith('#');
+  return (isClassAnchor || isInternalHref(link.href)) ? (
+    <Link
+      className={className}
+      state={isClassAnchor ? { classesAnchor: true } : undefined}
+      style={style}
+      to={link.href}
+    >
+      {content}
+    </Link>
   ) : (
     <a className={className} href={link.href} style={style}>{content}</a>
   );
@@ -130,16 +144,38 @@ export function PageLinksContinuity({ children }) {
   );
 }
 
-export default function PageLinks({ links, sharedBackground = false }) {
+export default function PageLinks({ classesHero = false, links, sharedBackground = false }) {
   const sectionRef = useRef(null);
   const reducedMotion = useReducedMotion();
+  const navigationOverlayActive = useOutletContext();
+  const [entered, setEntered] = useState(false);
   const { turtle } = useSiteAssets();
-  const { animate, motionReady, revealed } = useDirectionalReveal(
+  const directionalReveal = useDirectionalReveal(
     sectionRef,
-    reducedMotion,
+    reducedMotion || classesHero,
     { revealOnUpwardEntry: true },
   );
-  const className = `aloha-page-links${sharedBackground ? ' aloha-page-links--continuous' : ''}${revealed ? ' is-revealed' : ''}`;
+
+  useLayoutEffect(() => {
+    if (!classesHero || reducedMotion || navigationOverlayActive || entered) return undefined;
+
+    // Commit the starting positions before the first visible transition.
+    let frame = window.requestAnimationFrame(() => {
+      frame = window.requestAnimationFrame(() => setEntered(true));
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [classesHero, entered, navigationOverlayActive, reducedMotion]);
+
+  const { animate, motionReady, revealed } = classesHero
+    ? { animate: !reducedMotion && entered, motionReady: !reducedMotion, revealed: reducedMotion || entered }
+    : directionalReveal;
+  const className = [
+    'aloha-page-links',
+    classesHero && 'aloha-page-links--classes-hero',
+    sharedBackground && 'aloha-page-links--continuous',
+    revealed && 'is-revealed',
+  ].filter(Boolean).join(' ');
+  const Title = classesHero ? 'h1' : 'h2';
 
   return (
     <section
@@ -151,8 +187,13 @@ export default function PageLinks({ links, sharedBackground = false }) {
       style={{ '--aloha-page-link-duration': `${PAGE_LINK_ENTRANCE_DURATION_MS}ms` }}
     >
       {!sharedBackground && <PageLinksWater className="aloha-page-links__water" />}
-      <SwimmingTurtle asset={turtle} className="aloha-page-links__turtle" />
-      <h2 className="aloha-page-links__title aloha-heading--japanese">リンク集</h2>
+      <SwimmingTurtle
+        asset={turtle}
+        className="aloha-page-links__turtle"
+        minDurationMs={10000}
+        maxDurationMs={14000}
+      />
+      <Title className="aloha-page-links__title aloha-heading--japanese">{classesHero ? 'クラス' : 'リンク集'}</Title>
       <ul className="aloha-page-links__list">
         {links.map((link, index) => (
           <li
@@ -160,10 +201,11 @@ export default function PageLinks({ links, sharedBackground = false }) {
             key={link.id}
             style={{ '--aloha-page-link-delay': `${pageLinkAnimationDelay(index)}ms` }}
           >
-            <PageLink link={link} />
+            <PageLink classesHero={classesHero} link={link} />
           </li>
         ))}
       </ul>
+      {classesHero && <Wave className="aloha-hero__bottom-wave" {...HERO_BOTTOM_WAVE} />}
     </section>
   );
 }

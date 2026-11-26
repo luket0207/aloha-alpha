@@ -1,14 +1,21 @@
 @use '../styles/variables' as tokens;
+@use '../styles/mixins';
 
 .site-footer {
   position: relative;
   flex: 0 0 auto;
   margin-top: clamp(4rem, 8vw, 7rem);
   padding: clamp(2rem, 5vw, 3.5rem) 1rem 2rem;
-  background: tokens.$light-blue;
-  color: tokens.$mocha;
   text-align: center;
   isolation: isolate;
+
+  &.theme-dark-blue {
+    @include mixins.theme(tokens.$dark-blue, tokens.$cream, tokens.$light-blue);
+  }
+
+  &:is(.theme-dark-blue, .theme-green) .aloha-footer__content a:hover {
+    text-decoration-color: var(--aloha-theme-accent);
+  }
 }
 
 .aloha-footer__wave {
@@ -20,7 +27,7 @@
   display: block;
   width: 100%;
   height: clamp(4rem, 8vw, 7rem);
-  color: tokens.$light-blue;
+  color: var(--aloha-theme-background);
 
   path {
     fill: currentColor;

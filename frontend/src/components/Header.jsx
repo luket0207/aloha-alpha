@@ -19,6 +19,7 @@ import Wave from './Wave.jsx';
 import './Header.scss';
 
 const DESKTOP_MEDIA_QUERY = '(min-width: 900px)';
+const NAVIGATION_TIMEOUT_MS = 30000;
 const HEADER_BOTTOM_WAVE = {
   width: 1440,
   height: 16,
@@ -91,7 +92,7 @@ export function parseHeader(html) {
   };
 }
 
-export default function Header() {
+export default function Header({ onNavigationSettled }) {
   const [header, setHeader] = useState({
     colour: DEFAULT_HEADER_COLOUR,
     logoHtml: '',
@@ -126,6 +127,10 @@ export default function Header() {
 
   useEffect(() => {
     const controller = new AbortController();
+    const timeout = window.setTimeout(() => {
+      controller.abort();
+      setStatus('error');
+    }, NAVIGATION_TIMEOUT_MS);
     setHeader({ colour: DEFAULT_HEADER_COLOUR, logoHtml: '', links: [] });
     setStatus('loading');
 
@@ -137,6 +142,7 @@ export default function Header() {
         return response.json();
       })
       .then((section) => {
+        if (controller.signal.aborted) return;
         setHeader(parseHeader(section.html));
         setStatus('ready');
       })
@@ -145,10 +151,18 @@ export default function Header() {
           console.error(error);
           setStatus('error');
         }
-      });
+      })
+      .finally(() => window.clearTimeout(timeout));
 
-    return () => controller.abort();
+    return () => {
+      window.clearTimeout(timeout);
+      controller.abort();
+    };
   }, []);
+
+  useEffect(() => {
+    if (status !== 'loading') onNavigationSettled?.(true);
+  }, [onNavigationSettled, status]);
 
   useEffect(() => {
     const media = window.matchMedia(DESKTOP_MEDIA_QUERY);

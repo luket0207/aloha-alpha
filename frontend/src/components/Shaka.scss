@@ -1,21 +1,28 @@
-@keyframes aloha-shaka-cycle {
-  0%,
-  30%,
-  100% {
-    transform: rotate(0deg);
-  }
+@use 'sass:math';
 
-  3.333%,
-  10%,
-  16.667%,
-  23.333% {
-    transform: rotate(15deg);
-  }
+@mixin shaka-cycle($name, $shake-end) {
+  @keyframes #{$name} {
+    0%,
+    #{$shake-end},
+    100% {
+      transform: rotate(0deg);
+    }
 
-  6.667%,
-  13.333%,
-  20%,
-  26.667% {
-    transform: rotate(-15deg);
+    #{math.div($shake-end, 9)},
+    #{math.div(3 * $shake-end, 9)},
+    #{math.div(5 * $shake-end, 9)},
+    #{math.div(7 * $shake-end, 9)} {
+      transform: rotate(15deg);
+    }
+
+    #{math.div(2 * $shake-end, 9)},
+    #{math.div(4 * $shake-end, 9)},
+    #{math.div(6 * $shake-end, 9)},
+    #{math.div(8 * $shake-end, 9)} {
+      transform: rotate(-15deg);
+    }
   }
 }
+
+@include shaka-cycle(aloha-shaka-cycle, 30%);
+@include shaka-cycle(aloha-shaka-loading-cycle, 75%);

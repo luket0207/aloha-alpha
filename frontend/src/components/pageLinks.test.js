@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
+  normalizePageLinkCharacter,
   normalizePageLinkIcon,
   PAGE_LINK_ENTRANCE_DURATION_MS,
   pageLinkAnimationDelay,
@@ -12,6 +13,14 @@ test('normalizes Page Links icons to the supported Font Awesome allowlist', () =
   assert.equal(normalizePageLinkIcon('camera'), 'camera');
   assert.equal(normalizePageLinkIcon('javascript:alert(1)'), 'house');
   assert.equal(normalizePageLinkIcon(undefined), 'house');
+});
+
+test('keeps one visible icon character, including combined and joined characters', () => {
+  assert.equal(normalizePageLinkCharacter('  Aloha'), 'A');
+  assert.equal(normalizePageLinkCharacter('e\u0301x'), 'é');
+  assert.equal(normalizePageLinkCharacter('👩‍🏫🇯🇵'), '👩‍🏫');
+  assert.equal(normalizePageLinkCharacter('   '), '');
+  assert.equal(normalizePageLinkCharacter(`x${'\u0301'.repeat(64)}`), '');
 });
 
 test('creates deterministic and naturally varied blob orientations', () => {

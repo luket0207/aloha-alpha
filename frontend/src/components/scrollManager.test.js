@@ -36,3 +36,15 @@ test('resetScrollPosition resets instantly and scrollToHashTarget runs once when
     ['target', { behavior: 'auto', block: 'start' }],
   ]);
 });
+
+test('an intentional section link can focus its target and scroll smoothly', () => {
+  const calls = [];
+  const documentObject = {
+    getElementById: () => ({
+      focus: (options) => calls.push(options),
+      scrollIntoView: (options) => calls.push(options),
+    }),
+  };
+  assert.equal(scrollToHashTarget('#kids', documentObject, { behavior: 'smooth', focus: true }), true);
+  assert.deepEqual(calls, [{ preventScroll: true }, { behavior: 'smooth', block: 'start' }]);
+});
