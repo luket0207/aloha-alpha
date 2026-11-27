@@ -18,6 +18,22 @@
   overflow: hidden;
 }
 
+.aloha-image-divider--background {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+
+  .aloha-image-divider__media::after {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.2);
+    content: '';
+  }
+}
+
 .aloha-image-divider .aloha-image-divider__media > img {
   position: absolute;
   top: 50%;
@@ -33,7 +49,7 @@
 }
 
 @media (max-width: 899px) {
-  .aloha-image-divider {
+  .aloha-image-divider:not(.aloha-image-divider--background) {
     height: var(
       --aloha-image-divider-mobile-height,
       min(
@@ -41,10 +57,9 @@
         calc(100vw / var(--aloha-image-divider-image-aspect-ratio, 1))
       )
     );
-  }
-
-  .aloha-image-divider .aloha-image-divider__media > img {
-    max-width: 100%;
+    .aloha-image-divider__media > img {
+      max-width: 100%;
+    }
   }
 }
 

@@ -7,22 +7,22 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-const ALOHAALPHA_TURTLE_OPTION = 'alohaalpha_turtle_attachment_id';
-
-/**
- * Resolve the unique turtle.png attachment once, then retain its stable ID.
- */
-function alohaalpha_get_turtle_attachment_id() {
-    static $attachment_id = null;
-
-    if ( null !== $attachment_id ) {
-        return $attachment_id;
+function alohaalpha_is_public_png_attachment( $id ) {
+    if ( 'attachment' !== get_post_type( $id ) || 'image/png' !== get_post_mime_type( $id ) || 'publish' !== get_post_status( $id ) ) {
+        return false;
     }
 
-    $stored_id = absint( get_option( ALOHAALPHA_TURTLE_OPTION, 0 ) );
-    if ( $stored_id && 'attachment' === get_post_type( $stored_id ) && wp_attachment_is_image( $stored_id ) ) {
-        $attachment_id = $stored_id;
-        return $attachment_id;
+    $parent_id = wp_get_post_parent_id( $id );
+    return ! $parent_id || '' === (string) get_post_field( 'post_password', $parent_id, 'raw' );
+}
+
+/**
+ * Resolve an exact, unique Media Library filename and retain its attachment ID.
+ */
+function alohaalpha_get_shared_png_id( $filename, $option ) {
+    $stored_id = absint( get_option( $option, 0 ) );
+    if ( $stored_id && alohaalpha_is_public_png_attachment( $stored_id ) ) {
+        return $stored_id;
     }
 
     $candidate_ids = get_posts(
@@ -35,7 +35,7 @@ function alohaalpha_get_turtle_attachment_id() {
             'meta_query'     => array(
                 array(
                     'key'     => '_wp_attached_file',
-                    'value'   => 'turtle.png',
+                    'value'   => $filename,
                     'compare' => 'LIKE',
                 ),
             ),
@@ -44,26 +44,26 @@ function alohaalpha_get_turtle_attachment_id() {
     $candidate_ids = array_values(
         array_filter(
             array_map( 'absint', $candidate_ids ),
-            static function ( $candidate_id ) {
+            static function ( $candidate_id ) use ( $filename ) {
                 $attached_file = get_post_meta( $candidate_id, '_wp_attached_file', true );
-                return 'turtle.png' === wp_basename( (string) $attached_file );
+                return $filename === wp_basename( (string) $attached_file );
             }
         )
     );
 
-    $attachment_id = 1 === count( $candidate_ids ) ? $candidate_ids[0] : 0;
-    if ( $attachment_id ) {
-        update_option( ALOHAALPHA_TURTLE_OPTION, $attachment_id, false );
+    if ( 1 !== count( $candidate_ids ) || ! alohaalpha_is_public_png_attachment( $candidate_ids[0] ) ) {
+        return 0;
     }
 
-    return $attachment_id;
+    update_option( $option, $candidate_ids[0], false );
+    return $candidate_ids[0];
 }
 
 /**
- * Return only the public image data needed for the decorative turtle.
+ * Return the public URL and intrinsic size for a shared image.
  */
-function alohaalpha_get_turtle_data() {
-    $attachment_id = alohaalpha_get_turtle_attachment_id();
+function alohaalpha_get_shared_png( $filename, $option ) {
+    $attachment_id = alohaalpha_get_shared_png_id( $filename, $option );
     if ( ! $attachment_id ) {
         return null;
     }
@@ -87,7 +87,12 @@ function alohaalpha_get_turtle_data() {
 function alohaalpha_get_site_assets() {
     return rest_ensure_response(
         array(
-            'turtle' => alohaalpha_get_turtle_data(),
+            'turtle'           => alohaalpha_get_shared_png( 'turtle.png', 'alohaalpha_turtle_attachment_id' ),
+            'classDecorations' => array(
+                'palmTree'    => alohaalpha_get_shared_png( 'palm-tree.png', 'alohaalpha_palm_tree_attachment_id' ),
+                'greenTurtle' => alohaalpha_get_shared_png( 'turtle-g.png', 'alohaalpha_green_turtle_attachment_id' ),
+                'surfboard'   => alohaalpha_get_shared_png( 'surfboard.png', 'alohaalpha_surfboard_attachment_id' ),
+            ),
         )
     );
 }

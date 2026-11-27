@@ -1,0 +1,1802 @@
+# Epic-011 — Bugs 001–006
+
+## Overview
+
+This bug-fix phase refines the decorative artwork introduced in Epic-011 Feature-001 and corrects the remaining mobile rendering issues in Testimonials.
+
+The six bugs are:
+
+- Bug-001 — Increase and reposition Class Section decorations on mobile.
+- Bug-002 — Make the full Palm Tree visible and increase its desktop height.
+- Bug-003 — Increase the First Class Shaka size.
+- Bug-004 — Make the Second Class Turtle swim further upwards.
+- Bug-005 — Increase and reposition the Third Class Surfboard.
+- Bug-006 — Make Testimonials use the same mobile background and waves as Homepage Image Divider.
+
+Follow `AGENTS.md` and preserve all existing WordPress content.
+
+---
+
+# Bug-001 — Larger and Repositioned Mobile Class Decorations
+
+**Status:** complete
+
+**Notes:** Mobile artwork uses independent positioning wrappers. Palm and surfboard are centred and aspect-ratio fitted to 80% of the section dimensions; Shaka and green turtle use 90% of the inner width behind the introduction with opposite nudges. The centred mobile surfboard keeps its right-to-left fall and rests upright. Chrome verified sizes, positions, live introduction reflow, pointer behavior and desktop baselines.
+
+## Issue
+
+The decorative images introduced in Epic-011 Feature-001 are too small on mobile.
+
+I want them to be significantly larger, with different positioning rules depending on the decoration.
+
+These changes apply only to mobile layouts.
+
+## 1. Palm Tree and Surfboard
+
+The Palm Tree in Kids Class and Surfboard in Third Class should both be positioned in the centre of their respective Class Sections.
+
+### Size
+
+Each image should be sized within two limits:
+
+- Maximum height: 80% of its Class Section container's height.
+- Maximum width: 80% of its Class Section container's width.
+
+Whichever limit is reached first should control the final image size.
+
+### Requirements
+
+1. Preserve the image's original aspect ratio.
+2. Scale the image as large as possible within both constraints.
+3. Do not stretch or distort the image.
+4. Do not allow either image to exceed 80% of the section's height.
+5. Do not allow either image to exceed 80% of the section's width.
+6. Recalculate sizing when the container dimensions change.
+7. Support sections with different content heights.
+
+For example, if the image would exceed the maximum permitted width before reaching 80% of the section height, use the width limit.
+
+Avoid relying on percentage-based CSS image heights unless the containing block has a definite, correctly resolved height.
+
+If necessary, use the existing measurement utilities or ResizeObserver to determine the actual dimensions.
+
+### Positioning
+
+Both images should be centred on the X and Y axes of their respective Class Sections.
+
+Requirements:
+
+1. Centre horizontally relative to the section.
+2. Centre vertically relative to the section.
+3. Do not centre relative to the viewport.
+4. Do not centre relative to the featured-image element.
+5. Preserve their final centred position after entrance animations finish.
+6. Prevent decoration sizing or positioning from increasing the section's height.
+
+Use a dedicated positioning wrapper so entrance rotation does not interfere with centring transforms.
+
+### Mobile Opacity
+
+Preserve the existing decorative opacity:
+
+**0.2**
+
+Both images must remain behind all normal content.
+
+### Entrance Animations
+
+Preserve the existing falling animations:
+
+- Palm Tree — existing bottom-centre falling rotation.
+- Surfboard — existing right-to-left falling rotation.
+
+The animations should end at the new centred positions.
+
+Do not remove the falling effects or introduce unnecessary movement.
+
+---
+
+## 2. Shaka and Turtle
+
+The Shaka in First Class and Green Turtle in Second Class should also become considerably larger on mobile.
+
+### Width
+
+Both should occupy approximately:
+
+**90% of their containing Class Section's available width.**
+
+Requirements:
+
+1. Preserve their original aspect ratios.
+2. Use responsive sizing.
+3. Prevent horizontal overflow.
+4. Do not stretch either image.
+5. Keep both images behind the actual content.
+6. Preserve their 0.2 mobile opacity.
+
+The 90% width should be based on the Class Section's available inner width, not an unrelated viewport or image-frame dimension.
+
+### Positioning Behind the Introduction
+
+Unlike the Palm Tree and Surfboard, the Shaka and Turtle should be placed behind the introduction paragraphs.
+
+They should not be centred vertically within the entire Class Section.
+
+#### First Class — Shaka
+
+Position the Shaka:
+
+- Behind the introduction paragraph.
+- Approximately centred on the paragraph.
+- Slightly offset to the right.
+
+Its centre should be a little to the right of the introduction's centre.
+
+#### Second Class — Turtle
+
+Position the Turtle:
+
+- Behind the introduction paragraph.
+- Approximately centred on the paragraph.
+- Slightly offset to the left.
+
+Its centre should be a little to the left of the introduction's centre.
+
+### Requirements
+
+1. Position relative to the introduction region.
+2. Keep both decorations behind the text.
+3. Maintain approximately 90% width.
+4. Use small, responsive horizontal offsets.
+5. Do not let the offsets cause horizontal overflow.
+6. Do not allow the decorations to push the paragraph or other content out of place.
+7. Keep the introduction fully readable.
+8. Preserve existing section padding.
+
+Do not use fixed vertical offsets that only work for a specific paragraph length.
+
+The position should adapt when the introduction contains more or less text.
+
+### Preserve Animations
+
+#### Shaka
+
+Keep the existing Contact Us-style Shaka animation and timing.
+
+#### Turtle
+
+Keep the existing swimming entrance and final angled resting orientation.
+
+The mobile version should finish behind the introduction paragraph, rather than retaining an unsuitable desktop final position.
+
+Use the new mobile destination when calculating the swimming trajectory and final heading.
+
+Do not introduce a sudden position jump when the animation completes.
+
+---
+
+## 3. Mobile Layering
+
+All four decorative elements must remain behind actual section content.
+
+Use an appropriate stacking hierarchy:
+
+1. Class Section background.
+2. Decorative artwork.
+3. Title, introduction, timetable, image and booking button.
+
+Requirements:
+
+- Decorations are non-interactive.
+- Preserve `pointer-events: none`.
+- Preserve 0.2 opacity.
+- Do not reduce the opacity of actual content.
+- Do not obstruct links or buttons.
+- Prevent horizontal overflow.
+- Respect existing wave clipping.
+- Avoid unnecessary layout shifts.
+
+Do not apply opacity to the entire decorative wrapper if it contains non-decorative content.
+
+---
+
+## 4. Preserve Desktop Behaviour
+
+Bug-001 is specifically a mobile layout adjustment.
+
+Do not change desktop positioning or dimensions as part of this bug.
+
+Desktop size adjustments are specified independently in Bugs 002–005.
+
+---
+
+## Acceptance Criteria
+
+- Mobile Palm Tree is centred horizontally and vertically.
+- Mobile Surfboard is centred horizontally and vertically.
+- Both fit within 80% height and 80% width limits.
+- Both preserve their aspect ratios.
+- Shaka is approximately 90% of the Class Section's inner width.
+- Turtle is approximately 90% of the Class Section's inner width.
+- Shaka sits behind the introduction and slightly to the right.
+- Turtle sits behind the introduction and slightly to the left.
+- All mobile decorations retain 0.2 opacity.
+- All existing entrance animations continue working.
+- Decorations do not affect layout height or intercept interactions.
+- Desktop layouts remain unchanged.
+- No horizontal overflow.
+
+---
+
+# Bug-002 — Fully Visible, Taller Desktop Palm Tree
+
+**Status:** complete
+
+**Notes:** The desktop palm now rests above the bottom wave with no downward crop. It targets 75% of the rendered section height, capped proportionally by the safe margin and surface. Chrome verified the complete image, mobile sizing, and the existing bottom-pivot entrance.
+
+## Issue
+
+The Palm Tree in Kids Class is currently positioned so its bottom extends below the section boundary and gets cut off.
+
+I have changed my mind about this.
+
+I now want the entire Palm Tree to be visible.
+
+I also want it to be taller on desktop.
+
+## 1. Remove Intentional Bottom Cropping
+
+Requirements:
+
+1. Remove the intentional downward offset causing the trunk to be cut off.
+2. Keep the entire Palm Tree visible within the Kids Class section.
+3. Ensure the bottom of the trunk is visible.
+4. Do not allow the section's wave mask to clip the Palm Tree.
+5. Preserve the existing wave border.
+6. Do not let the Palm Tree extend visibly into the next section.
+7. Preserve its left-side desktop placement.
+
+Allow enough clearance above the section's bottom wave for the complete tree to remain visible.
+
+Do not fix the clipping by removing the section's wave.
+
+## 2. Increase Desktop Height
+
+Set the desktop Palm Tree height to approximately:
+
+**75% of the Class Section's height.**
+
+Requirements:
+
+1. Use the actual rendered Kids Class section height.
+2. Preserve the original image aspect ratio.
+3. Increase from the previous 50% target to 75%.
+4. Keep the full image visible.
+5. Preserve the existing desktop margin placement.
+6. Avoid covering the class content.
+7. Scale down proportionally if the available horizontal margin cannot accommodate the full target size.
+
+The 75% value is the intended size where space permits.
+
+Do not force the image behind desktop content just to achieve that height.
+
+## 3. Preserve Entrance Animation
+
+Preserve the existing falling rotation around the bottom centre.
+
+The Palm Tree should:
+
+1. Begin angled.
+2. Fall into place.
+3. Finish completely visible.
+4. Remain stationary after the entrance.
+
+The new final position must not be clipped by the bottom wave.
+
+## 4. Mobile Behaviour
+
+On mobile, use the new rules from Bug-001:
+
+- Centre the Palm Tree on both axes.
+- Maximum 80% of container height.
+- Maximum 80% of container width.
+- Preserve 0.2 opacity.
+
+Do not apply the desktop 75% height rule to mobile.
+
+## Acceptance Criteria
+
+- Full Palm Tree is visible on desktop.
+- No trunk is intentionally cut off.
+- Desktop Palm Tree targets 75% of section height.
+- Palm Tree remains in the left margin.
+- Existing falling animation remains functional.
+- Wave border remains intact.
+- Mobile behaviour follows Bug-001.
+- No overlap with desktop content.
+
+---
+
+# Bug-003 — Increase First Class Shaka Width
+
+**Status:** complete
+
+**Notes:** First Class Shaka targets 14rem plus 100px on desktop and remains capped by the right margin. Chrome verified the target, the white SVG, the shared shake cycle and the mobile introduction placement.
+
+## Issue
+
+The Shaka decoration in First Class is too small.
+
+I want this particular Shaka to be approximately 100px wider than it currently is.
+
+Do not change any other Shaka used throughout the website.
+
+## 1. Desktop Size Increase
+
+Increase the First Class decorative Shaka's target width by:
+
+**100px.**
+
+For example:
+
+If its current width is 200px, the new target width should be approximately 300px.
+
+Requirements:
+
+1. Inspect its existing width.
+2. Increase the target width by approximately 100px.
+3. Preserve the SVG aspect ratio.
+4. Preserve its existing resting rotation.
+5. Keep it positioned in the right desktop margin.
+6. Avoid content overlap.
+7. Prevent horizontal overflow.
+8. Allow the size to be constrained by available margin space when necessary.
+
+Do not alter the SVG's internal geometry.
+
+Use a Class Section-specific size modifier or configurable prop.
+
+## 2. Preserve Other Shakas
+
+Do not change:
+
+- Contact Us Shaka.
+- Loading-screen Shaka.
+- In-page loading Shaka.
+- Any future independent Shaka instances.
+- Shared Shaka animation keyframes.
+- Global Shaka width tokens.
+
+This is a local adjustment to the First Class decoration.
+
+## 3. Preserve Animation
+
+Keep:
+
+- White colour.
+- Existing entrance trigger.
+- Existing Contact Us-style shake cycle.
+- Existing resting angle.
+- Original shake amplitude and timing.
+
+The increased size must not change the animation's pivot or introduce an extra outline.
+
+## 4. Mobile Behaviour
+
+On mobile, use Bug-001's specific sizing and positioning:
+
+- Approximately 90% section inner width.
+- Positioned behind the introduction.
+- Slightly to the right.
+- Opacity 0.2.
+
+The desktop 100px increase must not override that mobile requirement.
+
+## Acceptance Criteria
+
+- First Class Shaka is approximately 100px wider on desktop.
+- It remains properly positioned.
+- No desktop content overlap.
+- Its animation remains unchanged.
+- Other Shaka instances are unaffected.
+- Mobile behaviour follows Bug-001.
+
+---
+
+# Bug-004 — Increase Second Class Turtle Swimming Height
+
+**Status:** complete
+
+**Notes:** Desktop turtle now ends at 30% from the section top with clearance for rotation, and its heading follows the recalculated bottom-left trajectory. Chrome verified the destination, wide-desktop 200px height, finite wiggle and unchanged mobile introduction target.
+
+## Issue
+
+The Green Turtle in Second Class currently swims upwards from the bottom-left and finishes approximately halfway up the section.
+
+I want the Turtle to swim further upwards.
+
+It should finish approximately:
+
+**70% of the way up the Class Section.**
+
+## 1. Update Final Destination
+
+Interpret 70% upwards as:
+
+- Starting near the bottom of the section.
+- Travelling upwards through approximately 70% of its height.
+- Finishing with its centre approximately 30% down from the top.
+
+For example, a section measuring 1,000px in height would have a target vertical centre of approximately 300px from the top.
+
+Requirements:
+
+1. Update the desktop swimming destination.
+2. Base the position on actual section height.
+3. Preserve the bottom-left starting region.
+4. Preserve a smooth upward trajectory.
+5. Keep the Turtle in the left desktop margin.
+6. Do not move it behind desktop content.
+7. Prevent it from clipping against the top wave.
+
+The final position should be calculated with enough room for the Turtle's full dimensions and rotation.
+
+## 2. Preserve Turtle Appearance
+
+Keep:
+
+- `turtle-g.png`.
+- Existing Green colour.
+- Desktop image height of 200px.
+- Original image proportions.
+- Current 0.2 opacity only on mobile.
+
+Do not use the separate water-background turtle image.
+
+## 3. Preserve Swimming Animation
+
+Requirements:
+
+1. Preserve the existing swimming entrance.
+2. Preserve the ±2° wiggle while swimming.
+3. Calculate heading from the updated trajectory.
+4. Preserve the final angled resting orientation.
+5. Stop translating at the new position.
+6. Stop the wiggle after the entrance finishes.
+7. Do not snap the image upright at the end.
+
+The Turtle should still appear to have swum naturally into its final position.
+
+## 4. Mobile Behaviour
+
+On mobile, use Bug-001's requirement:
+
+- Approximately 90% container inner width.
+- Behind the introduction.
+- Slightly to the left.
+- Opacity 0.2.
+
+The desktop 70%-up destination must not override the mobile introduction-relative placement.
+
+## Acceptance Criteria
+
+- Desktop Turtle ends approximately 70% up the section.
+- Its centre is approximately 30% below the section top.
+- Turtle remains in the left margin.
+- Turtle does not clip against the wave.
+- Existing wiggle and resting angle remain correct.
+- Mobile uses the introduction-relative layout.
+- No unintended changes to the swimming turtles used elsewhere.
+
+---
+
+# Bug-005 — Taller and Higher Third Class Surfboard
+
+**Status:** complete
+
+**Notes:** The desktop surfboard now aims for 75% of the section height and measures the actual timetable/image row bottom for its pivot. Its proportional margins allow the rotated art to fit, and the row observer retains alignment after reflow. Chrome verified the desktop and mobile layouts, animated entrance, and row resizing.
+
+## Issue
+
+The decorative Surfboard in Third Class is currently too short.
+
+I want it to be taller on desktop and positioned slightly higher.
+
+Its bottom should now align with the bottom of the timetable/featured-image row, rather than the bottom of the booking button.
+
+## 1. Increase Desktop Height
+
+Set the desktop Surfboard height to approximately:
+
+**75% of the Third Class Section's height.**
+
+Requirements:
+
+1. Use the actual Class Section height.
+2. Preserve the original image aspect ratio.
+3. Keep the Surfboard inside the right desktop margin.
+4. Prevent overlap with the class content.
+5. Allow proportional reduction where necessary to fit the available margin.
+6. Prevent horizontal overflow.
+
+Do not use a fixed image height that ignores section dimensions.
+
+## 2. Update Vertical Alignment
+
+The bottom of the Surfboard should align with:
+
+**The bottom edge of the side-by-side timetable/featured-image row.**
+
+It should no longer align with the bottom of the booking button.
+
+Requirements:
+
+1. Identify the actual image/timetable row.
+2. Use its rendered bottom position as the alignment reference.
+3. Position the Surfboard base at approximately the same vertical level.
+4. Preserve this alignment when timetable height changes.
+5. Preserve the alignment when the featured image changes.
+6. Avoid arbitrary fixed offsets that only work for one timetable.
+7. Ensure the Surfboard fits above the section's bottom wave.
+
+Use the existing element refs or shared layout measurements where appropriate.
+
+## 3. Preserve Animation
+
+Keep the existing falling animation:
+
+- Enters angled from the right.
+- Falls from right to left.
+- Rotates around bottom centre.
+- Reaches its final resting position.
+
+The animation's final state should align with the timetable/image row's bottom.
+
+Do not change the Surfboard used in Contact Us.
+
+## 4. Mobile Behaviour
+
+On mobile, Bug-001 takes precedence:
+
+- Centre Surfboard horizontally and vertically in the Class Section.
+- Maximum 80% of section height.
+- Maximum 80% of section width.
+- Opacity 0.2.
+- Preserve the falling animation.
+
+The desktop timetable-row alignment does not apply on mobile.
+
+## Acceptance Criteria
+
+- Desktop Surfboard targets 75% of section height.
+- It remains in the right margin.
+- Its bottom aligns with the timetable/image row bottom.
+- It no longer aligns with the booking button.
+- Alignment adapts to changing content.
+- Right-to-left falling animation remains functional.
+- Contact Us Surfboard remains unchanged.
+- Mobile behaviour follows Bug-001.
+- No content overlap or horizontal overflow.
+
+---
+
+# Bug-006 — Testimonials Must Match Homepage Image Divider on Mobile
+
+**Status:** complete
+
+**Notes:** Testimonials previously used a separate 150%-of-carousel-height mobile image cover and waves referenced to 50vh. It now renders the actual Image Divider component as a width-fit background behind the existing carousel. It matches the live neighbouring divider’s mobile wave depth and preserves overlay, parallax and desktop cover. At a 375px viewport the image width went from 1,579px to 360px, with matching 21.6px and 47.9px reference edge depths. Chrome verified six widths, direct screen captures, hover autoplay and the standalone demo.
+
+## Issue
+
+Previous attempts to correct Testimonials have not produced the intended result.
+
+On mobile:
+
+1. The organic wave borders are still significantly too tall.
+2. The background image is still excessively zoomed in.
+
+I want Testimonials to use the same background image behaviour and wave rendering as the **Image Divider on the Homepage**.
+
+The only meaningful difference should be that Testimonials displays its testimonial carousel over the background.
+
+This is a corrective implementation task, not another request to adjust the existing Testimonials CSS by trial and error.
+
+## 1. Use Homepage Image Divider as the Reference
+
+Inspect the actual Homepage Image Divider implementation.
+
+Identify:
+
+- Its React component structure.
+- Background image rendering.
+- Image sizing rules.
+- Responsive breakpoints.
+- Parallax calculations.
+- Background positioning.
+- Overflow clipping.
+- Wave masks.
+- Top and bottom SVGs or pseudo-elements.
+- Wave dimensions on mobile.
+- Any shared hooks or utilities.
+
+Then inspect Testimonials and identify why it behaves differently.
+
+Do not assume the implementations are already shared simply because they use similarly named classes or utilities.
+
+## 2. Reuse the Actual Image Divider Background
+
+The preferred solution is to reuse the working Image Divider background implementation directly.
+
+If Image Divider already contains reusable functionality, compose that functionality into Testimonials.
+
+If it does not, extract a suitable shared component.
+
+Suggested architecture:
+
+```text id="f73k1y"
+Shared Parallax Image Background
+├── Homepage Image Divider
+└── Testimonials
+    └── Testimonials Carousel
+```
+
+The existing Image Divider must remain visually and functionally unchanged.
+
+Requirements:
+
+1. Use the same background-image sizing behaviour.
+2. Use the same image positioning.
+3. Use the same parallax movement.
+4. Use the same responsive scaling.
+5. Use the same clipping approach.
+6. Use the same top wave geometry.
+7. Use the same bottom wave geometry.
+8. Use the same mobile wave-height rules.
+
+Do not simply duplicate CSS declarations if doing so would leave Testimonials vulnerable to diverging again.
+
+Prefer sharing the same rendering and styling logic.
+
+## 3. Correct Mobile Background Image Scaling
+
+The Testimonials background image currently looks too zoomed in on mobile.
+
+I want it to behave exactly like the image in Homepage Image Divider.
+
+### Requirements
+
+1. Use the same image-sizing strategy as Homepage Image Divider.
+2. Use the same responsive breakpoint behaviour.
+3. Preserve the Testimonials background image's original aspect ratio.
+4. Do not apply an additional Testimonials-only zoom factor.
+5. Do not force unnecessary scaling based on the full section height if Image Divider does not use that approach.
+6. Preserve smooth parallax movement.
+7. Avoid exposing image edges during scrolling.
+8. Centre the image using the same positioning logic as Image Divider.
+9. Prevent horizontal overflow.
+
+### Previous Overscan Requirement
+
+Epic-010 introduced a requirement for Testimonials to have 25% additional image coverage above and below the section.
+
+If that requirement is causing the excessive mobile zoom, it must no longer override the Image Divider's behaviour.
+
+**The Homepage Image Divider's actual image scaling and parallax behaviour takes precedence over the previous Testimonials-specific sizing formula.**
+
+Do not retain an obsolete 150%-height requirement if it conflicts with matching Image Divider.
+
+Use the same approach to managing parallax coverage that the Homepage Image Divider already uses.
+
+### Important Distinction
+
+The Testimonials background image may have different intrinsic proportions from the Homepage Image Divider image.
+
+Do not distort the source image to manufacture an identical crop.
+
+The goal is identical rendering behaviour and responsive scaling logic, using each image's actual dimensions.
+
+## 4. Correct Mobile Wave Height
+
+The Testimonials section's top and bottom waves are still being vertically elongated on mobile.
+
+Use the Homepage Image Divider's actual wave implementation.
+
+Requirements:
+
+1. Match the Image Divider's mobile wave depth.
+2. Match its SVG sizing rules.
+3. Match its responsive proportions.
+4. Match its clipping behaviour.
+5. Preserve correct wave orientation.
+6. Avoid percentage heights linked to the Testimonials section's full height.
+7. Avoid transforms that scale waves vertically with the section.
+8. Preserve full-width wave coverage.
+9. Prevent white gaps with neighbouring sections.
+10. Prevent straight edges from appearing.
+
+Making Testimonials taller because of its content must not increase the height of the individual decorative waves.
+
+### Explicit Requirement
+
+When viewed on the same mobile screen width, the Testimonials wave borders should have the same depth and general appearance as the Homepage Image Divider's wave borders.
+
+Do not leave a separate Testimonials-specific mobile wave-height rule that overrides the shared implementation.
+
+## 5. Testimonials Content Over the Background
+
+The Testimonials carousel should appear above the shared parallax image background.
+
+Use an appropriate layer structure:
+
+1. Parallax background image.
+2. Existing black overlay.
+3. Testimonial carousel.
+
+Requirements:
+
+1. Preserve the image background beneath the carousel.
+2. Preserve the black overlay at 0.2 opacity.
+3. Do not apply the overlay to testimonial cards.
+4. Preserve testimonial card opacity.
+5. Preserve the carousel's existing layout.
+6. Keep the background and waves independent of carousel transforms.
+7. Avoid clipping the carousel through incorrect background masking.
+
+The shared background should be a visual container rather than the owner of the Testimonials carousel logic.
+
+## 6. Preserve Carousel Functionality
+
+Do not change:
+
+- Existing testimonial content.
+- WordPress editing.
+- Automatic advancement every five seconds.
+- One-testimonial-at-a-time progression.
+- Seamless looping.
+- Current 3/2/1 responsive card counts.
+- Hover behaviour.
+- Card styling.
+- Card staggering.
+- Quote typography.
+- Name typography.
+
+The carousel must not pause when hovered.
+
+Do not reintroduce the previously fixed flashing or fading bug.
+
+## 7. Diagnose Why Previous Fixes Did Not Work
+
+Because earlier changes did not visibly correct the section, investigate the actual rendered implementation.
+
+Check:
+
+1. Whether Testimonials still has independent background markup.
+2. Whether old SCSS selectors override the new sizing rules.
+3. Whether mobile media queries have conflicting specificity.
+4. Whether background image sizing is based on section height.
+5. Whether an SVG uses `preserveAspectRatio="none"` or another distorting setting.
+6. Whether wave elements use percentage heights.
+7. Whether the frontend is loading the expected rebuilt CSS and JavaScript.
+8. Whether the shared component is actually being rendered on the Testimonials section.
+9. Whether the background image has intrinsic proportions that require different cropping.
+10. Whether another wrapper or transform is scaling the entire background layer.
+
+Do not mark this bug complete solely because shared utility functions have been introduced.
+
+The rendered mobile result must demonstrably match the Image Divider's behaviour.
+
+## 8. Preserve Desktop Appearance
+
+The primary issue is mobile, but the shared background implementation may also affect desktop.
+
+Requirements:
+
+1. Preserve the existing desktop Testimonials composition.
+2. Preserve smooth desktop parallax.
+3. Preserve the carousel layout.
+4. Preserve wave transitions.
+5. Avoid introducing unexpected image cropping.
+6. Keep the Homepage Image Divider unchanged.
+
+## 9. WordPress and Static Demo Compatibility
+
+Requirements:
+
+1. Preserve the existing Testimonials Gutenberg block identity.
+2. Preserve all saved testimonials.
+3. Preserve the current background image selection.
+4. Do not require editing existing WordPress content.
+5. Ensure the new shared implementation works in the GitHub Pages demo.
+6. Avoid hardcoded WordPress asset URLs.
+
+## Acceptance Criteria
+
+- Testimonials uses the same underlying background rendering approach as Homepage Image Divider.
+- Mobile image scaling follows the same rules as Homepage Image Divider.
+- Excessive Testimonials-only zoom is removed.
+- Parallax movement matches Image Divider.
+- Mobile top wave depth matches Image Divider.
+- Mobile bottom wave depth matches Image Divider.
+- Waves no longer stretch with Testimonials section height.
+- Background and waves remain seamless.
+- Black overlay remains at 0.2 opacity.
+- Carousel remains above the background.
+- Carousel still advances every five seconds.
+- Hover does not pause the carousel.
+- No previously fixed carousel bugs return.
+- Existing WordPress content remains intact.
+- Homepage Image Divider remains unchanged.
+- No horizontal overflow.
+
+---
+
+# Epic-011 Bug Implementation Workflow
+
+## Preparation
+
+Before making changes:
+
+1. Read `AGENTS.md`.
+2. Read the complete Epic-011 feature specification.
+3. Inspect all four Class Section decorations.
+4. Inspect the Class Section layout and animation triggers.
+5. Inspect Contact Us Shaka and Surfboard implementations.
+6. Inspect the shared Turtle wiggle animation.
+7. Inspect Homepage Image Divider.
+8. Inspect Testimonials background and carousel architecture.
+9. Preserve all existing WordPress data.
+
+## Implementation Order
+
+### Bug-001
+
+Implement the new mobile sizing and positioning rules for all four decorations.
+
+Keep mobile rules separate from desktop rules.
+
+### Bug-002
+
+Remove Palm Tree bottom clipping and increase its desktop height to approximately 75%.
+
+### Bug-003
+
+Increase the First Class Shaka's desktop target width by approximately 100px.
+
+Do not change other Shaka instances.
+
+### Bug-004
+
+Move the Green Turtle's desktop swimming destination to approximately 70% up the section.
+
+### Bug-005
+
+Increase the Third Class Surfboard's desktop height to approximately 75% and align its bottom with the timetable/image row.
+
+### Bug-006
+
+Investigate and correct Testimonials by reusing the actual Homepage Image Divider parallax and wave implementation.
+
+Prioritise verifying the rendered mobile result rather than making superficial SCSS adjustments.
+
+---
+
+# Shared Constraints
+
+1. Follow `AGENTS.md`.
+2. Preserve existing WordPress content.
+3. Preserve all Class Section block attributes.
+4. Preserve the existing Class Section colour groups.
+5. Preserve existing Class Section waves.
+6. Preserve timetable and image animations.
+7. Preserve decoration entrance triggers.
+8. Preserve the existing Contact Us Shaka and Surfboard.
+9. Preserve the water-background SwimmingTurtle.
+10. Keep decorative assets non-interactive.
+11. Preserve 0.2 opacity for mobile decorations.
+12. Use desktop margin placement where requested.
+13. Prevent horizontal overflow.
+14. Respect `prefers-reduced-motion`.
+15. Maintain GitHub Pages demo compatibility.
+16. Do not create new Gutenberg blocks for these corrections.
+17. Do not alter unrelated features.
+
+---
+
+# Testing Requirements
+
+Test at:
+
+- 320px.
+- 375px.
+- 430px.
+- 768px.
+- 1024px.
+- 1440px.
+
+## Decorative Artwork
+
+Verify:
+
+- Palm Tree mobile size limits.
+- Surfboard mobile size limits.
+- Both are centred on both axes.
+- Shaka mobile width and introduction positioning.
+- Turtle mobile width and introduction positioning.
+- Mobile opacity of 0.2.
+- Decorative layering behind content.
+- Complete desktop Palm Tree visibility.
+- Desktop Palm Tree height of approximately 75%.
+- First Class Shaka desktop width increase.
+- Turtle final position approximately 70% upwards.
+- Third Class Surfboard height of approximately 75%.
+- Surfboard alignment with timetable/image row.
+- Existing entrance animations.
+- No desktop content overlap.
+
+## Testimonials
+
+Compare Homepage Image Divider and Testimonials at the same viewport widths.
+
+Verify:
+
+1. Background image-sizing method.
+2. Responsive image position.
+3. Parallax movement.
+4. Top wave depth.
+5. Bottom wave depth.
+6. No section-height-driven wave distortion.
+7. No excessive background zoom.
+8. Carousel movement.
+9. Black overlay.
+10. Seamless neighbouring section transitions.
+
+Where browser visual testing is available, perform direct side-by-side comparison at mobile widths.
+
+Run focused tests and relevant frontend builds.
+
+Do not claim visual verification unless it was actually performed.
+
+---
+
+# Tracking and Completion
+
+Update:
+
+`src/vibe/epics/epic-011/bugs.txt`
+
+Follow the existing status and rollback conventions in `AGENTS.md`.
+
+Maintain independent rollback records for all six bugs.
+
+Do not modify unrelated Epics.
+
+No manual WordPress configuration should be required.
+
+## Completion Report
+
+For each bug, report:
+
+1. Root cause or relevant implementation finding.
+2. Changes made.
+3. Files modified.
+4. Tests performed.
+5. Responsive verification.
+6. Remaining limitations.
+
+For Bug-006 specifically, explain:
+
+- Why Testimonials was still producing elongated waves.
+- Why its background image remained excessively zoomed on mobile.
+- Which Image Divider implementation is now reused.
+- How the corrected mobile output was verified.
+
+**Scope:** Implement Epic-011 Bugs 001–006 only. Do not begin Epic-012 or unrelated work.
+
+
+# Epic-011 — Bugs 008 & 009
+
+## Bug-008 — Increase Palm Tree Height on Mobile and Desktop
+
+**Status:** complete
+
+**Notes:** The desktop palm targets 90% of the actual section height and uses more of the available left margin. Mobile sizing uses 90% of the usable introduction-to-wave height with room for the full aspect-ratio image. Chrome verified the target where the margin permits, larger phone sizing, whole-image visibility, the falling entrance and no overlap at six widths plus wide desktop.
+
+### Issue
+
+The Palm Tree decoration in Kids Class is still too short on both desktop and mobile.
+
+Previous sizing adjustments have not produced a sufficiently tall Palm Tree.
+
+I want it to be noticeably taller on both layouts while preserving its original proportions, animation and visibility.
+
+### 1. Increase Desktop Height
+
+The previous target was approximately 75% of the Kids Class section height.
+
+Increase this to approximately:
+
+**90% of the section height.**
+
+Requirements:
+
+1. Use the actual rendered Kids Class section height.
+2. Target approximately 90% of that height.
+3. Preserve the PNG's original aspect ratio.
+4. Keep the Palm Tree positioned on the left side.
+5. Ensure the entire image remains visible.
+6. Preserve its existing falling entrance animation.
+7. Prevent overlap with the main class content.
+8. Prevent horizontal overflow.
+
+The 90% measurement is a starting target, not a reason to distort or clip the artwork.
+
+If the existing desktop margin becomes too narrow, use the largest size that fits without covering actual content.
+
+Do not leave the previous 75% sizing rule unintentionally limiting the image.
+
+### 2. Increase Mobile Height
+
+On mobile, the Palm Tree currently uses the sizing limits introduced in Bug-001:
+
+- Maximum 80% of section height.
+- Maximum 80% of section width.
+
+These limits are no longer producing the desired result.
+
+Increase the mobile Palm Tree's size significantly.
+
+### New Mobile Sizing
+
+Target a height of approximately:
+
+**90% of the usable vertical space between the Introduction paragraph's top edge and the section's lower boundary.**
+
+Requirements:
+
+1. Preserve the original image aspect ratio.
+2. Use the available section dimensions rather than a fixed pixel height.
+3. Increase the Palm Tree significantly compared with its current mobile appearance.
+4. Remove or override the previous 80% height restriction for the Palm Tree.
+5. Allow the image to use more horizontal space where necessary.
+6. Prevent horizontal overflow.
+7. Keep the entire Palm Tree visible.
+8. Preserve its mobile opacity of 0.2.
+
+The maximum width may be constrained by the available section width, but the sizing implementation must not inadvertently reduce the image to its previous small size.
+
+Inspect all parent wrappers, `max-width`, `max-height`, `object-fit`, and transform constraints.
+
+### 3. Preserve Whole-Image Visibility
+
+The Palm Tree should no longer be intentionally cropped.
+
+Requirements:
+
+1. Keep the complete trunk visible.
+2. Keep all leaves visible.
+3. Ensure the section's wave masks do not cut off the artwork.
+4. Maintain sufficient clearance from section boundaries.
+5. Do not allow the image to spill into adjacent Class Sections.
+6. Do not remove or change the section's existing waves.
+
+### 4. Preserve Animation
+
+Keep the existing falling animation:
+
+- Rotation around bottom centre.
+- Original movement and easing.
+- Established scroll-trigger rules.
+- Stationary final resting state.
+
+The Palm Tree must finish at the correct position without snapping or changing size after its animation.
+
+The mobile final position will be further refined in Bug-009.
+
+### Acceptance Criteria
+
+- Palm Tree is noticeably taller on desktop.
+- Desktop targets approximately 90% of Kids Class section height.
+- Palm Tree is noticeably taller on mobile.
+- Previous 80% mobile height cap no longer restricts it.
+- Complete Palm Tree remains visible.
+- Original image proportions remain unchanged.
+- Existing falling animation works.
+- Desktop positioning remains on the left.
+- Mobile opacity remains 0.2.
+- No content overlap on desktop.
+- No horizontal overflow.
+
+---
+
+## Bug-009 — Mobile Decoration Animation Timing and Palm Tree Alignment
+
+**Status:** complete
+
+**Notes:** Stacked classes now share the introduction reveal state with their decorations. Desktop retains the image/timetable trigger. The mobile palm aligns to the measured introduction top and fits above the wave, and the mobile Shaka performs one existing shake cycle per downward entry. Chrome verified both timing paths, responsive and reduced-motion behaviour, and the demo with WordPress blocked. The published WordPress content checksum matched.
+
+### Issue
+
+The four Class Section decorations currently trigger their entrance animations alongside the timetable and featured image.
+
+On mobile, I want them to trigger earlier, alongside the Introduction paragraph.
+
+I also want to adjust the mobile Palm Tree's position and prevent the First Class Shaka from repeatedly shaking.
+
+These changes must apply only to mobile.
+
+Desktop animation timing and behaviour should remain unchanged.
+
+### 1. Trigger All Decorations with Introduction on Mobile
+
+When the Class Section uses its mobile stacked layout, all decorations should begin animating when the Introduction paragraph's entrance animation is triggered.
+
+This applies to:
+
+- Kids Class — Palm Tree.
+- First Class — Shaka.
+- Second Class — Green Turtle.
+- Third Class — Surfboard.
+
+### Requirements
+
+1. Reuse the existing Introduction paragraph scroll-trigger state.
+2. Start the decorative entrance animation at the same time as the Introduction paragraph.
+3. Do not wait for the timetable or featured image to enter the viewport.
+4. Preserve the existing viewport threshold and scroll-direction rules.
+5. Do not introduce independent IntersectionObservers unnecessarily.
+6. Keep each decoration's current animation movement and easing.
+7. Do not replay the animation when scrolling upwards.
+8. Preserve the existing safe reset behaviour for later downward re-entry.
+9. Respect reduced-motion preferences.
+
+The intended behaviour is that the Introduction paragraph and section decoration enter together.
+
+The featured image, timetable and booking button should retain their existing individual entrance triggers.
+
+### 2. Preserve Desktop Animation Timing
+
+On desktop, keep the existing behaviour.
+
+Decorations should continue animating when the timetable/image animations are triggered.
+
+| Layout | Decoration entrance trigger |
+|---|---|
+| Desktop | Timetable / Featured Image |
+| Mobile | Introduction paragraph |
+
+Use the existing responsive breakpoint that controls the Class Section's stacked layout.
+
+Do not create a different breakpoint solely for the animations.
+
+### 3. Align Mobile Palm Tree with Introduction
+
+The Palm Tree in Kids Class currently sits centred vertically in the section.
+
+I want its top to align with the top of the Introduction paragraph instead.
+
+### New Mobile Position
+
+- Horizontal alignment: centred within Kids Class.
+- Vertical alignment: top of Palm Tree aligned with top of Introduction paragraph.
+- Opacity: 0.2.
+- Layer: behind the Introduction and other class content.
+
+### Requirements
+
+1. Use the Introduction paragraph's actual top position as the vertical alignment reference.
+2. Position the Palm Tree so its uppermost visible edge begins at approximately the same height.
+3. Preserve horizontal centring.
+4. Preserve the larger mobile dimensions introduced in Bug-008.
+5. Keep the entire Palm Tree visible within the section.
+6. Avoid overlap with neighbouring sections.
+7. Prevent the decoration from affecting normal document flow.
+8. Preserve the existing falling animation.
+
+Do not use a hardcoded `top` value that only works for one screen width or Introduction length.
+
+Prefer measuring or positioning relative to the existing Introduction container.
+
+### Animation Alignment
+
+The Palm Tree should finish with its top aligned to the Introduction's top edge.
+
+Its entrance animation may temporarily rotate beyond that alignment as part of the existing falling effect.
+
+Once the animation finishes, its final position must be correct.
+
+If the new alignment and image size compete for available vertical space, preserve whole-image visibility and use the largest size that fits from the Introduction's top to the section's lower wave boundary.
+
+### 4. First Class — Stop Repeating Shaka Animation on Mobile
+
+The First Class Shaka currently uses the repeating Contact Us-style shake animation.
+
+I want the Shaka to retain its movement but stop looping on mobile.
+
+### Mobile Behaviour
+
+When the mobile Introduction animation triggers:
+
+1. The Shaka begins its existing entrance/shake movement.
+2. It completes one shake sequence.
+3. It returns to its normal resting angle.
+4. It remains stationary afterwards.
+
+**Do not restart the shake animation every few seconds on mobile.**
+
+### Requirements
+
+1. Preserve the existing Shaka SVG.
+2. Preserve its existing white colour before mobile opacity is applied.
+3. Preserve its current mobile size and placement.
+4. Preserve the existing shake movement.
+5. Perform only one shake sequence per entrance trigger.
+6. Stop the repeated animation after the first sequence.
+7. Preserve the final resting orientation.
+8. Avoid any visible jump when the animation stops.
+9. Do not affect the Contact Us Shaka.
+10. Do not affect loading-screen Shakas.
+
+Use a First Class-specific responsive animation modifier rather than globally changing shared Shaka animation keyframes.
+
+### Desktop Behaviour
+
+The First Class Shaka should continue using its existing repeating animation:
+
+- 1.5-second shake.
+- 3.5-second rest.
+- Repeat.
+
+Do not change its desktop animation or size.
+
+### 5. Second Class — Preserve Turtle Swimming Movement
+
+The Green Turtle should continue its existing swimming entrance.
+
+On mobile, only its trigger should change.
+
+Requirements:
+
+1. Begin swimming when the Introduction paragraph begins animating.
+2. Preserve the existing swimming trajectory.
+3. Preserve its position behind the Introduction.
+4. Preserve its slight left offset.
+5. Preserve its 90% responsive width.
+6. Preserve the ±2° wiggle while swimming.
+7. Preserve the final angled resting position.
+8. Stop the swimming movement when the entrance completes.
+9. Preserve 0.2 opacity.
+
+Do not change its desktop destination of approximately 70% up the Class Section.
+
+### 6. Third Class — Preserve Surfboard Movement
+
+The Third Class Surfboard should retain its right-to-left falling rotation.
+
+On mobile, only its trigger should change.
+
+Requirements:
+
+1. Begin falling alongside the Introduction paragraph.
+2. Preserve the bottom-centre rotation pivot.
+3. Preserve the right-to-left falling movement.
+4. Preserve its current mobile centring.
+5. Preserve its current mobile size.
+6. Preserve its 0.2 opacity.
+7. Remain stationary once the entrance finishes.
+
+Desktop sizing and alignment must remain unchanged.
+
+### 7. Keep All Decorations Behind Content on Mobile
+
+Preserve the layering established previously:
+
+1. Section background.
+2. Decorative artwork.
+3. Class content.
+
+Requirements:
+
+- Decorations remain at opacity 0.2.
+- Introduction text remains fully opaque.
+- Featured image remains fully opaque.
+- Timetable remains fully opaque.
+- Booking button remains fully opaque.
+- Decorations remain non-interactive.
+- No pointer-event interception.
+- No additional scrollbars.
+
+### 8. Avoid Trigger and Layout Conflicts
+
+Because some decorations will now animate earlier, inspect the relationship between their final positions and their animation wrappers.
+
+Requirements:
+
+1. Keep responsive positioning separate from entrance transforms.
+2. Do not allow animation transforms to overwrite centring or vertical alignment.
+3. Avoid duplicate triggers when crossing the responsive breakpoint.
+4. Clean up animation state correctly on viewport resizing.
+5. Do not restart completed animations because unrelated React state changes.
+6. Preserve the existing component mount/unmount behaviour.
+7. Keep reduced-motion handling consistent with other Class Section elements.
+
+### Acceptance Criteria
+
+- All four mobile decorations animate alongside their Introduction paragraphs.
+- They no longer wait for the image/timetable reveal on mobile.
+- Desktop decoration triggers remain unchanged.
+- Mobile Palm Tree is horizontally centred.
+- Mobile Palm Tree top aligns with Introduction top.
+- Palm Tree uses the larger dimensions from Bug-008.
+- Palm Tree remains completely visible.
+- Mobile Shaka completes one shake sequence, then stops.
+- Desktop Shaka continues shaking at the existing repeated interval.
+- Other Shaka instances remain unchanged.
+- Turtle swimming movement remains unchanged.
+- Surfboard falling movement remains unchanged.
+- All mobile decorations remain at 0.2 opacity.
+- No content interaction or layout regressions.
+- No horizontal overflow.
+
+---
+
+# Implementation Instructions
+
+## Preparation
+
+1. Read and follow `AGENTS.md`.
+2. Review Epic-011 Feature-001 and previous decoration bugs.
+3. Inspect current Palm Tree sizing rules.
+4. Inspect the Class Section responsive layout.
+5. Inspect the shared Introduction/timetable/image reveal triggers.
+6. Inspect First Class Shaka animation handling.
+7. Inspect mobile decoration positioning and clipping.
+8. Preserve existing WordPress content.
+
+## Bug-008 Implementation
+
+1. Increase desktop Palm Tree height to approximately 90% of section height.
+2. Remove the previous mobile 80% sizing restriction.
+3. Increase mobile Palm Tree height substantially.
+4. Preserve the original aspect ratio.
+5. Maintain full-image visibility.
+6. Preserve the falling rotation.
+7. Verify the updated size on desktop and mobile.
+
+## Bug-009 Implementation
+
+1. Update mobile decoration animation triggers to follow the Introduction paragraph.
+2. Preserve desktop triggers tied to timetable/image reveal.
+3. Align the mobile Palm Tree's top with the Introduction top.
+4. Preserve its horizontal centring.
+5. Ensure the Palm Tree's new size fits inside the section.
+6. Make the First Class Shaka shake once on mobile.
+7. Preserve the desktop repeating Shaka animation.
+8. Preserve Turtle swimming movement and positioning.
+9. Preserve Surfboard falling movement and positioning.
+10. Verify animation state and cleanup during breakpoint changes.
+
+## Testing
+
+Test at:
+
+- 320px.
+- 375px.
+- 430px.
+- 768px.
+- 1024px.
+- 1440px.
+
+Verify:
+
+- Palm Tree height on desktop.
+- Palm Tree height on mobile.
+- Whole-image visibility.
+- Palm Tree mobile top alignment.
+- Mobile Introduction animation synchronization.
+- Desktop timetable/image trigger preservation.
+- One-shot mobile Shaka shake.
+- Repeating desktop Shaka shake.
+- Turtle swimming entrance.
+- Surfboard falling entrance.
+- Responsive breakpoint transitions.
+- Reduced-motion behaviour.
+- No overlap or horizontal overflow.
+
+Run relevant frontend builds and focused regression tests.
+
+Do not claim browser verification unless it has actually been performed.
+
+## WordPress Integration
+
+No manual WordPress changes are required.
+
+Preserve existing Class Section Gutenberg blocks, attributes and media references.
+
+The changes must also work in the GitHub Pages static demo.
+
+## Tracking
+
+Update:
+
+`src/vibe/epics/epic-011/bugs.txt`
+
+Follow the status and rollback conventions in `AGENTS.md`.
+
+Preserve existing Bug-007 and all other bug entries.
+
+Maintain independent rollback records for Bugs 008 and 009.
+
+**Scope:** Implement Epic-011 Bugs 008 and 009 only. Do not begin Epic-012 or unrelated work.
+
+# Epic-011 — Bug-010
+
+## Bug-010 — Increase Testimonials Container Height Without Excessive Background Zoom
+
+**Status:** complete
+
+**Notes:** Balanced responsive padding now determines the section height with the carousel, and the shared Image Divider background covers it independently. The cover calculation preserves the image aspect ratio and caps travel at 4% of the section width, up to 24px per direction. Wave depths remain tied to the divider reference. At a 375px viewport Chrome measured a 656px section, up from 608px, with the same 336px carousel and 160px above and below. Six widths, autoplay, content growth, 20 focused tests, both builds and the offline demo passed.
+
+### Issue
+
+The Testimonials section is still not displaying correctly.
+
+The main problem is that the section container is not sufficiently taller than the testimonial carousel inside it.
+
+I want the Testimonials section to have noticeably more height than the carousel, providing comfortable vertical space above and below the testimonial cards.
+
+The background image must then cover this larger container while preserving the existing parallax effect.
+
+A slight increase in image zoom is acceptable if necessary, but the background must not return to the excessively zoomed appearance seen in previous implementations.
+
+**The most important requirement is that the Testimonials section container must be taller than the testimonial carousel itself.**
+
+---
+
+## 1. Separate Section Height from Carousel Height
+
+The Testimonials section must not derive its entire height directly from the carousel.
+
+Requirements:
+
+1. Keep the carousel inside a larger section container.
+2. Introduce meaningful vertical spacing above and below the carousel.
+3. Ensure the section is visibly taller than its carousel.
+4. Preserve the carousel's existing dimensions and behaviour.
+5. Do not enlarge the testimonial cards merely to make the section taller.
+6. Do not use image scaling to create additional section height.
+7. Allow the section to grow naturally when testimonial content requires more space.
+
+### Suggested Layout
+
+```text
+┌──────────────────────────────────┐
+│                                  │
+│        TOP BACKGROUND SPACE      │
+│                                  │
+│    ┌────────────────────────┐    │
+│    │                        │    │
+│    │  TESTIMONIAL CAROUSEL  │    │
+│    │                        │    │
+│    └────────────────────────┘    │
+│                                  │
+│       BOTTOM BACKGROUND SPACE    │
+│                                  │
+└──────────────────────────────────┘
+```
+
+The spacing above and below the carousel should be visually balanced.
+
+### Suggested Implementation
+
+Use responsive vertical padding on the section's content wrapper.
+
+For example:
+
+```scss
+.testimonials__content {
+  padding-block: clamp(5rem, 10vw, 8rem);
+}
+```
+
+These values are a starting point, not mandatory measurements.
+
+Adjust them to achieve sufficient breathing room.
+
+Keep additional clearance where necessary for the existing top and bottom wave boundaries.
+
+The wave depth should remain independent of the total section height.
+
+---
+
+## 2. Mobile Section Height
+
+This issue is particularly noticeable on mobile.
+
+When only one testimonial card is visible, the entire Testimonials section should still feel like a substantial background section rather than a tightly cropped container around the card.
+
+Requirements:
+
+1. Preserve the existing single-card mobile layout.
+2. Increase vertical spacing around the carousel.
+3. Ensure the section is visibly taller than its displayed card.
+4. Keep the carousel horizontally centred.
+5. Preserve appropriate spacing above and below the card.
+6. Avoid forcing a fixed height that clips longer testimonial content.
+7. Preserve responsive behaviour as card text wraps.
+
+The background should remain clearly visible around the carousel on mobile.
+
+Do not use a section height that exactly matches the card height.
+
+---
+
+## 3. Background Image Scaling
+
+The background image must cover the larger Testimonials container.
+
+However, it must not become excessively zoomed in.
+
+### Requirements
+
+1. Preserve the source image's aspect ratio.
+2. Cover the full visible width of the section.
+3. Cover the full visible height of the section.
+4. Maintain sufficient additional image coverage for parallax movement.
+5. Use the smallest practical image scale that meets these requirements.
+6. Avoid unnecessary scale multipliers.
+7. Centre the image horizontally.
+8. Preserve the existing parallax midpoint alignment.
+9. Prevent exposed image edges during scrolling.
+
+### Scaling Strategy
+
+Continue using the same background-rendering approach as the Homepage Image Divider.
+
+Calculate the minimum size necessary to cover the section and the actual required parallax movement.
+
+For example:
+
+```js
+const requiredHeight =
+  containerHeight + requiredParallaxOverscan;
+
+const scale = Math.max(
+  containerWidth / imageWidth,
+  requiredHeight / imageHeight
+);
+```
+
+Use the actual image dimensions and existing parallax implementation.
+
+**Do not introduce an arbitrary fixed zoom factor.**
+
+If a small amount of additional scaling is required to maintain image coverage, that is acceptable.
+
+However, the final result should remain visually similar to the Homepage Image Divider rather than appearing heavily cropped.
+
+### Important
+
+Do not try to solve the background coverage problem by shrinking the Testimonials section back down to the carousel's height.
+
+The larger section height takes priority.
+
+---
+
+## 4. Preserve Image Divider Parallax Behaviour
+
+The Testimonials background should continue matching the Homepage Image Divider.
+
+Requirements:
+
+1. Reuse the existing shared parallax calculation.
+2. Preserve the neutral midpoint alignment.
+3. Preserve smooth scroll-based movement.
+4. Ensure the image covers the section throughout its movement.
+5. Use the available image overscan safely.
+6. Clamp parallax movement when necessary to prevent image edges appearing.
+7. Preserve responsive recalculation when container dimensions change.
+8. Respect `prefers-reduced-motion`.
+
+If the image cannot accommodate the full desired parallax distance without excessive zoom, reduce the effective parallax travel for that image rather than enlarging it disproportionately.
+
+This is preferable to restoring the previous excessive zoom.
+
+The image should still move visibly, but full background coverage and reasonable scaling take priority.
+
+---
+
+## 5. Preserve Wave Geometry
+
+The Testimonials section must retain its organic wave borders.
+
+Requirements:
+
+1. Preserve the existing top wave.
+2. Preserve the existing bottom wave.
+3. Use the same wave-sizing behaviour as Homepage Image Divider.
+4. Keep wave height independent of the section container's height.
+5. Do not vertically stretch waves as the container becomes taller.
+6. Preserve correct wave orientation.
+7. Prevent gaps between neighbouring sections.
+8. Prevent straight image edges appearing through the wave boundaries.
+
+Increasing section padding must not enlarge the decorative waves.
+
+---
+
+## 6. Preserve Carousel Behaviour
+
+Do not change:
+
+- Testimonial content.
+- Number of visible cards.
+- Automatic advancement every five seconds.
+- One-card-at-a-time movement.
+- Seamless looping.
+- Existing card shapes.
+- Vertical card staggering.
+- Hover behaviour.
+- Existing animations.
+- WordPress editing functionality.
+
+The carousel should remain independent of the background sizing calculations.
+
+Do not alter carousel timing or card dimensions to solve this issue.
+
+---
+
+## 7. Preserve Black Overlay
+
+Keep the existing black overlay at:
+
+**0.2 opacity**
+
+Requirements:
+
+1. Overlay remains above the background image.
+2. Overlay remains below the carousel.
+3. Overlay covers the entire visible background.
+4. Do not apply opacity to testimonial cards.
+5. Preserve the existing text contrast.
+
+---
+
+## 8. Avoid Circular Layout Dependencies
+
+The implementation must not produce a cycle where:
+
+1. Background image size changes the section height.
+2. Section height changes the image size.
+3. Image size changes the section height again.
+
+Requirements:
+
+- The carousel and section padding determine the section's height.
+- The background image is positioned independently of normal document flow.
+- Background scaling responds to the measured section size.
+- Background image dimensions must not contribute to the section's layout height.
+- Avoid continuous ResizeObserver updates caused by background resizing.
+- Do not recalculate image scaling unnecessarily during every animation frame.
+
+This separation is important for reliable responsive behaviour.
+
+---
+
+## 9. Preserve Existing Component Architecture
+
+The previous Testimonials fixes were intended to reuse the Homepage Image Divider's background and wave implementation.
+
+Inspect the current code to confirm this is actually happening.
+
+Requirements:
+
+1. Reuse the working shared parallax implementation.
+2. Reuse the working wave sizing and clipping.
+3. Apply additional section padding to the Testimonials content layer.
+4. Avoid introducing a separate Testimonials-only background system.
+5. Preserve the Homepage Image Divider's existing appearance.
+6. Preserve all saved WordPress Testimonials content.
+
+Do not recreate the Testimonials component from scratch.
+
+---
+
+# Acceptance Criteria
+
+- Testimonials section is visibly taller than its carousel.
+- There is comfortable space above the carousel.
+- There is comfortable space below the carousel.
+- Mobile Testimonials has substantial vertical background space.
+- Carousel cards retain their current dimensions.
+- Background image covers the entire enlarged section.
+- Background is not excessively zoomed in.
+- Slight necessary zoom is acceptable.
+- Image aspect ratio remains correct.
+- Parallax movement remains smooth.
+- Parallax movement is limited when needed to prevent excessive zoom.
+- No exposed image edges.
+- Top and bottom waves remain proportional.
+- Waves do not stretch when section height increases.
+- Black overlay remains at 0.2 opacity.
+- Carousel continues advancing every five seconds.
+- No carousel flashing or hover-pausing regressions.
+- Homepage Image Divider remains unchanged.
+- No horizontal overflow.
+
+---
+
+# Implementation Instructions
+
+1. Read and follow `AGENTS.md`.
+2. Review previous Epic-011 Testimonials fixes, particularly Bugs 006 and 010.
+3. Inspect the current Testimonials component and its section wrappers.
+4. Inspect the shared Homepage Image Divider parallax and wave implementation.
+5. Identify what currently determines Testimonials section height.
+6. Separate the section's content height from the background image dimensions.
+7. Add responsive vertical padding around the carousel.
+8. Ensure the section is visibly taller than the carousel.
+9. Adapt background scaling to the new section dimensions.
+10. Use the smallest practical image scale.
+11. Reduce parallax travel if necessary to avoid excessive zoom.
+12. Preserve existing wave depth and shape.
+13. Preserve all carousel behaviour.
+14. Verify layout and image scaling on mobile and desktop.
+15. Run relevant frontend builds and focused regression tests.
+16. Update Bug-010 in `src/vibe/epics/epic-011/bugs.txt`.
+
+## Testing Priorities
+
+Test at:
+
+- 320px.
+- 375px.
+- 430px.
+- 768px.
+- 1024px.
+- 1440px.
+
+For each viewport, verify:
+
+1. Actual Testimonials section height.
+2. Actual carousel height.
+3. Space above the carousel.
+4. Space below the carousel.
+5. Background-image rendered dimensions.
+6. Image cropping and zoom.
+7. Parallax movement range.
+8. Top and bottom wave depth.
+9. Carousel continuity.
+10. No exposed image edges.
+
+Use the Homepage Image Divider as the visual reference for background scaling and parallax.
+
+Do not claim successful browser verification unless the rendered result has actually been inspected.
+
+## WordPress Integration
+
+No manual WordPress changes are required.
+
+Preserve:
+
+- Existing Testimonials block identity.
+- Saved testimonial content.
+- Saved background image.
+- Existing Gutenberg editor functionality.
+
+Ensure the same result appears in the GitHub Pages static demo.
+
+## Completion Report
+
+Report:
+
+1. Root cause of the section-height problem.
+2. How vertical spacing around the carousel was introduced.
+3. How the background scale is calculated.
+4. Whether parallax travel was reduced to prevent excessive zoom.
+5. How wave sizing was preserved.
+6. Files modified.
+7. Tests performed.
+8. Remaining limitations.
+
+**Scope:** Implement Epic-011 Bug-010 only. Do not modify unrelated components or begin Epic-012.

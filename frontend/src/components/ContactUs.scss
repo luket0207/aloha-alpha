@@ -1,4 +1,5 @@
 @use '../styles/variables' as tokens;
+@use '../styles/mixins';
 
 $contact-footer-wave-height: clamp(4rem, 7vw, 5.5rem);
 $contact-top-wave-height: clamp(4rem, 7vw, 6rem);
@@ -85,6 +86,8 @@ $contact-top-wave-height: clamp(4rem, 7vw, 6rem);
 }
 
 .contact-us__surfboard-decoration {
+  @include mixins.falling-artwork;
+
   --aloha-contact-surfboard-width: clamp(12rem, 7vw, 14rem);
   position: absolute;
   bottom: var(--aloha-contact-surfboard-bottom, 0px);
@@ -92,8 +95,6 @@ $contact-top-wave-height: clamp(4rem, 7vw, 6rem);
   width: var(--aloha-contact-surfboard-width);
   opacity: 0;
   transform: rotate(-15deg);
-  transform-origin: center bottom;
-  transition: opacity 800ms ease, transform 800ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .contact-us__surfboard-decoration.is-entered {
@@ -348,7 +349,7 @@ $contact-top-wave-height: clamp(4rem, 7vw, 6rem);
 .contact-us__jump {
   position: fixed;
   right: max(1rem, env(safe-area-inset-right));
-  bottom: calc(max(1rem, env(safe-area-inset-bottom)) + 10px);
+  bottom: var(--aloha-floating-control-bottom);
   z-index: 10;
   width: max-content;
   max-width: calc(100vw - 2rem);
@@ -360,12 +361,18 @@ $contact-top-wave-height: clamp(4rem, 7vw, 6rem);
   }
 }
 
+.site-layout:has(.aloha-back-to-top) .contact-us__jump {
+  max-width: calc(
+    100% - max(1rem, env(safe-area-inset-left)) - max(1rem, env(safe-area-inset-right)) - var(--aloha-floating-control-size) - 0.75rem
+  );
+}
+
 .contact-us__jump-link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
-  min-height: 3.75rem;
+  min-height: var(--aloha-floating-control-size);
   padding: 0.9rem 1.2rem;
   border-radius: 999px;
   background: tokens.$green;

@@ -1,0 +1,37 @@
+@use '../styles/variables' as tokens;
+
+.aloha-back-to-top {
+  position: fixed;
+  z-index: 10;
+  bottom: var(--aloha-floating-control-bottom);
+  left: max(1rem, env(safe-area-inset-left));
+  display: grid;
+  place-items: center;
+  width: var(--aloha-floating-control-size);
+  height: var(--aloha-floating-control-size);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--aloha-header-background);
+  color: tokens.$cream;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: filter 180ms ease;
+
+  &:focus-visible {
+    outline: 3px solid tokens.$yellow;
+    outline-offset: 3px;
+  }
+}
+
+@media (hover: hover) {
+  .aloha-back-to-top:hover {
+    filter: brightness(0.9);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aloha-back-to-top {
+    transition: none;
+  }
+}

@@ -13,12 +13,19 @@ export function findHashTarget(hash, documentObject = document) {
     || null;
 }
 
-export function resetScrollPosition(windowObject = window) {
+export function resetScrollPosition(windowObject = window, behavior = 'auto') {
   windowObject.scrollTo({
-    behavior: 'auto',
+    behavior,
     left: 0,
     top: 0,
   });
+}
+
+export function clearPageFragment(windowObject = window) {
+  const { location, history } = windowObject;
+  if (location.hash) {
+    history.replaceState(history.state, '', location.pathname + location.search);
+  }
 }
 
 export function scrollToHashTarget(hash, documentObject = document, { behavior = 'auto', focus = false } = {}) {

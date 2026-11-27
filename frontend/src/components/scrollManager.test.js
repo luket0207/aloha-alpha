@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { findHashTarget, resetScrollPosition, scrollToHashTarget } from './scrollManager.js';
+import { clearPageFragment, findHashTarget, resetScrollPosition, scrollToHashTarget } from './scrollManager.js';
 
 test('findHashTarget resolves encoded ids and legacy named anchors', () => {
   const idTarget = { id: 'lesson details' };
@@ -47,4 +47,18 @@ test('an intentional section link can focus its target and scroll smoothly', () 
   };
   assert.equal(scrollToHashTarget('#kids', documentObject, { behavior: 'smooth', focus: true }), true);
   assert.deepEqual(calls, [{ preventScroll: true }, { behavior: 'smooth', block: 'start' }]);
+});
+
+test('clears a class anchor without changing its history state, site base, or query', () => {
+  const calls = [];
+  const state = { idx: 1, key: 'class-anchor' };
+  const windowObject = {
+    history: { state, replaceState: (...args) => calls.push(args) },
+    location: { pathname: '/aloha-alpha/classes/', search: '?ref=nav', hash: '#second-class' },
+  };
+  clearPageFragment(windowObject);
+  assert.deepEqual(calls, [[state, '', '/aloha-alpha/classes/?ref=nav']]);
+  windowObject.location.hash = '';
+  clearPageFragment(windowObject);
+  assert.equal(calls.length, 1);
 });

@@ -9,8 +9,6 @@ $menu-bar-offset: 0.5rem;
 $menu-bar-inset: 0.65rem;
 
 .aloha-header.theme-green {
-  --aloha-header-background: #{tokens.$dark-green};
-
   position: sticky;
   top: 0;
   z-index: 100;
@@ -19,14 +17,6 @@ $menu-bar-inset: 0.65rem;
   border-bottom: 2px solid var(--aloha-header-background);
   background: var(--aloha-header-background);
   color: tokens.$cream;
-}
-
-.aloha-header.theme-green.aloha-header--green {
-  --aloha-header-background: #{tokens.$green};
-}
-
-.aloha-header.theme-green.aloha-header--dark-blue {
-  --aloha-header-background: #{tokens.$dark-blue};
 }
 
 .admin-bar .aloha-header {

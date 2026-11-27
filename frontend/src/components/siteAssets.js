@@ -1,4 +1,6 @@
-export const EMPTY_SITE_ASSETS = Object.freeze({ turtle: null });
+const EMPTY_CLASS_DECORATIONS = Object.freeze({ palmTree: null, greenTurtle: null, surfboard: null });
+
+export const EMPTY_SITE_ASSETS = Object.freeze({ turtle: null, classDecorations: EMPTY_CLASS_DECORATIONS });
 
 function normalizeImageAsset(image) {
   if (!image || typeof image.url !== 'string' || !image.url.trim()) return null;
@@ -16,7 +18,13 @@ function normalizeImageAsset(image) {
 }
 
 export function normalizeSiteAssets(value) {
+  const decorations = value?.classDecorations;
   return {
     turtle: normalizeImageAsset(value?.turtle),
+    classDecorations: {
+      palmTree: normalizeImageAsset(decorations?.palmTree),
+      greenTurtle: normalizeImageAsset(decorations?.greenTurtle),
+      surfboard: normalizeImageAsset(decorations?.surfboard),
+    },
   };
 }

@@ -10,10 +10,11 @@ export default function useImageParallax({
   imageHeight,
   imageRef,
   imageWidth,
-  mobileCoverOverscanRatio,
+  limitParallax,
   mobileMediaQuery,
   mobileSectionHeightProperty,
   offsetProperty,
+  onMeasureSection,
   preferredViewportHeight,
   reducedMotion,
   renderedHeightProperty,
@@ -57,15 +58,19 @@ export default function useImageParallax({
     function updateGeometry() {
       geometryFrame = null;
 
-      if (viewportWidthProperty && bleedOffsetProperty) {
+      if (viewportWidthProperty) {
+        section.style.setProperty(viewportWidthProperty, `${document.documentElement.clientWidth}px`);
+      }
+      if (bleedOffsetProperty) {
         const bounds = section.getBoundingClientRect();
         const marginLeft = Number.parseFloat(window.getComputedStyle(section).marginLeft) || 0;
-        section.style.setProperty(viewportWidthProperty, `${document.documentElement.clientWidth}px`);
         section.style.setProperty(bleedOffsetProperty, `${-(bounds.left - marginLeft)}px`);
       }
 
       const intrinsicWidth = image.naturalWidth || Number(imageWidth);
       const intrinsicHeight = image.naturalHeight || Number(imageHeight);
+      const sectionHeight = limitParallax ? section.getBoundingClientRect().height : section.clientHeight;
+      const sectionWidth = section.clientWidth;
       if (!(intrinsicWidth > 0 && intrinsicHeight > 0)) return;
 
       let geometry;
@@ -75,7 +80,7 @@ export default function useImageParallax({
           imageHeight: intrinsicHeight,
           imageWidth: intrinsicWidth,
           preferredSectionHeight: window.innerHeight * (preferredViewportHeight / 100),
-          sectionWidth: section.clientWidth,
+          sectionWidth,
         });
         section.style.setProperty(
           mobileSectionHeightProperty,
@@ -86,13 +91,21 @@ export default function useImageParallax({
         geometry = calculateImageCoverGeometry({
           imageHeight: intrinsicHeight,
           imageWidth: intrinsicWidth,
-          sectionHeight: section.clientHeight,
-          sectionWidth: section.clientWidth,
-          waveOverscanRatio: mobileMedia?.matches ? mobileCoverOverscanRatio : undefined,
+          sectionHeight,
+          sectionWidth,
+          parallaxTravel: limitParallax ? (reducedMotion ? 0 : Math.min(24, sectionWidth * 0.04)) : undefined,
         });
       }
 
       maxOffset = geometry.maxOffset;
+      onMeasureSection?.({
+        sectionHeight: geometry.sectionHeight ?? sectionHeight,
+        sectionWidth,
+        imageHeight: intrinsicHeight,
+        imageWidth: intrinsicWidth,
+        viewportHeight: window.innerHeight,
+        mobile: mobileMedia?.matches,
+      });
       image.style.setProperty(renderedHeightProperty, `${geometry.renderedHeight.toFixed(2)}px`);
       image.style.setProperty(renderedWidthProperty, `${geometry.renderedWidth.toFixed(2)}px`);
       queuePositionUpdate();
@@ -142,10 +155,11 @@ export default function useImageParallax({
     imageHeight,
     imageRef,
     imageWidth,
-    mobileCoverOverscanRatio,
+    limitParallax,
     mobileMediaQuery,
     mobileSectionHeightProperty,
     offsetProperty,
+    onMeasureSection,
     preferredViewportHeight,
     reducedMotion,
     renderedHeightProperty,

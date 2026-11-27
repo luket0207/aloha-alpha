@@ -1,5 +1,7 @@
 import { imageFrameDataFromElement } from './imageFrame.js';
 
+export const CLASS_STACKED_LAYOUT_QUERY = '(max-width: 767px)';
+
 const CLASS_ANCHORS = ['kids', 'first-class', 'second-class', 'third-class'];
 const TIME = /^(?:[01][0-9]|2[0-3]):[0-5][0-9]$/;
 const WEEKDAYS = {

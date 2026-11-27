@@ -1,0 +1,1416 @@
+# Epic-011 — Class Decorations, Responsive Layout, Testimonials and Back to Top
+
+## Overview
+
+This Epic contains four features:
+
+- **Feature-001:** Add decorative images and animations to the four Class Sections.
+- **Feature-002:** Correct the mobile content order of Class Sections.
+- **Feature-003:** Make Testimonials use the Image Divider's parallax and wave behaviour.
+- **Feature-004:** Add a reusable, colour-aware Back to Top button.
+
+Continue using:
+
+- WordPress for editable content and Media Library assets.
+- Gutenberg for content-editing controls.
+- React for public-facing components.
+- SCSS for styling and animations.
+- Existing shared Aloha Academy components and design tokens.
+
+Read and follow `AGENTS.md`.
+
+Preserve all functionality established in Epics 001–010.
+
+---
+
+# Feature-001 — Decorative Images and Animations for Class Sections
+
+**Status:** complete
+
+**Notes:** Shared site assets resolve unique Media Library attachments to stored IDs for palm-tree.png (161), turtle-g.png (160), and surfboard.png (105, also used by Contact Us). Stable class IDs select the artwork. The timetable, image and decoration share the row reveal. PHP lint, focused tests, browser checks at six widths plus wide desktop, and a standalone demo verified the assets and placement. Target artwork sizes are capped by available desktop margin width.
+
+## Objective
+
+Add decorative artwork to the margins of the four Class Sections.
+
+Each class should use a different piece of artwork with its own entrance animation.
+
+The following images already exist in the WordPress Media Library:
+
+- `surfboard.png`
+- `turtle-g.png`
+- `palm-tree.png`
+
+Also reuse the existing React Shaka SVG component.
+
+The artwork should complement the existing Class Section layout without obstructing the actual content.
+
+## 1. General Decoration Requirements
+
+Each class uses a fixed decorative element:
+
+| Class | Decoration | Position |
+|---|---|---|
+| Kids Class | Palm tree PNG | Left |
+| First Class | Shaka SVG | Right |
+| Second Class | Green turtle PNG | Left |
+| Third Class | Surfboard PNG | Right |
+
+Requirements:
+
+1. Use the specified artwork for each class.
+2. Keep the decorations separate from the editable class content.
+3. Preserve the existing Class Section block structure.
+4. Preserve the section's title, introduction, image, timetable and booking button.
+5. Do not require manually inserting decorative Image blocks into every section.
+6. Do not change the existing colours or image-frame designs.
+7. Do not introduce unrelated illustrations.
+8. Decorations must not interfere with links, buttons or other interactions.
+
+Identify the appropriate class using its existing stable class identifier, rather than relying on its position in the page.
+
+For example, reordering Class Sections must not move the palm tree onto the First Class section.
+
+## 2. WordPress Media Integration
+
+Use the existing Media Library images.
+
+### Palm Tree
+
+`palm-tree.png`
+
+### Green Turtle
+
+`turtle-g.png`
+
+### Surfboard
+
+`surfboard.png`
+
+### Shaka
+
+Reuse the existing React SVG component.
+
+Do not upload another copy of the Shaka to WordPress.
+
+### Requirements
+
+1. Preserve the actual source PNG files.
+2. Preserve image transparency.
+3. Preserve image proportions.
+4. Do not recreate the artwork through CSS or SVG.
+5. Do not hardcode local WordPress upload URLs.
+6. Reuse existing media references where available.
+7. Use stable WordPress attachment IDs or the existing shared asset system.
+8. Do not repeatedly search the Media Library by filename during normal frontend rendering.
+
+The existing Contact Us section already uses the Surfboard image. Reuse its media reference where appropriate.
+
+If the other images can be resolved reliably from existing WordPress data, use them directly.
+
+If not, introduce the smallest suitable shared media configuration, allowing each asset to be selected once.
+
+Do not require selecting the same decorative image separately in all four Class Section blocks.
+
+### Static Demo Compatibility
+
+The GitHub Pages demo exporter from Epic-010 must include these media assets.
+
+The deployed website must not depend on local WordPress image URLs.
+
+---
+
+## 3. Desktop Positioning
+
+On desktop, all decorative artwork should appear in the margins of the page.
+
+**It must not overlap or appear behind the main class content.**
+
+Requirements:
+
+1. Position each decoration on its specified side.
+2. Respect the site's established content container and horizontal margins.
+3. Keep the actual class content fully readable.
+4. Use responsive positioning rather than arbitrary fixed offsets.
+5. Preserve the existing class content width.
+6. Ensure decorative artwork does not create horizontal overflow.
+7. Keep decorations within their intended Class Section.
+
+Inspect the existing desktop section layout and determine the actual space available between the main content and the viewport edge.
+
+The artwork should occupy that margin wherever possible.
+
+If the available space becomes too narrow, scale down the artwork appropriately instead of allowing it to cover the main content.
+
+Use separate decorative and content layers with an appropriate stacking order.
+
+## 4. Mobile Positioning
+
+On mobile, there may not be enough horizontal space for the artwork to remain outside the content area.
+
+In this case, the decorations may appear behind the section content.
+
+### Mobile Opacity
+
+Set decorative artwork opacity to:
+
+```scss
+opacity: 0.2;
+```
+
+Requirements:
+
+1. Apply 0.2 opacity to all four decorations on mobile.
+2. Position them behind the actual class content.
+3. Keep text, timetables, featured images and booking buttons fully opaque.
+4. Preserve sufficient contrast and readability.
+5. Scale and reposition artwork to fit smaller screens.
+6. Avoid awkward cropping where possible.
+7. Prevent horizontal overflow.
+8. Keep decorative elements non-interactive.
+
+Use:
+
+```scss
+pointer-events: none;
+```
+
+Do not apply opacity to the entire Class Section container.
+
+Only the decorative artwork should become transparent.
+
+The desktop decorations should retain their normal artwork opacity unless otherwise specified.
+
+## 5. Shared Animation Trigger
+
+All four decorations should begin their entrance animations at the same point used to trigger the timetable and featured-image animations.
+
+Requirements:
+
+1. Reuse the existing Class Section scroll-observation mechanism.
+2. Trigger the decorative animation alongside the timetable/image reveal.
+3. Use the established viewport-position threshold.
+4. Do not introduce a separate unrelated trigger position.
+5. Animate on downward entry.
+6. Do not replay an entrance animation when scrolling upwards into the section.
+7. Reset only when the section is safely outside the viewport and prepared for a future downward entry.
+8. Do not visibly reset artwork while it is still on screen.
+9. Respect `prefers-reduced-motion`.
+
+Prefer sharing the existing reveal state instead of creating redundant scroll listeners.
+
+Each decoration has its own animation, but all use the same section-level trigger.
+
+---
+
+## 6. Kids Class — Falling Palm Tree
+
+### Artwork
+
+Use:
+
+`palm-tree.png`
+
+### Position
+
+Place the palm tree on the left side of the Kids Class section.
+
+### Size
+
+On desktop, the palm tree should be approximately:
+
+**50% of the Class Section's actual height.**
+
+Requirements:
+
+1. Size the image relative to the rendered section height.
+2. Preserve its original aspect ratio.
+3. Keep it within the available desktop margin.
+4. Do not distort the image.
+5. Recalculate its dimensions when the section height changes significantly.
+6. Use a smaller, responsive treatment on mobile where necessary.
+
+The desktop height should be based on the full Class Section, not merely the image/timetable row.
+
+### Bottom Position
+
+I want the base of the tree to extend slightly below the bottom boundary of the Kids Class section.
+
+This means the bottom part of the tree should be cut off.
+
+However, the tree must still be clearly visible above the section's bottom wave.
+
+Requirements:
+
+1. Position the tree near the bottom-left.
+2. Extend its base slightly below the bottom section boundary.
+3. Clip the portion extending outside the section.
+4. Keep enough of the trunk and leaves visible above the wave.
+5. Preserve the organic wave boundary.
+6. Do not allow the tree to spill visibly into the next section.
+7. Avoid clipping the entire lower portion too aggressively.
+
+The tree should appear to continue below the section, rather than floating above the bottom edge.
+
+### Entrance Animation
+
+Reuse the existing Surfboard-style falling rotation.
+
+The tree should rotate into position around its bottom centre.
+
+Use:
+
+```scss
+transform-origin: center bottom;
+```
+
+Requirements:
+
+1. Begin at an angled resting point outside its final orientation.
+2. Rotate smoothly into its final position.
+3. Keep the pivot at the bottom centre.
+4. Preserve the existing Surfboard animation's general style and timing.
+5. Do not introduce vertical sliding unless required by the existing shared effect.
+6. Leave the tree stationary once the entrance finishes.
+
+The animation should look like the tree is falling into place.
+
+Preserve the requested bottom clipping throughout the animation.
+
+---
+
+## 7. First Class — Shaka Animation
+
+### Artwork
+
+Use the existing Shaka SVG.
+
+### Position
+
+Place it on the right side of the First Class section.
+
+### Colour
+
+Use:
+
+**White — `#FFFFFF`**
+
+### Appearance and Animation
+
+I want this Shaka to behave as closely as possible to the one in the Contact Us section.
+
+Reuse:
+
+- Original SVG artwork.
+- Existing dimensions and responsive scaling where suitable.
+- Existing entrance behaviour.
+- Resting rotation.
+- Shake animation.
+- Animation timing.
+
+### Shake Behaviour
+
+Preserve the existing Contact Us shake cycle:
+
+- Resting angle: approximately −30°.
+- Shake movement between approximately −15° and −45°.
+- Four back-and-forth oscillations.
+- Shake duration: 1.5 seconds.
+- Pause between shakes: 3.5 seconds.
+
+Requirements:
+
+1. Animate into position when the Class Section reveal is triggered.
+2. Begin the repeated shake cycle after entering.
+3. Preserve the original SVG's fill and transparent regions.
+4. Do not add a second stroke or unwanted outline.
+5. Preserve responsive scaling.
+6. Keep the Shaka within the right margin on desktop.
+7. Apply 0.2 opacity behind content on mobile.
+8. Preserve the established animation reset behaviour.
+
+Reuse the shared Shaka animation rather than duplicating the entire implementation.
+
+**Do not use the faster loading-screen Shaka animation.**
+
+This decoration should use the Contact Us timing.
+
+---
+
+## 8. Second Class — Swimming Green Turtle
+
+### Artwork
+
+Use:
+
+`turtle-g.png`
+
+This is the Green version of the turtle, not the turtle used in the animated water backgrounds.
+
+### Position
+
+The turtle should appear on the left side of the Second Class section.
+
+### Dimensions
+
+On desktop, the image should be:
+
+**200px tall.**
+
+Requirements:
+
+1. Preserve its aspect ratio.
+2. Use a height of 200px on desktop.
+3. Keep the turtle within the available margin.
+4. Scale down on mobile where necessary.
+5. Do not distort the PNG.
+
+### Swimming Movement
+
+The turtle should swim upwards from the bottom-left corner of the Class Section.
+
+Its final position should be approximately halfway up the section.
+
+Requirements:
+
+1. Begin near the bottom-left section boundary.
+2. Start outside or close to the visible lower-left entrance edge.
+3. Move diagonally upwards through the left margin.
+4. Finish at approximately 50% of the section's height.
+5. Remain within the left margin on desktop.
+6. Follow one continuous straight-line trajectory.
+7. Stop moving when it reaches its final position.
+
+This is a one-time entrance animation, not a continuously repeating cross-section swimming animation.
+
+### Wiggle Animation
+
+Reuse the existing turtle swimming wiggle:
+
+**−2° to +2°.**
+
+Requirements:
+
+1. Calculate the heading from the entrance trajectory.
+2. Keep the turtle pointing in its swimming direction.
+3. Apply the ±2-degree wiggle while it swims.
+4. Keep translation and rotation transforms independent.
+5. Stop the travel animation when the turtle reaches its destination.
+
+### Resting Orientation
+
+When the turtle reaches the halfway position, it should remain at a slight angle.
+
+That angle should preserve the impression of its previous swimming direction.
+
+Requirements:
+
+1. Do not snap the turtle upright at the end.
+2. Preserve an appropriate final heading.
+3. Stop the movement smoothly.
+4. Leave the turtle stationary at its final position.
+5. Do not continue the swimming wiggle indefinitely once the entrance finishes.
+
+The turtle should look as though it has just swum into place.
+
+### Mobile
+
+On mobile:
+
+- Scale appropriately.
+- Display behind content.
+- Apply 0.2 opacity.
+- Preserve the swimming entrance.
+- Prevent clipping and horizontal overflow.
+
+---
+
+## 9. Third Class — Right-Side Falling Surfboard
+
+### Artwork
+
+Use:
+
+`surfboard.png`
+
+Reuse the same artwork already used in Contact Us.
+
+### Position
+
+Place the Surfboard on the right side of the Third Class section.
+
+Its bottom edge should align vertically with the bottom of the booking button.
+
+Requirements:
+
+1. Position the Surfboard within the right desktop margin.
+2. Align its base with the booking button's bottom edge.
+3. Preserve its existing aspect ratio.
+4. Reuse the existing Contact Us Surfboard size where practical.
+5. Prevent overlap with the booking button.
+6. Preserve responsive scaling.
+
+The alignment should be based on the actual booking button position, not a fixed percentage of the Class Section height.
+
+### Entrance Animation
+
+Use the existing Contact Us Surfboard falling animation, but reverse its direction.
+
+The Third Class Surfboard should fall:
+
+**From right to left.**
+
+Requirements:
+
+1. Rotate around its bottom centre.
+2. Begin angled towards the right.
+3. Rotate leftwards into its resting position.
+4. Preserve the existing entrance duration and easing.
+5. Do not add unnecessary vertical movement.
+6. Animate only when the Class Section reveal is triggered.
+7. Leave the Surfboard stationary after its entrance finishes.
+
+Use the opposite rotation direction from the existing Contact Us implementation.
+
+### Mobile
+
+On mobile:
+
+1. Keep the Surfboard behind the content.
+2. Apply 0.2 opacity.
+3. Adjust its size and right offset.
+4. Preserve the general falling animation.
+5. Ensure it does not obscure the booking button.
+6. Prevent horizontal overflow.
+
+---
+
+## 10. Layering and Wave Integration
+
+All decorations must integrate with the existing Class Section wave borders.
+
+Requirements:
+
+1. Preserve the organic top and bottom waves.
+2. Keep decorative images behind actual content.
+3. Avoid covering text or interactive controls on desktop.
+4. Respect the section's existing background colour.
+5. Preserve transitions with neighbouring sections.
+6. Prevent white gaps.
+7. Ensure artwork does not appear outside unintended section boundaries.
+8. Preserve pointer interaction with all foreground content.
+
+Use a clear layer structure:
+
+1. Section background.
+2. Decorative artwork.
+3. Main class content.
+
+Any clipping required for artwork should not accidentally clip the section's wave decorations or the foreground content.
+
+## 11. Preserve Existing Class Sections
+
+Do not modify:
+
+- Class titles.
+- Introduction content.
+- Timetable data.
+- Featured images.
+- Image-frame styles.
+- Booking button behaviour.
+- Existing colour schemes.
+- Existing wave geometry.
+- Class anchors.
+- WordPress editing functionality.
+
+The decorations must not become mandatory fields for each Class Section.
+
+## Acceptance Criteria
+
+- Kids Class displays the left-side Palm Tree.
+- Palm Tree is 50% of section height on desktop.
+- Palm Tree falls into place around its bottom centre.
+- Palm Tree base extends below the section and is clipped.
+- First Class displays the white Shaka on the right.
+- Shaka uses the Contact Us shake animation.
+- Second Class displays the Green Turtle on the left.
+- Turtle is 200px tall on desktop.
+- Turtle swims upwards to approximately 50% of the section height.
+- Turtle uses the ±2-degree wiggle.
+- Turtle preserves a slightly angled resting orientation.
+- Third Class displays the Surfboard on the right.
+- Surfboard falls from right to left.
+- Surfboard base aligns with the booking button's bottom.
+- All entrances use the timetable/image reveal trigger.
+- All artwork remains in desktop margins.
+- Mobile artwork appears behind content at 0.2 opacity.
+- Artwork does not interfere with the content.
+- Existing Class Section data and animations remain intact.
+- Static demo includes all three PNG assets.
+- No horizontal overflow.
+
+---
+
+# Feature-002 — Correct Mobile Class Section Content Order
+
+**Status:** complete
+
+**Notes:** The shared Class Section renders image before timetable in one DOM order. The Cream layout places the timetable on the left at widths of 768px and above, while Light Blue keeps the image on the left. The frontend build and browser checks at six widths verified all four classes, responsive spacing, shared entrances and no duplication or overflow.
+
+## Objective
+
+Ensure the four Class Section blocks use a consistent content order when stacked vertically on mobile.
+
+The existing desktop layout should remain unchanged.
+
+## 1. Required Mobile Order
+
+Below the Class Section title, the layout must always be:
+
+1. Introduction paragraph.
+2. Featured image.
+3. Timetable.
+
+The booking button remains below these elements.
+
+### Complete Mobile Structure
+
+```text
+             CLASS TITLE
+
+         INTRODUCTION PARAGRAPH
+
+           FEATURED IMAGE
+
+             TIMETABLE
+
+           BOOKING BUTTON
+```
+
+This must apply to:
+
+- Kids Class.
+- First Class.
+- Second Class.
+- Third Class.
+
+The image must always appear above the timetable on mobile.
+
+## 2. Preserve Desktop Layout
+
+Do not change the desktop alternating layout.
+
+### Light Background
+
+- Introduction above the row.
+- Timetable left.
+- Image right.
+- Booking button beneath.
+
+### Light Blue Background
+
+- Introduction above the row.
+- Image left.
+- Timetable right.
+- Booking button beneath.
+
+Keep the existing alternating styles.
+
+## 3. Responsive Implementation
+
+Inspect the existing Class Section layout.
+
+Prefer CSS Grid areas or an equivalent layout approach.
+
+Requirements:
+
+1. Preserve one logical DOM structure.
+2. Avoid duplicating the image or timetable markup.
+3. Apply mobile ordering consistently.
+4. Preserve existing spacing.
+5. Preserve image-frame dimensions.
+6. Preserve timetable readability.
+7. Preserve the introduction's centred alignment.
+8. Preserve the booking button's position.
+9. Avoid unnecessary layout shifts.
+
+Use the existing responsive breakpoint system.
+
+## 4. Preserve Animations
+
+The content elements already have entrance animations.
+
+Preserve:
+
+- Introduction fade and upward movement.
+- Featured image side entrance.
+- Timetable side entrance.
+- Booking button fade and upward movement.
+
+The mobile stacking order must not interfere with these effects.
+
+Where necessary, adjust the animation's translation direction or distance for narrow screens without changing its established overall style.
+
+Ensure the image appearing above the timetable does not cause animation overlap.
+
+## 5. WordPress Compatibility
+
+This is a frontend layout correction.
+
+Requirements:
+
+- Do not alter existing block identities.
+- Do not alter saved attributes.
+- Do not require users to reorder Gutenberg blocks.
+- Do not require new editor controls.
+- Preserve the existing editor-to-React data contract.
+- Apply the same layout in static demo mode.
+
+## Acceptance Criteria
+
+- Every mobile Class Section displays Introduction → Image → Timetable.
+- Booking button remains last.
+- Desktop alternating layouts remain unchanged.
+- No duplicated content.
+- Existing animations continue working.
+- WordPress content is preserved.
+- Responsive styling remains consistent.
+- No horizontal overflow.
+
+---
+
+# Feature-003 — Align Testimonials Parallax and Waves with Image Divider
+
+**Status:** complete
+
+**Notes:** Testimonials uses Image Divider’s shared scroll and cover calculations, wave-band builder, and normalized wave shapes. The wave depth follows the divider’s default 50vh reference, capped by the actual section height, while the image still covers 150% on mobile. Nine tests and Chrome checks at six widths verified stable wave depth, midpoint alignment, safe coverage, the 0.2 overlay and autoplay during hover.
+
+## Objective
+
+Correct the Testimonials section so its background image and wave-shaped borders behave like the existing Image Divider.
+
+There are currently two issues:
+
+1. The parallax background does not behave consistently with Image Divider.
+2. The organic wave borders become vertically elongated on mobile.
+
+Both should be corrected by reusing the working Image Divider implementation wherever possible.
+
+## 1. Inspect the Existing Implementations
+
+Compare:
+
+- Image Divider background image rendering.
+- Testimonials background image rendering.
+- Parallax calculations.
+- Background image sizing.
+- Scroll-position calculations.
+- Wave masks and SVG geometry.
+- Responsive wave sizing.
+- Section-height handling.
+
+Identify where the two components have diverged.
+
+Do not implement another independent approximation of the Image Divider behaviour.
+
+## 2. Reuse Image Divider Parallax
+
+The Testimonials background should follow the same movement logic as Image Divider.
+
+### Midpoint Alignment
+
+When the vertical centre of the Testimonials section aligns with the vertical centre of the viewport, the background image must be in its neutral, vertically centred position.
+
+### Scroll Behaviour
+
+As the user scrolls down:
+
+1. The initially visible region favours the lower portion of the image.
+2. The image moves smoothly upwards.
+3. The image reaches its neutral alignment at the section/viewport midpoint.
+4. Later scrolling reveals more of the upper portion.
+
+Requirements:
+
+1. Use the Image Divider's actual scroll-position calculation.
+2. Preserve the midpoint alignment.
+3. Preserve smooth movement.
+4. Use the Testimonials section's actual rendered dimensions.
+5. Recalculate correctly when those dimensions change.
+6. Preserve image aspect ratio.
+7. Prevent straight image edges from becoming visible.
+8. Respect `prefers-reduced-motion`.
+
+Prefer extracting shared parallax functionality if it is currently duplicated.
+
+The image must remain behind the testimonial cards.
+
+## 3. Preserve Safe Background Coverage
+
+The Testimonials section requires sufficient background image overscan for parallax.
+
+Preserve the existing mobile sizing requirement from Epic-010:
+
+- Cover the entire section width.
+- Cover the entire visible section height.
+- Provide an additional 25% of section height above and below where required.
+
+The target neutral image height is at least 150% of the section height.
+
+However, the image should not be enlarged unnecessarily.
+
+### Scaling Priority
+
+1. First calculate the image's proportional height when scaled to the section width.
+2. If that height provides sufficient coverage and overscan, use it.
+3. Otherwise scale proportionally until the vertical coverage requirement is satisfied.
+4. Centre the image horizontally.
+5. Centre it vertically at the neutral parallax position.
+
+Do not stretch the image independently along either axis.
+
+Any excess horizontal width should be clipped safely.
+
+Reuse the relevant Image Divider background positioning utilities while preserving this Testimonials-specific overscan requirement.
+
+## 4. Correct Wave Border Scaling
+
+The Testimonials wave borders currently become too tall when the section stretches vertically on mobile.
+
+I want them to behave exactly like Image Divider's wave borders.
+
+Requirements:
+
+1. Reuse the existing Image Divider wave geometry.
+2. Preserve a consistent wave depth.
+3. Do not stretch wave height proportionally with the section height.
+4. Keep the waves spanning the full section width.
+5. Preserve the distinct top and bottom shapes.
+6. Ensure the flat and curved edges have the correct orientation.
+7. Prevent wave distortion when content makes the section taller.
+8. Prevent unintended clipping.
+9. Prevent straight background edges being exposed.
+10. Preserve smooth transitions with neighbouring sections.
+
+The wave depth should be determined by the existing wave implementation and responsive styling, not by the height of the Testimonials container.
+
+For example, making a section twice as tall must not make its decorative waves twice as deep.
+
+## 5. Responsive Section Height
+
+Testimonials may become taller on mobile because the carousel layout and text wrapping change.
+
+Requirements:
+
+1. Keep the section tall enough to contain its cards.
+2. Do not force a fixed height that clips testimonial content.
+3. Recalculate background coverage using its actual height.
+4. Keep wave depth independent of that height.
+5. Preserve the existing 3/2/1 responsive card layout.
+6. Avoid visible image jumps when carousel content changes.
+7. Avoid unnecessary DOM measurements on every scroll frame.
+
+Use ResizeObserver or an existing equivalent only where needed.
+
+## 6. Preserve Black Image Overlay
+
+The Testimonials background uses a black overlay at 0.2 opacity.
+
+Preserve this exactly.
+
+Requirements:
+
+1. Overlay remains above the background image.
+2. Overlay remains below testimonial cards.
+3. Overlay follows the same visible image boundaries.
+4. No overlay is applied to the entire section's foreground content.
+5. Testimonial cards remain fully opaque.
+6. Prevent overlay layers from introducing straight edges.
+
+## 7. Preserve Testimonials Carousel
+
+Do not change:
+
+- Five-second automatic advancement.
+- One-testimonial-at-a-time movement.
+- Automatic scrolling while hovered.
+- Existing seamless looping.
+- Existing card shapes.
+- Card vertical staggering.
+- Quote typography.
+- Name typography.
+- Responsive visible-card counts.
+- WordPress content editing.
+
+Do not reintroduce navigation arrows.
+
+Do not reintroduce the unwanted faded flash from previous bugs.
+
+This feature concerns the background image and wave borders only.
+
+## 8. Background Continuity
+
+The Testimonials section may appear beneath Page Links or other sections.
+
+Requirements:
+
+1. Preserve correct neighbouring background colours.
+2. Ensure the preceding section's background remains visible behind transparent wave areas.
+3. Prevent white seams.
+4. Avoid hardcoded white wave overlays.
+5. Maintain full-width coverage.
+6. Prevent horizontal overflow.
+
+## Acceptance Criteria
+
+- Testimonials parallax behaves like Image Divider.
+- Image is vertically centred when section and viewport midpoints align.
+- Background moves smoothly with scrolling.
+- Image remains fully covered throughout movement.
+- Existing mobile image-sizing rules remain satisfied.
+- Wave depth remains consistent.
+- Waves no longer stretch vertically on mobile.
+- Top and bottom wave geometries remain distinct.
+- Black overlay remains at 0.2 opacity.
+- Testimonial cards remain unaffected.
+- Carousel continues advancing every five seconds.
+- Hovering does not pause the carousel.
+- No unwanted fading or carousel flashes return.
+- Adjacent background transitions remain seamless.
+- No horizontal overflow.
+
+---
+
+# Feature-004 — Reusable Back to Top Button
+
+**Status:** complete
+
+**Notes:** Classes opts in through the shared route configuration. The button inherits the saved Header colour and shares the Contact Us Jump bottom offset. It preserves the pathname, query and history state when clearing a fragment. Chrome verified keyboard and reduced-motion support, smooth scrolling, all three colours, floating control spacing at six widths, refresh and anchor navigation, including the static demo base path.
+
+## Objective
+
+Add a floating Back to Top button to the Classes page.
+
+It should be reusable so the same component can easily be enabled on other pages in future.
+
+The button should visually coordinate with the existing Contact Us Jump button.
+
+## 1. Create Reusable Component
+
+Create a React component.
+
+Suggested name:
+
+`BackToTopButton`
+
+Requirements:
+
+1. Keep it reusable.
+2. Do not hardcode its behaviour specifically into the Classes page component.
+3. Enable it on the Classes page initially.
+4. Allow other pages to enable it later without duplicating the implementation.
+5. Do not add it to every page automatically.
+6. Do not create a Gutenberg block for it.
+7. Preserve existing page content and WordPress structures.
+
+The button is a navigation utility, not editable page content.
+
+## 2. Position
+
+The existing Contact Us Jump button appears near the bottom-right of the viewport.
+
+Place the Back to Top button:
+
+**At the bottom-left of the viewport, at the same vertical position.**
+
+Requirements:
+
+1. Use fixed positioning.
+2. Align its vertical position with the Contact Us Jump button.
+3. Use the same established bottom offset.
+4. Respect mobile safe-area insets.
+5. Preserve appropriate space from the viewport edge.
+6. Avoid covering important page content unnecessarily.
+7. Keep the button accessible on desktop and mobile.
+
+Use the same shared positioning token or calculation as the existing Contact Us Jump button where possible.
+
+Do not create independent offsets that slowly become inconsistent.
+
+The button should remain a floating control while browsing the Classes page.
+
+## 3. Shape and Icon
+
+The button should be circular.
+
+Use a Font Awesome upward chevron.
+
+Suggested icon:
+
+```jsx
+<FontAwesomeIcon icon={faChevronUp} />
+```
+
+Requirements:
+
+1. Use a true circular shape.
+2. Centre the icon horizontally and vertically.
+3. Preserve a sufficiently large touch target.
+4. Keep the design simple.
+5. Do not add visible button text.
+6. Do not use a decorative blob shape for this button.
+7. Preserve keyboard accessibility.
+
+Use an appropriate accessible name, such as:
+
+`ページの先頭へ戻る`
+
+## 4. Match the Current Header Colour
+
+The button's background colour should come from the current Header colour selection.
+
+The Header currently supports:
+
+- Dark Green — `#033626`.
+- Green — `#066C4C`.
+- Dark Blue — `#1B4672`.
+
+Requirements:
+
+1. Read the Header's current theme selection.
+2. Use that colour for the Back to Top button background.
+3. Update the button colour if the Header's selected theme changes.
+4. Keep the icon in an appropriate contrasting colour.
+5. Use Cream (`#F1FFFA`) for the icon unless the existing Header theme system requires an equivalent accessible colour.
+6. Preserve a visible keyboard focus indicator.
+7. Do not hardcode Dark Blue as the only button colour.
+
+### Current Appearance
+
+Because the Header is currently Dark Blue, the Back to Top button should initially appear Dark Blue as well.
+
+### Important
+
+Use the existing Header theme data or shared CSS custom properties.
+
+Do not attempt to identify the Header colour by sampling rendered pixels.
+
+The Header's saved WordPress selection should remain the source of truth.
+
+## 5. Button Hover Behaviour
+
+Keep the hover effect simple.
+
+Requirements:
+
+1. Provide a subtle visual hover response.
+2. Preserve the circular shape.
+3. Keep the icon centred.
+4. Do not cause layout shifts.
+5. Preserve existing theme-aware colours.
+6. Keep the focus indicator visible.
+7. Respect `prefers-reduced-motion`.
+
+Reuse an existing simple button-hover treatment where appropriate.
+
+Do not copy the entire large navigation-link wave animation into this small circular button.
+
+## 6. Scroll to Top
+
+When clicked, the button should scroll the current page to the very top.
+
+Requirements:
+
+1. Smoothly scroll to the top.
+2. Use the existing site's scrolling conventions.
+3. Do not reload the page.
+4. Do not navigate to a different page.
+5. Do not interfere with the sticky Header.
+6. Preserve keyboard interaction.
+7. Use immediate scrolling when reduced motion is preferred.
+
+The target is the actual top of the page, not the first Class Section.
+
+## 7. Remove URL Fragment
+
+The Classes page currently uses anchor links such as:
+
+```text
+/classes/#kids
+/classes/#first-class
+/classes/#second-class
+/classes/#third-class
+```
+
+When the Back to Top button is clicked, remove the URL fragment.
+
+### Example
+
+Before:
+
+```text
+/classes/#second-class
+```
+
+After:
+
+```text
+/classes/
+```
+
+Requirements:
+
+1. Remove the fragment identifier.
+2. Preserve the existing pathname.
+3. Preserve any query parameters.
+4. Do not reload the page.
+5. Do not navigate away from Classes.
+6. Preserve the existing browser history state where appropriate.
+7. Support both local WordPress URLs and GitHub Pages demo URLs.
+
+Use the browser History API or the existing routing abstraction.
+
+A suitable approach is to replace the current history entry with the same pathname and query string, excluding the hash.
+
+Do not assume the site is always hosted at the domain root.
+
+The behaviour must also work under a GitHub Pages repository-specific base path.
+
+## 8. Interaction with Contact Us Jump
+
+Both floating buttons may be visible on the Classes page.
+
+Requirements:
+
+1. Back to Top remains left-aligned.
+2. Contact Us Jump remains right-aligned.
+3. Their vertical positions match.
+4. They must not overlap on narrow screens.
+5. Preserve Contact Us Jump's existing size and appearance.
+6. Preserve Contact Us Jump's existing show/hide behaviour.
+7. Preserve Back to Top's independent functionality.
+
+If the existing Contact Us Jump button becomes wider on mobile, account for its width without breaking the Back to Top button's usability.
+
+Do not unnecessarily redesign the Contact Us Jump button.
+
+## 9. Accessibility
+
+Requirements:
+
+1. Use a semantic button.
+2. Provide an accessible Japanese label.
+3. Preserve keyboard activation.
+4. Maintain a visible focus indicator.
+5. Ensure the touch target is sufficiently large.
+6. Respect reduced-motion preferences.
+7. Do not trap keyboard focus.
+8. Do not introduce unexpected page navigation.
+
+## 10. Future Reusability
+
+The component should be easy to enable on another page later.
+
+For example, through the existing shared page-layout system or a simple component prop.
+
+Requirements:
+
+1. Keep page-specific activation separate from button functionality.
+2. Reuse the shared Header theme.
+3. Reuse the existing viewport positioning system.
+4. Avoid creating a new Gutenberg block or WordPress setting.
+5. Do not automatically show the button on the Homepage, Gallery, FAQs or other pages yet.
+
+## Acceptance Criteria
+
+- Back to Top button appears on the Classes page.
+- Button is circular.
+- Button contains a Font Awesome up chevron.
+- Button is at the bottom-left of the viewport.
+- It aligns vertically with Contact Us Jump.
+- It uses the current Header background colour.
+- Current Dark Blue styling is displayed correctly.
+- Changing the Header theme updates the button colour.
+- Clicking scrolls to the top.
+- URL fragments are removed.
+- Pathname and query parameters remain intact.
+- No page reload occurs.
+- The component can be reused on future pages.
+- Contact Us Jump continues working.
+- Mobile buttons do not overlap.
+- Keyboard and reduced-motion behaviour work.
+- GitHub Pages base paths remain compatible.
+- No horizontal overflow.
+
+---
+
+# Epic-011 Implementation Workflow
+
+Run using:
+
+```text
+//completeEpic-011
+```
+
+Follow `AGENTS.md`.
+
+Process features in written order.
+
+## Phase 1 — Media and Component Inspection
+
+Before implementation:
+
+1. Read `AGENTS.md`.
+2. Read the complete Epic-011 specification.
+3. Inspect the Class Section component.
+4. Inspect existing Class Section entrance animations.
+5. Inspect the existing Shaka component.
+6. Inspect Contact Us Surfboard positioning and animation.
+7. Inspect the swimming turtle's wiggle animation.
+8. Inspect the Image Divider parallax and wave utilities.
+9. Inspect Testimonials background rendering.
+10. Inspect the Contact Us Jump position and Header theme system.
+11. Inspect existing WordPress media integration.
+
+Reuse established components and animations wherever practical.
+
+## Phase 2 — Feature-001 Media Prerequisites
+
+Verify the following Media Library assets:
+
+- `palm-tree.png`
+- `turtle-g.png`
+- `surfboard.png`
+
+Reuse existing stable references.
+
+If the images can be reliably resolved from existing WordPress configuration, continue without manual intervention.
+
+If new shared asset selection controls are needed:
+
+1. Implement those controls.
+2. Build the necessary WordPress assets.
+3. Stop for manual configuration.
+4. Provide exact instructions for selecting the three images.
+5. Resume after confirmation.
+
+Do not guess between duplicate Media Library attachments.
+
+Do not require reuploading images already present.
+
+## Phase 3 — Feature-001 Implementation
+
+Implement:
+
+1. Kids Class Palm Tree.
+2. First Class Shaka.
+3. Second Class Green Turtle.
+4. Third Class Surfboard.
+5. Desktop margin positioning.
+6. Mobile background positioning and 0.2 opacity.
+7. Shared scroll entrance triggers.
+8. Responsive sizing.
+9. Wave clipping and background integration.
+10. Static demo asset support.
+
+Preserve existing Class Section content and layout.
+
+## Phase 4 — Feature-002 Implementation
+
+Correct the mobile Class Section layout so it always displays:
+
+1. Introduction.
+2. Featured image.
+3. Timetable.
+
+Keep the title above and booking button below.
+
+Preserve desktop layout and existing WordPress data.
+
+## Phase 5 — Feature-003 Implementation
+
+Refactor or correct Testimonials to reuse the working Image Divider:
+
+- Parallax calculation.
+- Neutral midpoint alignment.
+- Safe image sizing.
+- Wave geometry.
+- Responsive wave sizing.
+- Background clipping.
+
+Preserve the Testimonials carousel and existing overlay.
+
+## Phase 6 — Feature-004 Implementation
+
+Create the reusable BackToTopButton.
+
+Integrate it into the Classes page only.
+
+Reuse:
+
+- Contact Us Jump vertical positioning.
+- Header theme selection.
+- Existing scroll utilities.
+- Existing Font Awesome setup.
+
+Implement URL-fragment removal without reloading.
+
+## Phase 7 — Final Verification
+
+Verify:
+
+1. All four Class Section decorations.
+2. Decoration entrance timing.
+3. Desktop and mobile positioning.
+4. Mobile content order.
+5. Testimonials parallax.
+6. Testimonials mobile waves.
+7. Back to Top positioning.
+8. Back to Top colour awareness.
+9. Back to Top scrolling and fragment removal.
+10. Existing Contact Us Jump.
+11. Static demo compatibility.
+12. No horizontal overflow.
+
+Do not modify unrelated WordPress content or begin another Epic.
+
+---
+
+# Testing Requirements
+
+Test at:
+
+- 320px.
+- 375px.
+- 430px.
+- 768px.
+- 1024px.
+- 1440px.
+
+## Feature-001
+
+Verify:
+
+- All specified images load.
+- Decorative artwork stays in desktop margins.
+- Mobile opacity is 0.2.
+- Content remains readable.
+- Palm Tree sizing and bottom clipping.
+- Shaka colour and shake cycle.
+- Turtle height, movement and resting angle.
+- Surfboard direction and booking-button alignment.
+- Entrance timing matches timetable/image reveal.
+- No unwanted scroll-up replay.
+- No decorative element intercepts interaction.
+- Reduced-motion behaviour.
+- Static demo media export.
+
+## Feature-002
+
+Verify:
+
+- Correct mobile ordering for all four classes.
+- Both desktop layouts remain unchanged.
+- Existing entrance animations.
+- Responsive spacing.
+- No duplication or clipping.
+
+## Feature-003
+
+Verify:
+
+- Midpoint parallax alignment.
+- Scroll movement matches Image Divider.
+- Image remains fully covered.
+- Top and bottom waves retain their proportions.
+- Mobile section-height changes do not stretch waves.
+- Black overlay remains correct.
+- Carousel continues advancing every five seconds.
+- No reintroduced fading or flashing.
+- No background seams.
+
+## Feature-004
+
+Verify:
+
+- Button appears on Classes.
+- Correct left positioning.
+- Vertical alignment with Contact Us Jump.
+- Header theme inheritance.
+- Smooth scrolling to top.
+- Fragment removal.
+- Query string preservation.
+- WordPress route compatibility.
+- GitHub Pages route compatibility.
+- Keyboard functionality.
+- Reduced-motion support.
+- Mobile spacing between floating buttons.
+
+Run focused automated tests and relevant frontend builds.
+
+Do not claim browser or WordPress verification unless actually performed.
+
+---
+
+# Development Constraints
+
+1. Follow `AGENTS.md`.
+2. Preserve Epics 001–010 behaviour.
+3. Keep WordPress-managed assets in WordPress.
+4. Keep public-facing animations and styling in React/SCSS.
+5. Reuse existing Shaka and Surfboard components.
+6. Reuse existing turtle wiggle keyframes.
+7. Reuse existing Image Divider parallax and wave utilities.
+8. Preserve existing Class Section Gutenberg blocks.
+9. Preserve existing saved class content and timetables.
+10. Do not create unnecessary new Gutenberg blocks.
+11. Do not modify Header or Footer theme options.
+12. Do not reset or destroy the WordPress environment.
+13. Do not recreate already existing Media Library assets.
+14. Keep the GitHub Pages demo compatible.
+15. Respect `prefers-reduced-motion`.
+16. Prevent horizontal overflow.
+17. Keep all decorative assets non-interactive.
+
+---
+
+# Feature Tracking
+
+Update:
+
+`src/vibe/epics/epic-011/features.txt`
+
+Use the existing statuses:
+
+- not started
+- in progress
+- blocked
+- complete
+
+Follow the existing rollback procedures.
+
+Keep separate rollback records for each feature.
+
+Do not modify `bugs.txt` unless explicitly instructed.
+
+---
+
+# Completion Report
+
+For each feature, report:
+
+1. Final status.
+2. Changes implemented.
+3. Files modified.
+4. Relevant tests performed.
+5. Responsive verification.
+6. Any manual WordPress work.
+7. Remaining limitations.
+
+For Feature-001, explicitly identify how the three Media Library assets are referenced.
+
+For Feature-003, identify which existing Image Divider utilities are now shared with Testimonials.
+
+For Feature-004, confirm that removing the anchor fragment does not break navigation or page refreshes.
+
+**Scope:** Complete Features 001–004 of Epic-011 only. Do not begin Epic-012 or unrelated work.

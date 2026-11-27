@@ -1,17 +1,12 @@
 import {
   useCallback,
   useEffect,
-  useId,
   useMemo,
   useRef,
   useState,
 } from 'react';
 import { SQUARE_FRAME_PATH } from './imageFrame.js';
-import {
-  buildWaveBandPath,
-  IMAGE_DIVIDER_BOTTOM_WAVE,
-  IMAGE_DIVIDER_TOP_WAVE,
-} from './imageDivider.js';
+import ImageDivider from './ImageDivider.jsx';
 import {
   isJapaneseText,
   normalizedCarouselIndex,
@@ -21,16 +16,7 @@ import {
   testimonialVisibleCount,
 } from './testimonials.js';
 import useReducedMotion from './useReducedMotion.js';
-import useImageParallax from './useImageParallax.js';
-import { WaveClipPath } from './Wave.jsx';
 import './Testimonials.scss';
-
-const TESTIMONIALS_MASK_PATH = buildWaveBandPath(
-  IMAGE_DIVIDER_TOP_WAVE,
-  IMAGE_DIVIDER_BOTTOM_WAVE,
-);
-const MOBILE_MEDIA_QUERY = '(max-width: 899px)';
-const MOBILE_PARALLAX_OVERSCAN_RATIO = 0.25;
 
 function useVisibleCount() {
   const [visibleCount, setVisibleCount] = useState(() => (
@@ -82,7 +68,6 @@ function TestimonialCard({ copyIndex, item, itemIndex, renderedIndex, visible })
 
 export default function Testimonials({ image, testimonials }) {
   const sectionRef = useRef(null);
-  const imageRef = useRef(null);
   const trackRef = useRef(null);
   const reducedMotion = useReducedMotion();
   const visibleCount = useVisibleCount();
@@ -92,7 +77,6 @@ export default function Testimonials({ image, testimonials }) {
   const [transitioning, setTransitioning] = useState(false);
   const [isIntersecting, setIsIntersecting] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
-  const clipId = `aloha-testimonials-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`;
 
   const renderedTestimonials = useMemo(() => {
     if (!looping) return testimonials.map((item, itemIndex) => ({ copyIndex: 0, item, itemIndex }));
@@ -163,19 +147,6 @@ export default function Testimonials({ image, testimonials }) {
     return () => window.clearInterval(timer);
   }, [advance, isFocused, isIntersecting, looping, reducedMotion]);
 
-  useImageParallax({
-    imageHeight: image.height,
-    imageRef,
-    imageWidth: image.width,
-    mobileCoverOverscanRatio: MOBILE_PARALLAX_OVERSCAN_RATIO,
-    mobileMediaQuery: MOBILE_MEDIA_QUERY,
-    offsetProperty: '--aloha-testimonials-image-offset',
-    reducedMotion,
-    renderedHeightProperty: '--aloha-testimonials-image-height',
-    renderedWidthProperty: '--aloha-testimonials-image-width',
-    sectionRef,
-  });
-
   const visibleIndices = new Set(
     Array.from({ length: Math.min(visibleCount, itemCount) }, (_, index) => virtualIndex + index),
   );
@@ -198,21 +169,7 @@ export default function Testimonials({ image, testimonials }) {
       ref={sectionRef}
       tabIndex="0"
     >
-      <WaveClipPath id={clipId} path={TESTIMONIALS_MASK_PATH} />
-      <div className="aloha-testimonials__background" style={{ clipPath: `url(#${clipId})` }}>
-        <img
-          alt={image.alt}
-          className="aloha-testimonials__background-image"
-          decoding={image.decoding}
-          height={image.height}
-          loading={image.loading}
-          ref={imageRef}
-          sizes={image.sizes}
-          src={image.src}
-          srcSet={image.srcSet}
-          width={image.width}
-        />
-      </div>
+      <ImageDivider background image={image} />
 
       <div className="aloha-testimonials__carousel">
         <div className="aloha-testimonials__viewport">

@@ -11,6 +11,7 @@ import {
 import { Link, useOutletContext } from 'react-router-dom';
 import { getRouterHref } from '../wordpressApi.js';
 import { HERO_BOTTOM_WAVE } from './hero.js';
+import { ImageDividerReference } from './ImageDivider.jsx';
 import { IMAGE_DIVIDER_WAVE_OVERSCAN_RATIO } from './imageDivider.js';
 import { ROUND_FRAME_PATH } from './imageFrame.js';
 import {
@@ -122,21 +123,27 @@ function PageLinksWater({ className }) {
 
 export function PageLinksContinuity({ children }) {
   const continuityRef = useRef(null);
+  const [reference, setReference] = useState(null);
 
   useLayoutEffect(() => {
     const continuity = continuityRef.current;
     const divider = continuity?.querySelector(':scope > .aloha-image-divider');
     const testimonials = continuity?.querySelector(':scope > .aloha-testimonials');
-    if (!continuity || !divider || !testimonials) return undefined;
+    const background = testimonials?.querySelector(':scope > .aloha-image-divider--background');
+    if (!continuity || !divider || !testimonials || !background) return undefined;
 
     function updateWaterBounds() {
       const continuityBounds = continuity.getBoundingClientRect();
       const dividerBounds = divider.getBoundingClientRect();
-      const testimonialsBounds = testimonials.getBoundingClientRect();
+      const backgroundBounds = background.getBoundingClientRect();
+      const heightSetting = Number(divider.dataset.dividerHeight);
+      setReference((previous) => previous?.height === dividerBounds.height && previous.heightSetting === heightSetting
+        ? previous
+        : { height: dividerBounds.height, heightSetting });
       const waterTop = (dividerBounds.top - continuityBounds.top)
         + (dividerBounds.height * (1 - IMAGE_DIVIDER_WAVE_OVERSCAN_RATIO));
-      const waterBottom = continuityBounds.bottom
-        - (testimonialsBounds.top + (testimonialsBounds.height * IMAGE_DIVIDER_WAVE_OVERSCAN_RATIO));
+      const overlap = Math.max(dividerBounds.height, backgroundBounds.height) * IMAGE_DIVIDER_WAVE_OVERSCAN_RATIO;
+      const waterBottom = continuityBounds.bottom - backgroundBounds.top - Math.min(overlap, backgroundBounds.height * 0.46);
 
       continuity.style.setProperty('--aloha-page-links-water-top', `${waterTop.toFixed(2)}px`);
       continuity.style.setProperty('--aloha-page-links-water-bottom', `${Math.max(0, waterBottom).toFixed(2)}px`);
@@ -148,6 +155,7 @@ export function PageLinksContinuity({ children }) {
     resizeObserver?.observe(continuity);
     resizeObserver?.observe(divider);
     resizeObserver?.observe(testimonials);
+    resizeObserver?.observe(background);
     window.addEventListener('resize', updateWaterBounds);
 
     return () => {
@@ -159,7 +167,7 @@ export function PageLinksContinuity({ children }) {
   return (
     <div className="aloha-page-links-continuity" ref={continuityRef}>
       <PageLinksWater className="aloha-page-links-continuity__water" />
-      {children}
+      <ImageDividerReference.Provider value={reference}>{children}</ImageDividerReference.Provider>
     </div>
   );
 }

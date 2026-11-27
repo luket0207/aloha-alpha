@@ -1,7 +1,20 @@
+@use '../styles/variables' as tokens;
+
 .site-layout {
+  --aloha-header-background: #{tokens.$dark-green};
+  --aloha-floating-control-size: 3.75rem;
+  --aloha-floating-control-bottom: calc(max(1rem, env(safe-area-inset-bottom)) + 10px);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+.site-layout:has(> .aloha-header--green) {
+  --aloha-header-background: #{tokens.$green};
+}
+
+.site-layout:has(> .aloha-header--dark-blue) {
+  --aloha-header-background: #{tokens.$dark-blue};
 }
 
 .site-layout__content {

@@ -1,6 +1,6 @@
 export const siteRoutes = [
   { path: '/', slug: 'home' },
-  { path: '/classes/', slug: 'classes' },
+  { path: '/classes/', slug: 'classes', backToTop: true },
   { path: '/gallery/', slug: 'gallery' },
   { path: '/faqs/', slug: 'faqs' },
   { path: '/booking/', slug: 'booking' },

@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { matchPath, Outlet, useLocation } from 'react-router-dom';
+import { siteRoutes } from '../siteRoutes.js';
+import BackToTopButton from './BackToTopButton.jsx';
 import ContactUs from './ContactUs.jsx';
 import Footer from './Footer.jsx';
 import Header from './Header.jsx';
@@ -9,6 +11,8 @@ import useLoadingScreen from './useLoadingScreen.js';
 import './Layout.scss';
 
 export default function Layout() {
+  const { pathname } = useLocation();
+  const showBackToTop = siteRoutes.some(({ backToTop, path }) => backToTop && matchPath(path, pathname));
   const [navigationSettled, setNavigationSettled] = useState(false);
   const navigationStage = useLoadingScreen(navigationSettled);
   const showOverlay = navigationStage !== 'complete';
@@ -20,6 +24,7 @@ export default function Layout() {
         <Header onNavigationSettled={setNavigationSettled} />
         <div className="site-layout__content">
           <Outlet context={showOverlay} />
+          {showBackToTop && <BackToTopButton />}
         </div>
         <ContactUs />
         <Footer />

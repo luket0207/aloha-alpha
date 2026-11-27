@@ -8,11 +8,15 @@
 }
 
 .aloha-class-section__surface {
+  position: relative;
+  isolation: isolate;
   overflow: clip;
   background: var(--aloha-theme-background);
 }
 
 .aloha-class-section__inner {
+  position: relative;
+  z-index: 1;
   display: grid;
   gap: clamp(1.75rem, 4vw, 3rem);
   width: min(calc(100% - 2.5rem), tokens.$container-width);
@@ -119,6 +123,18 @@
 .aloha-class-section__media {
   justify-self: center;
   width: min(100%, 29rem);
+}
+
+@media (min-width: 768px) {
+  .aloha-class-section.theme-cream .aloha-class-section__columns:has(> :nth-child(2)) {
+    > .aloha-class-section__schedule {
+      grid-area: 1 / 1;
+    }
+
+    > .aloha-class-section__media {
+      grid-area: 1 / 2;
+    }
+  }
 }
 
 .aloha-class-section__timetable {

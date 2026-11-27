@@ -1,0 +1,169 @@
+@use '../styles/mixins';
+@use '../styles/variables' as tokens;
+
+.aloha-class-decoration {
+  position: absolute;
+  z-index: 0;
+  inset: 0 auto 0 0;
+  width: max(1.25rem, calc((100% - #{tokens.$container-width}) / 2));
+  overflow: clip;
+  pointer-events: none;
+
+  &--shaka,
+  &--surfboard {
+    inset-inline: auto 0;
+  }
+
+  &__position {
+    position: absolute;
+    left: 50%;
+    translate: -50% 0;
+  }
+
+  &__graphic,
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  &[data-revealed='false'] &__artwork {
+    opacity: 0;
+    transform: var(--aloha-decoration-entry);
+  }
+
+  &--palmTree &__artwork,
+  &--surfboard &__artwork {
+    transform-origin: center bottom;
+  }
+
+  &--palmTree[data-animate='true'] &__artwork,
+  &--surfboard[data-animate='true'] &__artwork {
+    @include mixins.falling-artwork;
+  }
+
+  &--palmTree &__position {
+    bottom: 0.5rem;
+    width: min(calc(100% - 2px), calc(var(--aloha-palm-height, 0px) * var(--aloha-decoration-ratio, 0.667)));
+  }
+
+  &--palmTree &__artwork {
+    --aloha-decoration-entry: rotate(-25deg);
+    transform: rotate(0deg);
+  }
+
+  &--shaka &__position {
+    top: 23%;
+    width: min(78%, 14rem + 100px);
+  }
+
+  &--shaka &__artwork {
+    --aloha-decoration-entry: translate3d(calc(100% + 1.5rem), -20%, 0) rotate(-30deg);
+    color: tokens.$color-white;
+    transform: rotate(-30deg);
+  }
+
+  &--shaka[data-animate='true'] &__artwork {
+    transition: opacity 700ms ease, transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  &--shaka[data-revealed='true'] &__graphic {
+    animation: aloha-shaka-cycle 5s ease-in-out 700ms infinite;
+  }
+
+  &--greenTurtle &__position {
+    top: var(--aloha-turtle-destination, 50%);
+    width: min(85%, calc(200px * var(--aloha-decoration-ratio, 1)));
+    translate: -50% -50%;
+  }
+
+  &--greenTurtle &__artwork {
+    --aloha-decoration-entry: translate3d(var(--aloha-turtle-start-x, 0px), var(--aloha-turtle-start-y, 0px), 0);
+  }
+
+  &--greenTurtle &__heading {
+    transform: rotate(var(--aloha-turtle-heading, 0deg));
+  }
+
+  &--greenTurtle[data-animate='true'] &__artwork {
+    transition: opacity 700ms ease, transform 1.4s linear;
+  }
+
+  &--greenTurtle[data-animate='true'][data-revealed='true'] img {
+    animation: aloha-turtle-wiggle 700ms ease-in-out 2;
+  }
+
+  &--surfboard &__position {
+    bottom: var(--aloha-surfboard-bottom, 0px);
+    left: calc(50% + var(--aloha-surfboard-center-shift, 0px));
+    width: var(--aloha-surfboard-width, 0px);
+  }
+
+  &--surfboard &__artwork {
+    --aloha-decoration-entry: rotate(15deg);
+    transform: rotate(-15deg);
+  }
+}
+
+@media (max-width: 767px) {
+  .aloha-class-decoration {
+    inset-inline: 0;
+    width: 100%;
+    opacity: 0.2;
+
+    &--surfboard &__position {
+      top: var(--aloha-decoration-center, 50%);
+      bottom: auto;
+      left: 50%;
+      width: min(80%, calc(var(--aloha-decoration-max-height, 0px) * var(--aloha-decoration-ratio, 1)));
+      translate: -50% -50%;
+    }
+
+    &--palmTree &__position {
+      top: var(--aloha-palm-mobile-top, 0px);
+      bottom: auto;
+      width: min(calc(100% - 2px), calc(var(--aloha-palm-mobile-height, 0px) * var(--aloha-decoration-ratio, 0.667)));
+    }
+
+    &--shaka &__position,
+    &--greenTurtle &__position {
+      top: var(--aloha-decoration-intro, 50%);
+      width: var(--aloha-decoration-intro-width, 90%);
+      translate: -50% -50%;
+    }
+
+    &--shaka &__position {
+      left: calc(50% + var(--aloha-decoration-intro-nudge, 0px));
+    }
+
+    &--shaka[data-revealed='true'] &__graphic {
+      animation: none;
+    }
+
+    &--shaka[data-revealed='true'] &__graphic.is-shaking {
+      animation: aloha-shaka-cycle 5s ease-in-out 700ms 1;
+    }
+
+    &--greenTurtle &__position {
+      left: calc(50% - var(--aloha-decoration-intro-nudge, 0px));
+    }
+
+    &--surfboard &__artwork {
+      // Keep the right-to-left rotation and fit the complete board in its centred box at rest.
+      --aloha-decoration-entry: rotate(30deg);
+      transform: rotate(0deg);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aloha-class-decoration[data-animate] .aloha-class-decoration__artwork {
+    transition: none;
+  }
+
+  .aloha-class-decoration--shaka[data-revealed] .aloha-class-decoration__graphic.is-shaking,
+  .aloha-class-decoration--shaka[data-revealed] .aloha-class-decoration__graphic,
+  .aloha-class-decoration--greenTurtle[data-animate] img {
+    animation: none;
+  }
+}

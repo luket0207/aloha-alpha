@@ -154,12 +154,14 @@ export async function exportWordPress({ source, base, output }) {
     snapshots.set('sections/' + slug + '.json', { slug, html: rewriter.rewriteHtml(data.html, slug) });
   }));
   const assets = await get('aloha/v1/site-assets', 'public site assets');
-  const asset = assets.turtle;
-  const turtle = asset?.url ? {
+  const exportAsset = (asset, label) => asset?.url ? {
     id: asset.id, width: asset.width, height: asset.height,
-    url: rewriter.rewriteUrl(asset.url, 'site turtle', source),
+    url: rewriter.rewriteUrl(asset.url, label, source),
   } : null;
-  snapshots.set('site-assets.json', { turtle });
+  const classDecorations = Object.fromEntries(['palmTree', 'greenTurtle', 'surfboard'].map((key) => [
+    key, exportAsset(assets.classDecorations?.[key], 'class decoration ' + key),
+  ]));
+  snapshots.set('site-assets.json', { turtle: exportAsset(assets.turtle, 'site turtle'), classDecorations });
 
   for (const [name, data] of snapshots) {
     const destination = path.join(output, 'snapshot', name);

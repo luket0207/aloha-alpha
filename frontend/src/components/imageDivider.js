@@ -8,6 +8,8 @@ export const IMAGE_DIVIDER_TOP_WAVE = {
   ],
 };
 
+const DEFAULT_IMAGE_DIVIDER_HEIGHT = 50;
+
 export const IMAGE_DIVIDER_BOTTOM_WAVE = {
   startY: 0.8,
   curves: [
@@ -30,19 +32,33 @@ export const IMAGE_DIVIDER_WAVE_OVERSCAN_RATIO = Math.max(
   1 - Math.min(...waveValues(IMAGE_DIVIDER_BOTTOM_WAVE)),
 );
 
-function curveCommands(curves) {
+function curveCommands(curves, scaleY) {
   return curves.map(({ control1, control2, end }) => (
-    `C${control1.x} ${control1.y} ${control2.x} ${control2.y} ${end.x} ${end.y}`
+    `C${control1.x} ${scaleY(control1.y)} ${control2.x} ${scaleY(control2.y)} ${end.x} ${scaleY(end.y)}`
   )).join('');
 }
 
-export function buildWaveBandPath(topWave, bottomWave) {
-  return `M0 ${topWave.startY}${curveCommands(topWave.curves)}L1 ${bottomWave.startY}${curveCommands(bottomWave.curves)}Z`;
+export function buildWaveBandPath(topWave, bottomWave, edgeScale = 1) {
+  const scaleTop = (y) => y * edgeScale;
+  const scaleBottom = (y) => 1 - (1 - y) * edgeScale;
+  return `M0 ${scaleTop(topWave.startY)}${curveCommands(topWave.curves, scaleTop)}L1 ${scaleBottom(bottomWave.startY)}${curveCommands(bottomWave.curves, scaleBottom)}Z`;
+}
+
+export function imageDividerWaveScale(sectionHeight, viewportHeight) {
+  if (sectionHeight <= 0 || viewportHeight <= 0) return 1;
+  const referenceHeight = viewportHeight * (DEFAULT_IMAGE_DIVIDER_HEIGHT / 100);
+  return Math.min(1, referenceHeight / sectionHeight);
+}
+
+export function matchMobileDividerWaveScale(sectionHeight, referenceHeight) {
+  if (!(sectionHeight > 0 && referenceHeight > 0)) return 1;
+  // Even a panoramic image needs room between the two curved edges.
+  return Math.min(0.45 / IMAGE_DIVIDER_WAVE_OVERSCAN_RATIO, referenceHeight / sectionHeight);
 }
 
 export function normalizeImageDividerHeight(dividerHeight) {
   const numericHeight = Number(dividerHeight);
-  if (!Number.isFinite(numericHeight)) return 50;
+  if (!Number.isFinite(numericHeight)) return DEFAULT_IMAGE_DIVIDER_HEIGHT;
   return Math.min(100, Math.max(20, Math.round(numericHeight / 5) * 5));
 }
 
@@ -60,6 +76,7 @@ export function calculateParallaxOffset(sectionCenter, sectionHeight, viewportHe
 export function calculateImageCoverGeometry({
   imageHeight,
   imageWidth,
+  parallaxTravel,
   sectionHeight,
   sectionWidth,
   waveOverscanRatio = IMAGE_DIVIDER_WAVE_OVERSCAN_RATIO,
@@ -68,7 +85,10 @@ export function calculateImageCoverGeometry({
   const safeSectionWidth = Math.max(1, Number(sectionWidth) || 0);
   const safeImageHeight = Math.max(1, Number(imageHeight) || 0);
   const safeImageWidth = Math.max(1, Number(imageWidth) || 0);
-  const minimumOverscan = safeSectionHeight * Math.max(0, waveOverscanRatio);
+  const travel = Number.isFinite(parallaxTravel) ? Math.max(0, parallaxTravel) : Infinity;
+  // A one-pixel reserve protects the image edges when a moving image is rounded.
+  const minimumOverscan = travel === Infinity ? safeSectionHeight * Math.max(0, waveOverscanRatio)
+    : travel > 0 ? travel + 1 : 0;
   const minimumRenderedHeight = safeSectionHeight + (minimumOverscan * 2);
   const scale = Math.max(
     safeSectionWidth / safeImageWidth,
@@ -78,7 +98,7 @@ export function calculateImageCoverGeometry({
   const renderedWidth = safeImageWidth * scale;
 
   return {
-    maxOffset: Math.max(0, ((renderedHeight - safeSectionHeight) / 2) - 1),
+    maxOffset: Math.min(travel, Math.max(0, ((renderedHeight - safeSectionHeight) / 2) - 1)),
     minimumOverscan,
     renderedHeight,
     renderedWidth,
