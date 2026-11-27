@@ -17,7 +17,7 @@
     &::after {
       position: absolute;
       inset: 0;
-      background-color: rgba(0, 0, 0, 0.6);
+      background-color: rgba(0, 0, 0, 0.2);
       content: '';
       pointer-events: none;
     }
@@ -30,7 +30,7 @@
     display: block;
     width: var(--aloha-testimonials-image-width, 100%);
     max-width: none;
-    height: var(--aloha-testimonials-image-height, 120%);
+    height: var(--aloha-testimonials-image-height, var(--aloha-testimonials-image-fallback-height, 120%));
     max-height: none;
     object-fit: cover;
     transform: translate3d(-50%, calc(-50% + var(--aloha-testimonials-image-offset, 0px)), 0);
@@ -130,13 +130,19 @@
 .aloha-testimonials .aloha-testimonials__background-image {
   width: var(--aloha-testimonials-image-width, 100%);
   max-width: none;
-  height: var(--aloha-testimonials-image-height, 120%);
+  height: var(--aloha-testimonials-image-height, var(--aloha-testimonials-image-fallback-height, 120%));
   max-height: none;
 }
 
 @media (max-width: 1023px) {
   .aloha-testimonials__slide {
     flex-basis: calc((100% - var(--aloha-testimonials-gap)) / 2);
+  }
+}
+
+@media (max-width: 899px) {
+  .aloha-testimonials {
+    --aloha-testimonials-image-fallback-height: 150%;
   }
 }
 

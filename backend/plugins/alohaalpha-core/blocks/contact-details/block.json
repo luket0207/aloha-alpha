@@ -1,0 +1,24 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "aloha/contact-details",
+  "title": "Contact Details",
+  "category": "aloha-layouts",
+  "icon": "id",
+  "description": "Editable company contact information and opening hours.",
+  "textdomain": "alohaalpha-core",
+  "attributes": {
+    "companyName": { "type": "string", "default": "" },
+    "address": { "type": "string", "default": "" },
+    "email": { "type": "string", "default": "" },
+    "telephone": { "type": "string", "default": "" },
+    "openingHours": {
+      "type": "array",
+      "default": [],
+      "items": { "type": "object" }
+    }
+  },
+  "supports": { "html": false, "customClassName": false },
+  "editorScript": "file:./index.js",
+  "render": "file:./render.php"
+}

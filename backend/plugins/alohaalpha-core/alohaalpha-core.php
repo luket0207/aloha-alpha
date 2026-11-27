@@ -77,6 +77,8 @@ add_action( 'init', function () {
         'text-image-side-by-side',
         'home-hero',
         'page-links',
+        'class-section',
+        'contact-details',
         'testimonials',
         'access-map',
     );

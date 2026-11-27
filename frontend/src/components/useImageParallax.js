@@ -10,6 +10,7 @@ export default function useImageParallax({
   imageHeight,
   imageRef,
   imageWidth,
+  mobileCoverOverscanRatio,
   mobileMediaQuery,
   mobileSectionHeightProperty,
   offsetProperty,
@@ -65,21 +66,21 @@ export default function useImageParallax({
 
       const intrinsicWidth = image.naturalWidth || Number(imageWidth);
       const intrinsicHeight = image.naturalHeight || Number(imageHeight);
+      if (!(intrinsicWidth > 0 && intrinsicHeight > 0)) return;
+
       let geometry;
 
-      if (mobileMedia?.matches) {
+      if (mobileMedia?.matches && mobileSectionHeightProperty) {
         geometry = calculateMobileImageGeometry({
           imageHeight: intrinsicHeight,
           imageWidth: intrinsicWidth,
           preferredSectionHeight: window.innerHeight * (preferredViewportHeight / 100),
           sectionWidth: section.clientWidth,
         });
-        if (mobileSectionHeightProperty) {
-          section.style.setProperty(
-            mobileSectionHeightProperty,
-            `${geometry.sectionHeight.toFixed(2)}px`,
-          );
-        }
+        section.style.setProperty(
+          mobileSectionHeightProperty,
+          `${geometry.sectionHeight.toFixed(2)}px`,
+        );
       } else {
         if (mobileSectionHeightProperty) section.style.removeProperty(mobileSectionHeightProperty);
         geometry = calculateImageCoverGeometry({
@@ -87,6 +88,7 @@ export default function useImageParallax({
           imageWidth: intrinsicWidth,
           sectionHeight: section.clientHeight,
           sectionWidth: section.clientWidth,
+          waveOverscanRatio: mobileMedia?.matches ? mobileCoverOverscanRatio : undefined,
         });
       }
 
@@ -140,6 +142,7 @@ export default function useImageParallax({
     imageHeight,
     imageRef,
     imageWidth,
+    mobileCoverOverscanRatio,
     mobileMediaQuery,
     mobileSectionHeightProperty,
     offsetProperty,

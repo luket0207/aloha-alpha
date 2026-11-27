@@ -25,7 +25,9 @@ Preserve all existing functionality from Epics 001–009.
 
 # Feature-001 — One-Command Static Demo Export and GitHub Pages Deployment
 
-**Status:** not started
+**Status:** complete
+
+**Notes:** Static export, local preview, validation and isolated gh-pages publishing are implemented. The local build exported six routes, 11 snapshots and 22 media files, and the browser smoke check passed with WordPress blocked. The first preview invocation pushed the validated build because the Windows npm wrapper dropped its dry-run argument. The separate demo:build command now provides local-only builds. The live GitHub Pages homepage, Classes route and site assets snapshot now return HTTP 200.
 
 ## Objective
 
@@ -542,7 +544,9 @@ Do not introduce another backend solely for previewing.
 
 # Feature-002 — Four Editable Classes Blocks
 
-**Status:** not started
+**Status:** complete
+
+**Notes:** The four Gutenberg variations, Media Library and frame controls, weekly timetable, React layout, animations, waves and demo support are implemented. PHP lint, frontend and demo builds, focused tests and editor checks passed. Verified all four owner-configured sections on the published local Classes page, including Japanese schedules, frames and images, Hero anchors, Booking navigation and layout at all six specified widths.
 
 ## Objective
 
@@ -1269,7 +1273,9 @@ Do not create a separate static version of the component.
 
 # Feature-003 — Contact Us Booking Buttons and Editable Business Details
 
-**Status:** not started
+**Status:** complete
+
+**Notes:** The Contact Details block prefills and stores editable contact fields and hours. React displays the saved details beneath the existing form and adds two Secondary Booking links. Verified the owner’s published synced pattern, local form delivery to Mailpit, and both new content types at all six specified widths. The fresh local export passed standalone browser checks with WordPress blocked. GitHub Pages publication of this export awaits explicit authorisation.
 
 ## Objective
 

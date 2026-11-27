@@ -9,7 +9,7 @@ import {
   faQuestion,
 } from '@fortawesome/free-solid-svg-icons';
 import { Link, useLocation } from 'react-router-dom';
-import { getWordPressRestUrl } from '../wordpressApi.js';
+import { getRouterHref, getWordPressRestUrl } from '../wordpressApi.js';
 import {
   DEFAULT_HEADER_COLOUR,
   headerColourClass,
@@ -107,11 +107,13 @@ export default function Header({ onNavigationSettled }) {
   const currentPath = normalizePath(location.pathname);
 
   const links = useMemo(() => header.links.map((link) => {
-    const url = new URL(link.href, window.location.origin);
+    const routerHref = getRouterHref(link.href);
+    const url = new URL(routerHref, window.location.origin);
     const path = normalizePath(url.pathname);
 
     return {
       ...link,
+      routerHref,
       icon: navigationIcons[path],
       isInternal: url.origin === window.location.origin && link.href.startsWith('/'),
       isActive: url.origin === window.location.origin && path === currentPath,
@@ -305,7 +307,7 @@ export default function Header({ onNavigationSettled }) {
                           <Link
                             className={className}
                             onClick={() => closeMenu(!isDesktop)}
-                            to={link.href}
+                            to={link.routerHref}
                           >
                             {content}
                           </Link>

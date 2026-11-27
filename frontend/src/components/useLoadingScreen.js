@@ -3,13 +3,17 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 const MINIMUM_LOADING_MS = 3000;
 const LOADING_FADE_MS = 500;
 
-export default function useLoadingScreen(settled, skipFade = false) {
+export default function useLoadingScreen(settled, {
+  covered = false,
+  initiallyComplete = false,
+  minimumMs = MINIMUM_LOADING_MS,
+} = {}) {
   const startedAt = useRef(null);
-  const [stage, setStage] = useState('loading');
+  const [stage, setStage] = useState(initiallyComplete ? 'complete' : 'loading');
 
   useLayoutEffect(() => {
-    startedAt.current ??= performance.now();
-  }, []);
+    if (!covered) startedAt.current ??= performance.now();
+  }, [covered]);
 
   useEffect(() => {
     if (!settled || stage === 'complete') return undefined;
@@ -19,10 +23,10 @@ export default function useLoadingScreen(settled, skipFade = false) {
       return () => window.clearTimeout(timeout);
     }
 
-    const remaining = Math.max(0, MINIMUM_LOADING_MS - (performance.now() - startedAt.current));
-    const timeout = window.setTimeout(() => setStage(skipFade ? 'complete' : 'fading'), Math.ceil(remaining));
+    const remaining = covered ? 0 : Math.max(0, minimumMs - (performance.now() - startedAt.current));
+    const timeout = window.setTimeout(() => setStage(covered ? 'complete' : 'fading'), Math.ceil(remaining));
     return () => window.clearTimeout(timeout);
-  }, [settled, skipFade, stage]);
+  }, [covered, minimumMs, settled, stage]);
 
   return stage;
 }

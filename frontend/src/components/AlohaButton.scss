@@ -17,6 +17,7 @@
   color: var(--aloha-button-text, #{tokens.$cream});
   font: 600 1rem/1.2 tokens.$font-body;
   text-align: center;
+  text-decoration: none;
   overflow-wrap: anywhere;
   cursor: pointer;
   isolation: isolate;
@@ -47,6 +48,15 @@
     &::before {
       display: none;
     }
+  }
+
+  &--tone-cream {
+    --aloha-button-background: #{tokens.$cream};
+    --aloha-button-text: #{tokens.$green};
+    --aloha-button-hover-background: #{tokens.$light-blue};
+    --aloha-button-hover-text: #{tokens.$dark-green};
+    --aloha-button-secondary-hover: #{tokens.$light-blue};
+    --aloha-button-secondary-hover-text: #{tokens.$dark-green};
   }
 
   &:focus-visible {

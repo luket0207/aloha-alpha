@@ -34,7 +34,27 @@ npm run build:watch
 
 React source changes will compile into `backend/themes/alohaalpha/dist`, which WordPress serves. Refresh the browser to see the changes. WordPress page edits are served via the REST API; simply refresh to see them.
 
-### Home hero content
+## Client demo on GitHub Pages
+
+Run these from the repository root with local WordPress running and both npm installs complete:
+
+```sh
+npm run demo:build
+npm run demo:preview
+```
+
+The build command exports the current published pages and reusable sections, copies referenced WordPress media, and builds and validates a static site in `demo/generated/site`. It operates locally. The preview command prints the local URL. Once the export is built, the preview works independently of WordPress. Google Fonts and the Google Maps embed still use their public services. The demo form validates inputs and shows the demo notice instead of sending messages.
+
+### First publication
+
+1. Check the target with `git remote get-url --push origin`. The default URL for `luket0207/aloha-alpha` is `https://luket0207.github.io/aloha-alpha/`.
+2. Verify your commit identity with `git config user.name` and `git config user.email`. For HTTPS, Git Credential Manager can prompt for GitHub sign-in on the first push. Sign in to an account with write access. Keep credentials in Git's credential manager, outside this repository.
+3. When ready to publish the previewed content, run `npm run demo:deploy`. It re-exports and validates the latest content, then pushes only the generated site to `gh-pages`. The first run creates that branch.
+4. In the repository's **Settings → Pages**, select **Deploy from a branch**, choose **gh-pages** and **/ (root)**, and save. Once GitHub finishes the deployment, **Settings → Pages** displays the public URL. Future updates use the same `npm run demo:deploy` command.
+
+See GitHub's [HTTPS credential setup](https://docs.github.com/en/get-started/git-basics/caching-your-github-credentials-in-git) and [Pages publishing settings](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site). If the project already has a configured Pages URL different from the derived URL, set `DEMO_PUBLIC_URL` to that URL for both export and deployment. An existing `CNAME` on the publishing branch is preserved. Set `DEMO_WP_URL` only if local wp-env uses a different loopback port from `http://localhost:8888/`.
+
+## Home hero content
 
 The React Home hero uses the WordPress **Home** page title for its heading and
 the page excerpt for its description. Its button uses the custom fields

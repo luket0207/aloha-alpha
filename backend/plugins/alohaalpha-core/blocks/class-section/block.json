@@ -1,0 +1,38 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "aloha/class-section",
+  "title": "Class Section",
+  "category": "aloha-layouts",
+  "icon": "welcome-learn-more",
+  "description": "Editable class introduction, framed image and weekly timetable.",
+  "textdomain": "alohaalpha-core",
+  "attributes": {
+    "classId": {
+      "type": "string",
+      "default": "kids",
+      "enum": ["kids", "first-class", "second-class", "third-class"]
+    },
+    "colorStyle": {
+      "type": "string",
+      "default": "a",
+      "enum": ["a", "b"]
+    },
+    "title": { "type": "string", "default": "" },
+    "introduction": { "type": "string", "default": "" },
+    "imageId": { "type": "integer" },
+    "frameType": {
+      "type": "string",
+      "default": "round",
+      "enum": ["round", "square"]
+    },
+    "timetable": {
+      "type": "array",
+      "default": [],
+      "items": { "type": "object" }
+    }
+  },
+  "supports": { "html": false, "customClassName": false },
+  "editorScript": "file:./index.js",
+  "render": "file:./render.php"
+}

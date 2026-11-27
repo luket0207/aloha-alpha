@@ -1,0 +1,181 @@
+@use '../styles/variables' as tokens;
+
+.aloha-class-section[class*='theme-'] {
+  --aloha-class-wave-height: clamp(3rem, 6vw, 5rem);
+  position: relative;
+  background: transparent;
+  color: var(--aloha-theme-text);
+}
+
+.aloha-class-section__surface {
+  overflow: clip;
+  background: var(--aloha-theme-background);
+}
+
+.aloha-class-section__inner {
+  display: grid;
+  gap: clamp(1.75rem, 4vw, 3rem);
+  width: min(calc(100% - 2.5rem), tokens.$container-width);
+  margin-inline: auto;
+  padding-block: clamp(2rem, 5vw, 3.5rem);
+  text-align: center;
+
+  h2,
+  p {
+    margin: 0;
+    color: inherit;
+    overflow-wrap: anywhere;
+  }
+}
+
+.aloha-class-section__wave {
+  display: block;
+  width: 100%;
+  height: var(--aloha-class-wave-height);
+  color: var(--aloha-theme-background);
+  pointer-events: none;
+
+  path {
+    fill: currentColor;
+  }
+}
+
+.aloha-class-section__wave--top {
+  margin-bottom: -1px;
+}
+
+.aloha-class-section__wave--bottom {
+  z-index: 1;
+  position: relative;
+  margin-top: -1px;
+  background: var(--aloha-class-next-background, transparent);
+}
+
+// A shared edge uses one wave with the two adjacent surfaces as its colours.
+.aloha-class-section:has(+ .aloha-class-section.theme-cream) {
+  --aloha-class-next-background: #{tokens.$cream};
+}
+
+.aloha-class-section:has(+ .aloha-class-section.theme-light-blue) {
+  --aloha-class-next-background: #{tokens.$light-blue};
+}
+
+.aloha-page-links--classes-hero:has(+ .aloha-class-section.theme-cream) .aloha-hero__bottom-wave {
+  color: tokens.$cream;
+}
+
+.aloha-page-links--classes-hero:has(+ .aloha-class-section.theme-light-blue) .aloha-hero__bottom-wave {
+  color: tokens.$light-blue;
+}
+
+.aloha-page-links--classes-hero + .aloha-class-section > .aloha-class-section__wave--top,
+.aloha-class-section + .aloha-class-section > .aloha-class-section__wave--top,
+.aloha-text-image-section.has-bottom-wave + .aloha-class-section > .aloha-class-section__wave--top,
+.aloha-class-section:has(+ .aloha-text-image-section.has-top-wave) > .aloha-class-section__wave--bottom {
+  display: none;
+}
+
+.aloha-text-image-section.has-bottom-wave:has(+ .aloha-class-section.theme-cream) .aloha-text-image-section__wave--bottom,
+.aloha-class-section.theme-cream + .aloha-text-image-section.has-top-wave .aloha-text-image-section__wave--top {
+  background: tokens.$cream;
+}
+
+.aloha-text-image-section.has-bottom-wave:has(+ .aloha-class-section.theme-light-blue) .aloha-text-image-section__wave--bottom,
+.aloha-class-section.theme-light-blue + .aloha-text-image-section.has-top-wave .aloha-text-image-section__wave--top {
+  background: tokens.$light-blue;
+}
+
+.aloha-image-divider + .aloha-class-section {
+  margin-top: calc(-1 * var(--aloha-class-wave-height));
+}
+
+.aloha-class-section:has(+ .aloha-image-divider) {
+  margin-bottom: calc(-1 * var(--aloha-class-wave-height) + 1px);
+}
+
+.site-layout__content:has(+ .contact-us__full) .wp-content > .aloha-class-section:last-child > .aloha-class-section__wave--bottom {
+  display: none;
+}
+
+.site-layout__content:has(.wp-content > .aloha-class-section.theme-cream:last-child) + .contact-us__full .contact-us__top-wave {
+  background: tokens.$cream;
+}
+
+.site-layout__content:has(.wp-content > .aloha-class-section.theme-light-blue:last-child) + .contact-us__full .contact-us__top-wave {
+  background: tokens.$light-blue;
+}
+
+.aloha-class-section__columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: center;
+  gap: clamp(1.5rem, 5vw, 4rem);
+
+  &:has(> :only-child) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.aloha-class-section__media {
+  justify-self: center;
+  width: min(100%, 29rem);
+}
+
+.aloha-class-section__timetable {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+
+  dt {
+    font-weight: 700;
+  }
+
+  dd {
+    margin: 0;
+  }
+}
+
+.aloha-class-section__intro {
+  justify-self: center;
+  max-width: 38rem;
+
+  p + p {
+    margin-top: 1em;
+  }
+}
+
+.aloha-class-section__entrance[data-motion-ready='true'][data-revealed='false']:not(:focus-within) {
+  opacity: 0;
+  transform: var(--aloha-class-entrance-transform);
+}
+
+.aloha-class-section__entrance[data-animate='true'] {
+  transition: opacity 1s ease, transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.aloha-class-section__entrance--left {
+  --aloha-class-entrance-transform: translate3d(clamp(-5rem, -7vw, -2.5rem), 0, 0);
+}
+
+.aloha-class-section__entrance--right {
+  --aloha-class-entrance-transform: translate3d(clamp(2.5rem, 7vw, 5rem), 0, 0);
+}
+
+.aloha-class-section__entrance--below {
+  --aloha-class-entrance-transform: translate3d(0, 2rem, 0);
+}
+
+@media (max-width: 767px) {
+  .aloha-class-section__columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aloha-class-section__entrance {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}

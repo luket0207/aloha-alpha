@@ -7,9 +7,13 @@
     "wp:stop": "wp-env stop",
     "wp:status": "wp-env status",
     "build": "npm --prefix frontend run build",
-    "build:watch": "npm --prefix frontend run build:watch"
+    "build:watch": "npm --prefix frontend run build:watch",
+    "demo:build": "node demo/deploy.mjs --build",
+    "demo:deploy": "node demo/deploy.mjs --publish",
+    "demo:preview": "node demo/deploy.mjs --preview"
   },
   "devDependencies": {
-    "@wordpress/env": "latest"
+    "@wordpress/env": "latest",
+    "parse5": "^7.3.0"
   }
 }

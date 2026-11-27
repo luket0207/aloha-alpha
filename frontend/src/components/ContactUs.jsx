@@ -1,8 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { bookingPath } from '../siteRoutes.js';
 import { getWordPressRestUrl } from '../wordpressApi.js';
+import AlohaButton from './AlohaButton.jsx';
 import ContactDecorations from './ContactDecorations.jsx';
+import ContactDetails from './ContactDetails.jsx';
+import { contactDetailsFromElement } from './contactDetails.js';
 import ContactForm from './ContactForm.jsx';
 import { contactSurfboardFromElement } from './contactDecorations.js';
 import Shaka from './Shaka.jsx';
@@ -78,6 +82,9 @@ function parseContactSection(html) {
   const presetGroup = section.querySelector('.aloha-contact__presets');
   const surfboardElement = section.querySelector('.aloha-contact__surfboard');
   const surfboard = contactSurfboardFromElement(surfboardElement);
+  const heading = section.querySelector('h2');
+  const detailsElements = Array.from(section.querySelectorAll('.wp-block-aloha-contact-details'));
+  const details = detailsElements.map(contactDetailsFromElement).find(Boolean);
   const presets = presetGroup
     ? Array.from(presetGroup.querySelectorAll('li'))
       .map((item) => item.textContent.trim())
@@ -86,9 +93,13 @@ function parseContactSection(html) {
 
   presetGroup?.remove();
   surfboardElement?.remove();
+  heading?.remove();
+  detailsElements.forEach((element) => element.remove());
 
   return {
     contentHtml: section.innerHTML,
+    details,
+    headingHtml: heading?.outerHTML || '',
     presets,
     presetsStatus: presetGroup ? 'ready' : 'error',
     surfboard,
@@ -103,6 +114,16 @@ function parseContactJump(html) {
     href: link?.getAttribute('href') || '#contact-us',
     label: link?.textContent.trim() || 'お問い合わせ',
   };
+}
+
+function BookingLink({ className }) {
+  return (
+    <div className={`contact-us__booking ${className}`}>
+      <AlohaButton to={bookingPath} tone="cream" variant="secondary">
+        体験レッスンを今すぐ予約
+      </AlohaButton>
+    </div>
+  );
 }
 
 export default function ContactUs() {
@@ -198,16 +219,19 @@ export default function ContactUs() {
         {full.status === 'loading' && <p className="contact-us__loading">お問い合わせを読み込んでいます…</p>}
         {full.status === 'error' && <p className="contact-us__error" role="alert">お問い合わせ内容を読み込めませんでした。</p>}
         {full.status === 'ready' && (
-          <div
-            className="contact-us__intro"
-            dangerouslySetInnerHTML={{ __html: contactContent.contentHtml }}
-          />
+          <div className="contact-us__intro">
+            {contactContent.headingHtml && <div dangerouslySetInnerHTML={{ __html: contactContent.headingHtml }} />}
+            <BookingLink className="contact-us__booking--upper" />
+            <div dangerouslySetInnerHTML={{ __html: contactContent.contentHtml }} />
+          </div>
         )}
         <ContactForm
           presets={contactContent.presets}
           presetsStatus={contactContent.presetsStatus}
           submitRef={submitRef}
         />
+        {contactContent.details && <ContactDetails {...contactContent.details} />}
+        {full.status === 'ready' && <BookingLink className="contact-us__booking--lower" />}
       </section>
 
       {showJump && (

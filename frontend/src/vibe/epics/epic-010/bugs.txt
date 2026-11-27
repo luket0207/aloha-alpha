@@ -1,0 +1,920 @@
+# Epic-010 — Bugs
+
+## Bug-001 — Prevent Animated Water Waves from Stretching Vertically
+
+**Status:** complete
+
+**Notes:** Page Links and Classes used a fixed 600-unit SVG viewBox scaled to the container height. The viewBox now follows the rendered height, keeping the animated SVG patterns at a fixed vertical scale and tiling them across the full background. Build and browser checks passed at all six widths, with changing link counts, 400–1,200px test heights, running animation and reduced motion.
+
+### Issue
+
+The animated water background used in the Page Links section and Classes Hero does not behave correctly on mobile.
+
+When these sections become taller, particularly because their circular links stack vertically, the background waves become vertically stretched.
+
+I want the waves to retain their original height and proportions regardless of how tall their parent section becomes.
+
+If the container becomes too tall for the existing waves to cover, additional waves should be generated or repeated to cover the remaining background.
+
+### 1. Preserve Wave Height
+
+Inspect the existing shared animated water background.
+
+Identify why wave height changes when the parent container becomes taller.
+
+Pay particular attention to:
+
+- SVG dimensions and `viewBox`.
+- `preserveAspectRatio`.
+- CSS `background-size`.
+- Percentage-based element heights.
+- SVG or container transforms.
+- Absolute positioning.
+- Shared background sizing calculations.
+
+Requirements:
+
+1. The individual animated waves must retain a consistent vertical height.
+2. Increasing the parent section's height must not stretch the waves.
+3. Reducing the parent section's height must not squash them.
+4. Preserve the existing wave curvature and proportions.
+5. Preserve the existing wave colours.
+6. Preserve existing animation speeds and movement.
+7. Keep the waves responsive horizontally.
+8. Do not tie their vertical size to `height: 100%` when that causes distortion.
+
+The animated water should maintain the same visual wave height whether its container is 400px or 1,200px tall.
+
+### 2. Generate Additional Waves When Necessary
+
+When the parent section becomes taller, the water background must continue filling its entire height.
+
+Requirements:
+
+1. Determine the available background height.
+2. Maintain a consistent height for individual wave bands.
+3. Repeat or generate additional wave bands when necessary.
+4. Cover the entire section without leaving empty areas.
+5. Allow the number of visible wave bands to adapt to the section's dimensions.
+6. Prevent visible seams between repeated waves.
+7. Avoid abrupt changes in wave positioning when the layout resizes.
+8. Preserve the current organic wave appearance.
+
+For example, if a background previously contained enough waves to cover 500px and the section becomes 1,000px tall, add enough wave coverage rather than stretching the existing waves to twice their height.
+
+### 3. Reuse the Existing Water Background Component
+
+The website already uses a shared animated water background.
+
+It is currently used in:
+
+- Homepage Hero.
+- Page Links.
+- Classes Hero.
+
+Requirements:
+
+1. Fix the shared implementation wherever appropriate.
+2. Preserve the existing Homepage Hero appearance.
+3. Ensure the Page Links and Classes Hero use the corrected background.
+4. Do not create independent wave systems for each section.
+5. Avoid unnecessary duplication of animated SVGs or React components.
+6. Preserve the swimming turtle integration.
+
+If the Homepage Hero requires its existing wave geometry or sizing to remain unchanged, use a suitable shared configuration rather than changing its appearance unintentionally.
+
+### 4. Preserve Animation
+
+Additional wave bands must participate in the existing water animation.
+
+Requirements:
+
+1. Preserve the current horizontal wave movement.
+2. Preserve the current animation timing.
+3. Avoid static-looking gaps between animated regions.
+4. Prevent waves from visibly jumping when repeated.
+5. Ensure animation remains continuous during scrolling.
+6. Avoid unnecessary React updates on every animation frame.
+7. Respect `prefers-reduced-motion`.
+
+Prefer efficient CSS/SVG background tiling or another approach compatible with the existing animation system.
+
+Do not generate large numbers of unnecessary DOM elements.
+
+### 5. Responsive Behaviour
+
+This issue is particularly noticeable on mobile because the circular links become vertically stacked.
+
+Verify that the background adapts when:
+
+- Four links are on one row.
+- Links collapse into two columns.
+- Links collapse into one column.
+- The section height changes after content loads.
+- The viewport is resized.
+- WordPress links are added or removed.
+
+Requirements:
+
+1. All section backgrounds remain completely covered.
+2. Wave height stays consistent.
+3. No vertical stretching.
+4. No exposed background gaps.
+5. No horizontal overflow.
+6. No layout shifts caused by adding wave bands.
+
+### 6. Preserve Existing Functionality
+
+Do not change:
+
+- Page Links content.
+- Page Links heading.
+- Circular link styling.
+- Link entrance animations.
+- Hover animations.
+- Classes Hero heading.
+- Classes Hero bottom wave.
+- Classes Hero anchor navigation.
+- Turtle swimming animations.
+- Homepage Hero layout.
+- Existing water colours.
+
+**Important:** This bug concerns the animated waves inside the water background, not the decorative wave-shaped boundaries between page sections.
+
+Do not unnecessarily modify those section boundaries.
+
+### Acceptance Criteria
+
+- Animated waves retain a consistent height.
+- Waves do not stretch when the section becomes taller.
+- Additional wave coverage appears when needed.
+- Background fills the entire section.
+- No visible seams between wave bands.
+- Existing water animation continues smoothly.
+- Page Links works at all responsive sizes.
+- Classes Hero works at all responsive sizes.
+- Homepage Hero remains visually unchanged.
+- Turtle animation remains functional.
+- No performance regressions or horizontal overflow.
+
+---
+
+## Bug-002 — Correct Testimonials Background Image Scaling on Mobile
+
+**Status:** complete
+
+**Notes:** Testimonials shared the desktop divider overscan on mobile. The shared hook now fits the image to the larger of section width and 150% of section height at widths through 899px, with movement clamped to the available height. Desktop geometry and the wave mask remain in use, and the image-only overlay uses the specified 0.2 opacity. Eight tests and local browser checks passed across all six widths and three image aspect ratios.
+
+### Issue
+
+On mobile, the Testimonials section does not size its background image correctly.
+
+The image should scale down appropriately to match the viewport width while maintaining enough image height for the existing parallax scrolling effect.
+
+I want the image to be as small as reasonably possible while still covering the visible section and providing additional space above and below for parallax movement.
+
+### 1. Required Image Coverage
+
+The background image must cover:
+
+- The full width of the Testimonials section.
+- The full height of the Testimonials section.
+- An additional 25% of the section's height above.
+- An additional 25% of the section's height below.
+
+This gives the image enough vertical space to move during parallax scrolling.
+
+If the section height is H, the target image height must be at least:
+
+```text
+Required image height = H × 1.5
+```
+
+For example:
+
+If the Testimonials section is 600px tall:
+
+- Visible section: 600px.
+- Additional space above: 150px.
+- Additional space below: 150px.
+- Minimum rendered image height: 900px.
+
+The image should remain vertically centred at the neutral parallax position.
+
+### 2. Prioritise Viewport Width When Possible
+
+On mobile, first determine whether the image can be displayed at the width of the page.
+
+If scaling the image to the viewport width produces sufficient height for the parallax requirement, use that size.
+
+For example:
+
+```text
+Viewport width: 375px
+Scaled image height: 1000px
+Required image height: 900px
+
+Result: Use 375px image width.
+```
+
+This prevents unnecessary horizontal enlargement or cropping.
+
+### 3. Increase Image Size Only When Necessary
+
+If displaying the image at viewport width does not produce enough height, increase the image's size proportionally until the minimum required height is satisfied.
+
+For example:
+
+```text
+Viewport width: 375px
+Scaled image height: 500px
+Required image height: 900px
+
+Result: Increase image scale until height is 900px.
+```
+
+This may result in the rendered image being wider than the viewport, with the excess width cropped by the container.
+
+That is acceptable when necessary to maintain image coverage and parallax movement.
+
+### 4. Image Scaling Calculation
+
+Use the image's intrinsic dimensions and the section's actual dimensions.
+
+Let:
+
+- W = container width.
+- H = container height.
+- IW = original image width.
+- IH = original image height.
+
+The minimum scale factor should satisfy both width and vertical coverage:
+
+```js
+const requiredHeight = containerHeight * 1.5;
+
+const scale = Math.max(
+  containerWidth / imageWidth,
+  requiredHeight / imageHeight
+);
+
+const renderedWidth = imageWidth * scale;
+const renderedHeight = imageHeight * scale;
+```
+
+This is an illustrative calculation.
+
+Adapt it to the existing image-rendering implementation.
+
+Requirements:
+
+1. Preserve the image's original aspect ratio.
+2. Never stretch the image independently on either axis.
+3. Do not make the image larger than necessary.
+4. Ensure the rendered width covers the section.
+5. Ensure the rendered height accommodates parallax movement.
+6. Centre the image horizontally.
+7. Keep the image vertically centred at the neutral parallax position.
+
+### 5. Preserve Parallax Behaviour
+
+The Testimonials background should continue using the existing Image Divider-style parallax effect.
+
+Requirements:
+
+1. Preserve the existing scroll-based movement.
+2. Preserve the neutral midpoint alignment.
+3. When the section centre aligns with the viewport centre, the image should be vertically centred.
+4. As the user scrolls down, the image should move smoothly upwards.
+5. Use the available vertical overscan safely.
+6. Never expose the image's straight top or bottom edge.
+7. Keep the image behind the organic wave boundaries.
+8. Preserve reduced-motion behaviour.
+
+The 25% additional image height on each side should be available for the parallax effect, rather than being removed through incorrect positioning or clipping.
+
+Clamp the actual movement to the available safe overscan if necessary.
+
+### 6. Account for Responsive Section Height
+
+The Testimonials section displays:
+
+- Three testimonials on desktop.
+- Two on intermediate screens.
+- One on mobile.
+
+Its height may change depending on the number of visible cards and the length of their text.
+
+Requirements:
+
+1. Use the section's actual rendered height.
+2. Recalculate image sizing when the section height changes.
+3. Recalculate on viewport resizing.
+4. Recalculate when the background image changes.
+5. Avoid repeated layout calculations during every scroll frame.
+6. Preserve the carousel's existing responsive layout.
+7. Prevent sudden image-size jumps during carousel movement.
+
+Use existing measurement utilities or ResizeObserver where appropriate.
+
+### 7. Preserve Wave Borders and Overlay
+
+The Testimonials section already has:
+
+- Top wave boundary.
+- Bottom wave boundary.
+- Black image overlay at 0.2 opacity.
+
+Preserve all three.
+
+Requirements:
+
+1. Keep the background image correctly positioned beneath both waves.
+2. Keep the overlay covering the visible image.
+3. Do not apply the overlay to testimonial cards.
+4. Prevent straight image edges from appearing through the wave masks.
+5. Prevent exposed white or transparent gaps.
+6. Preserve transitions into neighbouring sections.
+
+### 8. Preserve Desktop Behaviour
+
+This is primarily a mobile sizing correction.
+
+Do not unnecessarily change the existing desktop parallax effect or image presentation.
+
+The corrected sizing logic may be shared with desktop if it preserves the current appearance.
+
+### 9. Preserve Existing Testimonials Functionality
+
+Do not modify:
+
+- Carousel timing.
+- One-testimonial-at-a-time movement.
+- Card shapes.
+- Card staggering.
+- Card colours.
+- Quote and name typography.
+- Existing entrance transitions.
+- Automatic scrolling.
+- Hover behaviour.
+- WordPress image selection.
+- WordPress testimonial editing.
+
+### Acceptance Criteria
+
+- Mobile image is scaled appropriately to the viewport.
+- Image is no larger than necessary.
+- Image covers the full section width.
+- Image extends at least 25% of section height above and below at neutral alignment.
+- Original image aspect ratio is preserved.
+- Existing parallax movement works.
+- Image is vertically centred at the scroll midpoint.
+- No straight image edges become visible.
+- Wave boundaries remain intact.
+- Black overlay remains correct.
+- Testimonial cards remain unaffected.
+- Desktop appearance remains unchanged.
+- No horizontal overflow.
+
+---
+
+## Bug-003 — Reduce In-Page Loading Time and Skip Cached Loads
+
+**Status:** complete
+
+**Notes:** In-page routes shared the three-second minimum and fetched content on every mount. They now use a 500ms minimum plus the existing 500ms fade and bypass the loader for successful page data cached for the current app session. Failed or canceled requests do not enter the cache. Chrome verified the initial three-second overlay, fast and slow loads, retry, cache, scroll reset, anchor navigation and cancellation.
+
+### Issue
+
+The website currently has two loading screens:
+
+1. A full-screen loading screen displayed while the website's navigation is initially loading.
+2. An in-page loading screen displayed when navigating to another page and waiting for its content.
+
+Both currently use a minimum display time of three seconds.
+
+I want to keep the initial website loading screen unchanged.
+
+However, the in-page loading animation should appear for a much shorter time.
+
+If the destination page is already available in the application's cache, I would prefer not to show the in-page loading animation at all.
+
+### 1. Preserve Initial Website Loading Screen
+
+Do not change the initial site-loading overlay.
+
+It must continue to use:
+
+- Dark Blue full-screen background.
+- Light Blue Shaka.
+- Light Blue 読み込み中 text.
+- Shaka width up to 400px.
+- Existing shake animation.
+- Minimum three-second full display.
+- Half-second fade-out.
+
+Minimum total lifetime remains approximately 3.5 seconds.
+
+This loading screen is independent of the changes described below.
+
+### 2. Reduce In-Page Loading Minimum
+
+The in-page page-content loading screen should have a minimum display time of:
+
+**0.5 seconds (500ms)**
+
+Requirements:
+
+1. Show the loading screen when the destination page content is genuinely pending and cannot be rendered immediately.
+2. Once displayed, keep it fully visible for at least 500ms.
+3. If content takes longer than 500ms, continue displaying it until content is ready.
+4. Do not begin the fade-out until both the minimum time and content-readiness conditions are satisfied.
+5. Do not preserve the previous three-second minimum for in-page loading.
+6. Keep the initial full-screen loading overlay's timing unchanged.
+
+### 3. Preserve Fade-Out
+
+The in-page loader should still fade out smoothly.
+
+Use the existing:
+
+**0.5-second fade-out**
+
+Requirements:
+
+1. Fade the loading content out over 500ms.
+2. Avoid abrupt removal.
+3. Do not briefly display a blank section between loading and content.
+4. Prevent duplicate fade transitions.
+5. Remove loading elements from the layout when finished.
+6. Restore normal page interaction.
+
+When displayed, the in-page loader's minimum total lifetime should therefore be approximately:
+
+**1 second**
+
+- 0.5 seconds fully visible.
+- 0.5 seconds fading out.
+
+If the actual content fetch takes longer, the loading screen should remain until it is ready.
+
+### 4. Skip Loading Screen for Cached Pages
+
+When navigating to a page whose required content is already available in the application's cache, show the page immediately.
+
+Requirements:
+
+1. Inspect the existing page-content caching system.
+2. Detect whether usable content for the destination route is already available.
+3. If the data is available immediately, render the destination page without displaying the in-page loader.
+4. Do not impose the 500ms minimum when the loader was never shown.
+5. Do not fade in or fade out a loading screen that was not displayed.
+6. Do not show an empty loading frame before cached content appears.
+7. Preserve the existing page content and React component structure.
+
+### Important
+
+Do not assume browser HTTP caching automatically guarantees that React has synchronously available page data.
+
+Use the application's actual route/data cache or existing data state.
+
+The loader should be skipped only when the destination content can genuinely be rendered immediately.
+
+If the data is not ready, show the normal shortened loading screen.
+
+### 5. Avoid Loading-Screen Flashing
+
+Pay attention to transitions where content loads very quickly.
+
+Requirements:
+
+1. Avoid mounting and immediately removing the loader unnecessarily.
+2. Check for cached content before committing to the loading state.
+3. Once the loader becomes visible, honour the 500ms minimum.
+4. Do not repeatedly mount the loader during one page transition.
+5. Avoid race conditions between multiple navigation requests.
+6. Prevent stale requests from replacing newer page content.
+
+The result should feel smooth regardless of whether page content loads instantly or takes longer.
+
+### 6. Preserve In-Page Loader Appearance
+
+Do not change:
+
+- Dark Blue Shaka colour.
+- Dark Blue Japanese loading text.
+- Shaka maximum width of 300px.
+- Top-centred placement.
+- Spacing below the navigation.
+- Existing shake animation.
+- Normal page background.
+
+When the loader is visible, it should still occupy sufficient height to keep the Contact Us form and Footer below the fold.
+
+Only its minimum display time and cached-page behaviour should change.
+
+### 7. Preserve Navigation and Scroll Behaviour
+
+The website currently returns to the top when navigating between pages.
+
+Requirements:
+
+1. Preserve top-of-page navigation.
+2. Preserve the sticky Header.
+3. Preserve intentional anchor navigation.
+4. Preserve the Contact Us Jump button.
+5. Preserve the Home Hero scroll-down button.
+6. Do not introduce unexpected scrolling when cached content is displayed.
+7. Keep page transitions consistent whether content is cached or fetched.
+
+If navigation targets a specific anchor, honour it after the relevant content is ready.
+
+### 8. Preserve Error Handling
+
+Requirements:
+
+1. Preserve existing loading-error states.
+2. Do not leave users stuck on a loader after a request fails.
+3. Do not treat failed content as successfully cached.
+4. Do not display stale content as current unless this is already an intentional supported caching behaviour.
+5. Clean up timers correctly.
+6. Preserve existing request cancellation and stale-response protections.
+
+### Acceptance Criteria
+
+- Initial website loading overlay remains unchanged.
+- Initial overlay still uses its three-second minimum.
+- In-page loader uses a 500ms minimum.
+- In-page loader still fades out over 500ms.
+- Cached pages render immediately without the loader.
+- No loading flash occurs for cached content.
+- Uncached pages display the loader correctly.
+- Slow requests keep the loader visible until content is ready.
+- Loading errors are handled correctly.
+- Existing page navigation and anchors work.
+- No blank flashes or unexpected layout shifts.
+
+---
+
+## Bug-004 — Move Class Introduction Above Timetable and Image
+
+**Status:** complete
+
+**Notes:** The shared React component now renders the introduction between the title and the timetable/image row. Existing WordPress content matched the pre-change response exactly. Browser checks covered all four classes at six widths, both alternating layouts, viewport-based entrance animations and Booking navigation. The fresh static preview passed on mobile and desktop with WordPress blocked.
+
+### Issue
+
+The new Class Section blocks currently display the timetable and featured image above the introduction paragraph.
+
+I want to reverse this order.
+
+The introduction should appear directly beneath the class title, followed by the side-by-side timetable and image.
+
+The booking button should remain at the bottom.
+
+This change should apply to all four Class Section blocks.
+
+### 1. New Section Structure
+
+The intended order is:
+
+1. Class title.
+2. Introduction paragraph.
+3. Timetable and featured image side by side.
+4. Book a Demo Lesson button.
+
+### Style A — Light Background
+
+```text
+                  CLASS TITLE
+
+             INTRODUCTION PARAGRAPH
+
+
+        TIMETABLE              IMAGE
+
+
+                 BOOKING BUTTON
+```
+
+### Style B — Light Blue Background
+
+```text
+                  CLASS TITLE
+
+             INTRODUCTION PARAGRAPH
+
+
+          IMAGE               TIMETABLE
+
+
+                 BOOKING BUTTON
+```
+
+The introduction should remain centred.
+
+The image and timetable must continue alternating sides according to the selected class style.
+
+### 2. Move Introduction Paragraph
+
+Requirements:
+
+1. Move the existing introduction paragraph above the image/timetable row.
+2. Position it directly below the title.
+3. Maintain comfortable vertical spacing.
+4. Preserve its current typography.
+5. Preserve its current colour.
+6. Preserve its centred alignment.
+7. Preserve its maximum content width.
+8. Preserve paragraph breaks and WordPress-managed content.
+9. Do not duplicate the introduction.
+
+This should be a presentation/layout change, not a content migration.
+
+### 3. Preserve Timetable and Image Layout
+
+Do not change the side-by-side layout.
+
+For Style A:
+
+- Timetable left.
+- Image right.
+
+For Style B:
+
+- Image left.
+- Timetable right.
+
+Preserve:
+
+- Timetable content.
+- Japanese weekday labels.
+- Structured lesson times.
+- Round/Square image-frame selection.
+- Featured image dimensions.
+- Existing responsive stacking.
+- Current column spacing.
+
+Only the row's position within the overall section should change.
+
+### 4. Preserve Booking Button Position
+
+The booking button should remain at the bottom of the Class Section.
+
+Requirements:
+
+1. Keep it below the image/timetable row.
+2. Preserve its centred alignment.
+3. Preserve its Japanese text.
+4. Preserve its Primary AlohaButton styling.
+5. Preserve theme-aware colours.
+6. Preserve its hover animation.
+7. Preserve navigation to the Booking page.
+
+Do not move the button above the timetable.
+
+### 5. Preserve Entrance Animations
+
+The introduction, timetable, image and booking button already have entrance animations.
+
+Preserve:
+
+**Introduction**
+
+- Fade in.
+- Move upwards into position.
+
+**Timetable**
+
+- Slide in from its nearest side.
+
+**Featured Image**
+
+- Slide in from the opposite side.
+
+**Booking Button**
+
+- Fade in and move upwards.
+
+Requirements:
+
+1. Adjust animation triggers to work with the new visual order.
+2. Preserve the existing animation duration and easing.
+3. Preserve the existing scroll-direction rules.
+4. Do not animate when scrolling upwards into an element.
+5. Prevent elements from animating before reaching their intended viewport trigger.
+6. Preserve reduced-motion support.
+
+The introduction may now enter the viewport before the timetable and image. Its animation should trigger based on its new position.
+
+### 6. Preserve WordPress Editing
+
+This must not require recreating or reconfiguring the Class Section blocks.
+
+Requirements:
+
+1. Preserve the existing block identity.
+2. Preserve all existing attributes.
+3. Preserve saved titles.
+4. Preserve saved introductions.
+5. Preserve timetables.
+6. Preserve featured images.
+7. Preserve image-frame selections.
+8. Preserve class styles.
+9. Preserve existing anchor IDs.
+10. Preserve Gutenberg editor functionality.
+
+The frontend should display the new order using the existing saved content.
+
+If the Gutenberg editor has a structural preview, update it to reflect the new layout.
+
+### 7. Preserve Existing Section Design
+
+Do not change:
+
+- Alternating background colours.
+- Text colours.
+- Organic top and bottom wave boundaries.
+- Section spacing beyond what is needed for the new order.
+- Class title styling.
+- Class navigation anchors.
+- Background continuity with adjacent sections.
+- Contact Us section.
+
+The section should continue to grow naturally based on its content.
+
+### 8. Static Demo Compatibility
+
+Ensure the new order also appears in the GitHub Pages demo.
+
+Requirements:
+
+1. Use the same React component in normal and demo modes.
+2. Do not alter the exported data structure.
+3. Do not require a new WordPress export format merely for reordering.
+4. Preserve booking links and images.
+5. Preserve responsive behaviour.
+
+### Acceptance Criteria
+
+- Class title remains at the top.
+- Introduction appears directly below the title.
+- Introduction is centred.
+- Image and timetable appear beneath the introduction.
+- Style A keeps timetable left and image right.
+- Style B keeps image left and timetable right.
+- Booking button remains at the bottom.
+- Existing content remains unchanged.
+- Existing WordPress block attributes remain compatible.
+- Entrance animations work in the new order.
+- All four class sections use the updated layout.
+- Mobile stacking works.
+- Static demo uses the same layout.
+- No new wave gaps or horizontal overflow.
+
+---
+
+# Epic-010 Bug Implementation Instructions
+
+## 1. Preparation
+
+Before implementing the bugs:
+
+1. Read and follow `AGENTS.md`.
+2. Read the existing Epic-010 feature requirements.
+3. Inspect the shared water background.
+4. Inspect Page Links and Classes Hero.
+5. Inspect Testimonials image and parallax rendering.
+6. Inspect the existing navigation and page-loading lifecycle.
+7. Inspect the Class Section component and Gutenberg editor.
+8. Preserve all existing WordPress content.
+
+## 2. Implementation Order
+
+Complete the bugs in written order.
+
+### Bug-001
+
+Correct the animated water background so wave heights remain consistent and additional waves cover taller sections.
+
+### Bug-002
+
+Correct mobile Testimonials background sizing while preserving parallax overscan.
+
+### Bug-003
+
+Reduce the in-page loader minimum to 500ms, preserve the 500ms fade, and skip the loader when cached page content is immediately available.
+
+### Bug-004
+
+Move the Class Section introduction above the timetable/image row.
+
+## 3. WordPress Integration
+
+No manual WordPress configuration should be necessary.
+
+Preserve all existing Gutenberg blocks and synced patterns.
+
+Do not require users to re-enter content or replace saved images.
+
+## 4. Testing
+
+Verify relevant functionality at:
+
+- 320px.
+- 375px.
+- 430px.
+- 768px.
+- 1024px.
+- 1440px.
+
+### Bug-001
+
+Test:
+
+- Short and tall water-background sections.
+- One-row, two-row and four-row link layouts.
+- Consistent wave height.
+- Dynamic wave coverage.
+- Continuous water animation.
+- Homepage Hero regression.
+
+### Bug-002
+
+Test:
+
+- Portrait images.
+- Landscape images.
+- Square images.
+- Full-width mobile scaling.
+- Minimum 150% rendered image height.
+- Parallax midpoint alignment.
+- Complete image coverage throughout scroll.
+- Wave and overlay integration.
+
+### Bug-003
+
+Test:
+
+- Initial site load.
+- Navigation loading overlay.
+- Cached page navigation.
+- Fast uncached requests.
+- Slow uncached requests.
+- Failed requests.
+- Fade-out duration.
+- Scroll resetting.
+- Anchor navigation.
+- Repeated route changes.
+
+### Bug-004
+
+Test:
+
+- All four Class Sections.
+- Both colour/layout styles.
+- Correct content order.
+- Responsive column stacking.
+- Entrance animations.
+- Gutenberg content persistence.
+- Booking navigation.
+- Static demo compatibility.
+
+Run focused automated tests and relevant frontend builds.
+
+Do not claim live browser or WordPress verification unless those checks actually ran.
+
+## 5. Bug Tracking
+
+Update:
+
+`src/vibe/epics/epic-010/bugs.txt`
+
+Follow the existing status and rollback conventions in `AGENTS.md`.
+
+Keep an independent rollback record for each bug.
+
+Only mark bugs complete when their acceptance criteria have been satisfied.
+
+Do not modify unrelated features or begin another Epic.
+
+## 6. Completion Report
+
+For each bug, report:
+
+1. Root cause identified.
+2. Changes implemented.
+3. Files modified.
+4. Relevant tests performed.
+5. Responsive verification.
+6. Any remaining limitations.
+
+For Bug-001, explain how the waves now maintain their height while covering taller containers.
+
+For Bug-002, explain how the minimum image size and parallax overscan are calculated.
+
+For Bug-003, confirm that the initial site loader still has its original three-second minimum.
+
+For Bug-004, confirm that existing WordPress Class Section data was preserved.
+
+**Scope:** Implement Epic-010 Bugs 001–004 only. Do not begin Epic-011.

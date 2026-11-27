@@ -4,6 +4,7 @@ frontend/node_modules/
 
 # Frontend bundle is generated from source
 backend/themes/alohaalpha/dist/
+demo/generated/
 
 # Local settings and secrets
 .env

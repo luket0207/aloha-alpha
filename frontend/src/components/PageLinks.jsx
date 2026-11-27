@@ -9,6 +9,7 @@ import {
   faQuestion,
 } from '@fortawesome/free-solid-svg-icons';
 import { Link, useOutletContext } from 'react-router-dom';
+import { getRouterHref } from '../wordpressApi.js';
 import { HERO_BOTTOM_WAVE } from './hero.js';
 import { IMAGE_DIVIDER_WAVE_OVERSCAN_RATIO } from './imageDivider.js';
 import { ROUND_FRAME_PATH } from './imageFrame.js';
@@ -70,7 +71,7 @@ function PageLink({ classesHero, link }) {
       className={className}
       state={isClassAnchor ? { classesAnchor: true } : undefined}
       style={style}
-      to={link.href}
+      to={getRouterHref(link.href)}
     >
       {content}
     </Link>
@@ -80,8 +81,26 @@ function PageLink({ classesHero, link }) {
 }
 
 function PageLinksWater({ className }) {
+  const waterRef = useRef(null);
+  const [height, setHeight] = useState(600);
   const reducedMotion = useReducedMotion();
   const surfaceId = `aloha-page-links-water-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`;
+
+  useLayoutEffect(() => {
+    const water = waterRef.current;
+    // A viewBox matching the rendered height keeps one SVG unit equal to one vertical CSS pixel.
+    const updateHeight = () => setHeight(Math.max(1, water.getBoundingClientRect().height));
+
+    updateHeight();
+    if ('ResizeObserver' in window) {
+      const observer = new ResizeObserver(updateHeight);
+      observer.observe(water);
+      return () => observer.disconnect();
+    }
+
+    window.addEventListener('resize', updateHeight);
+    return () => window.removeEventListener('resize', updateHeight);
+  }, []);
 
   return (
     <svg
@@ -89,11 +108,12 @@ function PageLinksWater({ className }) {
       className={className}
       focusable="false"
       preserveAspectRatio="none"
-      viewBox="0 0 1000 600"
+      ref={waterRef}
+      viewBox={`0 0 1000 ${height}`}
     >
       <WaterSurface
         id={surfaceId}
-        path="M0 0H1000V600H0Z"
+        path={`M0 0H1000V${height}H0Z`}
         reducedMotion={reducedMotion}
       />
     </svg>

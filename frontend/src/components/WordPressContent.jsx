@@ -1,6 +1,8 @@
 import { createElement, useMemo } from 'react';
 import AccessMap from './AccessMap.jsx';
 import { accessMapDataFromElement } from './accessMap.js';
+import ClassSection from './ClassSection.jsx';
+import { classSectionDataFromElement } from './classSection.js';
 import ImageDivider from './ImageDivider.jsx';
 import { imageDividerDataFromElement, imageDividerHeightFromElement } from './imageDivider.js';
 import ImageFrame from './ImageFrame.jsx';
@@ -64,6 +66,11 @@ function renderWordPressNode(node, key, options = {}) {
   if (node.matches('.wp-block-aloha-image-frame')) {
     const frame = imageFrameDataFromElement(node);
     return frame ? <ImageFrame {...frame} key={key} /> : null;
+  }
+
+  if (node.matches('.wp-block-aloha-class-section')) {
+    const section = classSectionDataFromElement(node);
+    return section ? <ClassSection {...section} key={key} /> : null;
   }
 
   if (node.matches('.wp-block-aloha-image-divider')) {

@@ -9,6 +9,8 @@ import WordPressContent from './WordPressContent.jsx';
 import './WordPressPage.scss';
 
 const PAGE_REQUEST_TIMEOUT_MS = 30000;
+const PAGE_LOADING_MINIMUM_MS = 500;
+const pageCache = new Map();
 
 function extractHomeHero(html) {
   const document = new DOMParser().parseFromString(html, 'text/html');
@@ -58,11 +60,20 @@ function extractHomeHero(html) {
 }
 
 export default function WordPressPage({ slug }) {
-  const [{ page, status }, setResult] = useState({ page: null, status: 'loading' });
+  const [cachedPage] = useState(() => pageCache.get(slug));
+  const [{ page, status }, setResult] = useState(() => (
+    cachedPage ? { page: cachedPage, status: 'ready' } : { page: null, status: 'loading' }
+  ));
   const navigationOverlayActive = useOutletContext();
-  const stage = useLoadingScreen(status !== 'loading', navigationOverlayActive);
+  const stage = useLoadingScreen(status !== 'loading', {
+    covered: navigationOverlayActive,
+    initiallyComplete: Boolean(cachedPage),
+    minimumMs: PAGE_LOADING_MINIMUM_MS,
+  });
 
   useEffect(() => {
+    if (cachedPage) return undefined;
+
     const controller = new AbortController();
     const timeout = window.setTimeout(() => {
       controller.abort();
@@ -80,9 +91,13 @@ export default function WordPressPage({ slug }) {
         if (controller.signal.aborted) return;
 
         const found = pages.find((item) => item.slug === slug);
+        if (found) {
+          if (typeof found.content?.rendered !== 'string') throw new Error('WordPress page content is missing');
+          pageCache.set(slug, found);
+        }
         setResult({ page: found, status: found ? 'ready' : 'missing' });
       } catch (error) {
-        if (error.name !== 'AbortError') {
+        if (!controller.signal.aborted && error.name !== 'AbortError') {
           console.error(error);
           setResult({ page: null, status: 'error' });
         }
@@ -97,7 +112,7 @@ export default function WordPressPage({ slug }) {
       window.clearTimeout(timeout);
       controller.abort();
     };
-  }, [slug]);
+  }, [cachedPage, slug]);
 
   const homeContent = useMemo(() => {
     if (slug !== 'home' || !page) return null;

@@ -63,6 +63,25 @@ test('uses natural width-scaled image geometry and only genuine overscan on mobi
   assert.equal(portrait.maxOffset, 115.25);
 });
 
+test('uses the smallest aspect-ratio-preserving cover with 25% parallax clearance on each side', () => {
+  for (const [imageWidth, imageHeight, expectedWidth, expectedHeight] of [
+    [300, 800, 375, 1000],
+    [1200, 800, 1350, 900],
+    [800, 800, 900, 900],
+  ]) {
+    const geometry = calculateImageCoverGeometry({
+      imageWidth,
+      imageHeight,
+      sectionWidth: 375,
+      sectionHeight: 600,
+      waveOverscanRatio: 0.25,
+    });
+    assert.equal(geometry.renderedWidth, expectedWidth);
+    assert.equal(geometry.renderedHeight, expectedHeight);
+    assert.equal(geometry.maxOffset, (expectedHeight - 600) / 2 - 1);
+  }
+});
+
 test('builds one closed mask band from distinct top and bottom waves', () => {
   const path = buildWaveBandPath(IMAGE_DIVIDER_TOP_WAVE, IMAGE_DIVIDER_BOTTOM_WAVE);
   assert.match(path, /^M0 0\.09C/);

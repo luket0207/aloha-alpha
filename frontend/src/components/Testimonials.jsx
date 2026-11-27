@@ -29,6 +29,8 @@ const TESTIMONIALS_MASK_PATH = buildWaveBandPath(
   IMAGE_DIVIDER_TOP_WAVE,
   IMAGE_DIVIDER_BOTTOM_WAVE,
 );
+const MOBILE_MEDIA_QUERY = '(max-width: 899px)';
+const MOBILE_PARALLAX_OVERSCAN_RATIO = 0.25;
 
 function useVisibleCount() {
   const [visibleCount, setVisibleCount] = useState(() => (
@@ -165,6 +167,8 @@ export default function Testimonials({ image, testimonials }) {
     imageHeight: image.height,
     imageRef,
     imageWidth: image.width,
+    mobileCoverOverscanRatio: MOBILE_PARALLAX_OVERSCAN_RATIO,
+    mobileMediaQuery: MOBILE_MEDIA_QUERY,
     offsetProperty: '--aloha-testimonials-image-offset',
     reducedMotion,
     renderedHeightProperty: '--aloha-testimonials-image-height',

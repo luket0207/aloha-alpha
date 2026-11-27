@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { getWordPressRestUrl } from '../wordpressApi.js';
+import { getWordPressRestUrl, isDemoMode } from '../wordpressApi.js';
 import AlohaButton from './AlohaButton.jsx';
 
 export const MAX_MESSAGE_LENGTH = 1000;
@@ -22,6 +22,7 @@ const TEXT = {
   messageTooLong: '1000文字以内で入力してください。',
   accepted: 'お問い合わせを受け付けました。ありがとうございます。',
   failed: '送信できませんでした。時間をおいてもう一度お試しください。',
+  demo: 'こちらはデモサイトのため、お問い合わせは送信されません。',
 };
 
 function validate(values) {
@@ -56,6 +57,10 @@ export default function ContactForm({ presets, presetsStatus, submitRef }) {
     setSubmissionStatus('idle');
 
     if (Object.keys(nextErrors).length) return;
+    if (isDemoMode) {
+      setSubmissionStatus('demo');
+      return;
+    }
 
     setSubmissionStatus('submitting');
 
@@ -206,6 +211,7 @@ export default function ContactForm({ presets, presetsStatus, submitRef }) {
       </AlohaButton>
 
       <div aria-live="polite" className="contact-us__submission-status">
+        {submissionStatus === 'demo' && <p>{TEXT.demo}</p>}
         {submissionStatus === 'success' && <p className="is-success">{TEXT.accepted}</p>}
         {submissionStatus === 'error' && <p className="is-error" role="alert">{TEXT.failed}</p>}
       </div>
